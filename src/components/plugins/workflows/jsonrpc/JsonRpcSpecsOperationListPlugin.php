@@ -22,7 +22,7 @@ class JsonRpcSpecsOperationListPlugin extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array $jRpcData = [])
     {
         $fileName = getenv('WF__OPERATION_ALL') ?: APP__ROOT . '/configs/operations.json';
-        $specs = is_file($fileName) ? file_get_contents($fileName) : [];
+        $specs = is_file($fileName) ? json_decode(file_get_contents($fileName), true) : [];
 
         $response = $response
             ->withHeader('Content-type', 'application/json')
@@ -31,7 +31,7 @@ class JsonRpcSpecsOperationListPlugin extends Plugin
             ->getBody()->write(json_encode([
                 'id' => $jRpcData['id'] ?? '',
                 'jsonrpc' => '2.0',
-                'result' => json_decode($specs, true)
+                'result' => $specs
             ]));
     }
 }
