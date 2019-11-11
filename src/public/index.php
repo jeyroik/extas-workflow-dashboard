@@ -16,7 +16,13 @@ $app->post('/api/jsonrpc', function (Request $request, Response $response, array
     $jrpcRequest = json_decode($request->getBody()->getContents(), true);
     $method = $jrpcRequest['method'] ?? 'app.index';
     $pluginStub = new \extas\components\plugins\Plugin();
+    foreach ($pluginStub->getPluginsByStage('before.run.jsonrpc.' . $method) as $plugin) {
+        $plugin($request, $response, $jrpcRequest);
+    }
     foreach ($pluginStub->getPluginsByStage('run.jsonrpc.' . $method) as $plugin) {
+        $plugin($request, $response, $jrpcRequest);
+    }
+    foreach ($pluginStub->getPluginsByStage('after.run.jsonrpc.' . $method) as $plugin) {
         $plugin($request, $response, $jrpcRequest);
     }
     return $response;

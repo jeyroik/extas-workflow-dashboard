@@ -22,6 +22,14 @@
       "stage": "run.jsonrpc.entity.template.delete"
     },
     {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\BeforeTransitionCreate",
+      "stage": "before.run.jsonrpc.transition.create"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\BeforeTransitionDelete",
+      "stage": "before.run.jsonrpc.transition.delete"
+    },
+    {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionCreate",
       "stage": "run.jsonrpc.transition.create"
     },
@@ -36,6 +44,10 @@
     {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionDelete",
       "stage": "run.jsonrpc.transition.delete"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\BeforeTransitionDispatcherCreate",
+      "stage": "before.run.jsonrpc.transition.dispatcher.create"
     },
     {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionDispatcherCreate",
@@ -54,6 +66,10 @@
       "stage": "run.jsonrpc.transition.dispatcher.delete"
     },
     {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\BeforeTransitionDispatcherTemplateDelete",
+      "stage": "before.run.jsonrpc.transition.dispatcher.template.delete"
+    },
+    {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionDispatcherTemplateCreate",
       "stage": "run.jsonrpc.transition.dispatcher.template.create"
     },
@@ -70,6 +86,14 @@
       "stage": "run.jsonrpc.transition.dispatcher.template.delete"
     },
     {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\BeforeSchemaCreate",
+      "stage": "before.run.jsonrpc.schema.create"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\BeforeSchemaCreate",
+      "stage": "before.run.jsonrpc.schema.delete"
+    },
+    {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcSchemaCreate",
       "stage": "run.jsonrpc.schema.create"
     },
@@ -84,6 +108,10 @@
     {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcSchemaDelete",
       "stage": "run.jsonrpc.schema.delete"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\BeforeStateDelete",
+      "stage": "before.run.jsonrpc.state.delete"
     },
     {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcStateCreate",
