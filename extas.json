@@ -1,0 +1,81 @@
+{
+  "name": "extas/workflow-dashboard",
+  "plugins": [
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcSpecsOperationListPlugin",
+      "stage": "run.specs.operation.all"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcEntityTemplateCreate",
+      "stage": "run.jsonrpc.entity.template.create"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcEntityTemplateUpdate",
+      "stage": "run.jsonrpc.entity.template.update"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcEntityTemplateIndex",
+      "stage": "run.jsonrpc.entity.template.index"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionCreate",
+      "stage": "run.jsonrpc.transition.create"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionUpdate",
+      "stage": "run.jsonrpc.transition.update"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionIndex",
+      "stage": "run.jsonrpc.transition.index"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionDispatcherCreate",
+      "stage": "run.jsonrpc.transition.dispatcher.create"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionDispatcherUpdate",
+      "stage": "run.jsonrpc.transition.dispatcher.update"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionDispatcherIndex",
+      "stage": "run.jsonrpc.transition.dispatcher.index"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionDispatcherTemplateCreate",
+      "stage": "run.jsonrpc.transition.dispatcher.template.create"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionDispatcherTemplateUpdate",
+      "stage": "run.jsonrpc.transition.dispatcher.template.update"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionDispatcherTemplateIndex",
+      "stage": "run.jsonrpc.transition.dispatcher.template.index"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcSchemaCreate",
+      "stage": "run.jsonrpc.schema.create"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcSchemaUpdate",
+      "stage": "run.jsonrpc.schema.update"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcSchemaIndex",
+      "stage": "run.jsonrpc.schema.index"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcStateCreate",
+      "stage": "run.jsonrpc.state.create"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcStateUpdate",
+      "stage": "run.jsonrpc.state.update"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcStateIndex",
+      "stage": "run.jsonrpc.state.index"
+    }
+  ]
+}

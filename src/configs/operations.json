@@ -1,0 +1,664 @@
+{
+  "state.create": {
+    "request": {
+      "properties": {
+        "data": {
+          "type": "object",
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array"
+          }
+        }
+      },
+      "required": ["data"],
+      "type": "object"
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "array"
+        }
+      }
+    }
+  },
+  "state.update": {
+    "request": {
+      "type": "object",
+      "required": ["data"],
+      "properties": {
+        "data": {
+          "type": "object",
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array"
+          }
+        }
+      }
+    },
+    "response": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  },
+  "state.index": {
+    "request": {
+      "type": "object",
+      "limit": {
+        "type": "number"
+      }
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "parameters": {
+              "type": "array"
+            }
+          }
+        },
+        "total": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "transition.create": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "state_from": {
+            "type": "string"
+          },
+          "state_to": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["data"]
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "state_from": {
+          "type": "string"
+        },
+        "state_to": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "transition.update": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "state_from": {
+            "type": "string"
+          },
+          "state_to": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["data"]
+    },
+    "response": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "state_from": {
+            "type": "string"
+          },
+          "state_to": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "transition.index": {
+    "request": {
+      "type": "object",
+      "limit": {
+        "type": "number"
+      }
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "state_from": {
+              "type": "string"
+            },
+            "state_to": {
+              "type": "string"
+            }
+          }
+        },
+        "total": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "transition.dispatcher.template.create": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "class": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array"
+          }
+        }
+      },
+      "required": ["data"]
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "class": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "array"
+        }
+      }
+    }
+  },
+  "transition.dispatcher.template.update": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "class": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array"
+          }
+        }
+      },
+      "required": ["data"]
+    },
+    "response": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "class": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  },
+  "transition.dispatcher.template.index": {
+    "request": {
+      "type": "object",
+      "limit": {
+        "type": "number"
+      }
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "class": {
+              "type": "string"
+            },
+            "parameters": {
+              "type": "array"
+            }
+          }
+        },
+        "total": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "schema.create": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "entity_template": {
+            "type": "string"
+          },
+          "states": {
+            "type": "array"
+          },
+          "transitions": {
+            "type": "array"
+          },
+          "parameters": {
+            "type": "array"
+          }
+        }
+      },
+      "required": ["data"]
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "entity_template": {
+          "type": "string"
+        },
+        "states": {
+          "type": "array"
+        },
+        "transitions": {
+          "type": "array"
+        },
+        "parameters": {
+          "type": "array"
+        }
+      }
+    }
+  },
+  "schema.update": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "entity_template": {
+            "type": "string"
+          },
+          "states": {
+            "type": "array"
+          },
+          "transitions": {
+            "type": "array"
+          },
+          "parameters": {
+            "type": "array"
+          }
+        }
+      },
+      "required": ["data"]
+    },
+    "response": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "entity_template": {
+            "type": "string"
+          },
+          "states": {
+            "type": "array"
+          },
+          "transitions": {
+            "type": "array"
+          },
+          "parameters": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  },
+  "schema.index": {
+    "request": {
+      "type": "object",
+      "limit": {
+        "type": "number"
+      }
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "entity_template": {
+              "type": "string"
+            },
+            "states": {
+              "type": "array"
+            },
+            "transitions": {
+              "type": "array"
+            },
+            "parameters": {
+              "type": "array"
+            }
+          }
+        },
+        "total": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "entity.template.create": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "class": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array"
+          }
+        }
+      },
+      "required": ["data"]
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "class": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "array"
+        }
+      }
+    }
+  },
+  "entity.template.update": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "class": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array"
+          }
+        }
+      },
+      "required": ["data"]
+    },
+    "response": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "class": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  },
+  "entity.template.index": {
+    "request": {
+      "type": "object",
+      "limit": {
+        "type": "number"
+      }
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "class": {
+              "type": "string"
+            },
+            "parameters": {
+              "type": "array"
+            }
+          }
+        },
+        "total": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}

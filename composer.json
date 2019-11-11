@@ -1,0 +1,12 @@
+{
+  "name": "jeyroik/extas-workflow-dashboard",
+  "description": "Simple dashboard for the extas workflow",
+  "require": {
+    "jeyroik/extas-workflow": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "extas\\": "src/"
+    }
+  }
+}
