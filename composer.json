@@ -2,7 +2,8 @@
   "name": "jeyroik/extas-workflow-dashboard",
   "description": "Simple dashboard for the extas workflow",
   "require": {
-    "jeyroik/extas-workflow": "*"
+    "jeyroik/extas-workflow": "*",
+    "slim/slim": "^3.0"
   },
   "autoload": {
     "psr-4": {

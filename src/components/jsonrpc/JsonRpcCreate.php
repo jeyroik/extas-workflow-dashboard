@@ -29,9 +29,10 @@ class JsonRpcCreate extends JsonRpcIndex implements IJsonRpcCreate
         $item = new $itemClass($this->getItemData());
         $repo->create($item);
 
-        $response
+        $response = $response
             ->withHeader('Content-type', 'application/json')
-            ->withStatus(200)
+            ->withStatus(200);
+        $response
             ->getBody()->write(json_encode([
                 'id' => $jRpcData['id'] ?? '',
                 'result' => $item->__toArray()

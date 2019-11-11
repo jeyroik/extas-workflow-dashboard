@@ -24,10 +24,14 @@ class JsonRpcSpecsOperationListPlugin extends Plugin
         $fileName = getenv('WF__OPERATION_ALL') ?: APP__ROOT . '/configs/operations.json';
         $specs = is_file($fileName) ? file_get_contents($fileName) : [];
 
-        $response->withStatus(200)->getBody()->write(json_encode([
-            'id' => $jRpcData['id'] ?? '',
-            'jsonrpc' => '2.0',
-            'result' => json_decode($specs, true)
-        ]));
+        $response = $response
+            ->withHeader('Content-type', 'application/json')
+            ->withStatus(200);
+        $response
+            ->getBody()->write(json_encode([
+                'id' => $jRpcData['id'] ?? '',
+                'jsonrpc' => '2.0',
+                'result' => json_decode($specs, true)
+            ]));
     }
 }

@@ -19,6 +19,7 @@ $app->post('/api/jsonrpc', function (Request $request, Response $response, array
     foreach ($pluginStub->getPluginsByStage('run.jsonrpc.' . $method) as $plugin) {
         $plugin($request, $response, $jrpcRequest);
     }
+    return $response;
 });
 
 $app->any('/specs/', function (Request $request, Response $response, array $args) {
@@ -28,6 +29,7 @@ $app->any('/specs/', function (Request $request, Response $response, array $args
     foreach ($pluginStub->getPluginsByStage('run.specs.' . $method) as $plugin) {
         $plugin($request, $response, $jrpcRequest);
     }
+    return $response;
 });
 
 $app->run();
