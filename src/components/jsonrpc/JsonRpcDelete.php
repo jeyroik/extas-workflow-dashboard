@@ -43,7 +43,7 @@ class JsonRpcDelete extends JsonRpcCreate implements IJsonRpcCreate
                     ]
                 ]));
         } else {
-            $repo->delete($item);
+            $repo->delete([], $item);
             $response
                 ->getBody()->write(json_encode([
                     'id' => $jRpcData['id'] ?? '',
