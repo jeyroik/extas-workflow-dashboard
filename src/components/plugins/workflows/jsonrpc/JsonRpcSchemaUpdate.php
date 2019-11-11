@@ -4,7 +4,7 @@ namespace extas\components\plugins\workflows\jsonrpc;
 use extas\components\jsonrpc\JsonRpcUpdate;
 use extas\components\plugins\Plugin;
 use extas\components\workflows\schemas\WorkflowSchema;
-use extas\components\workflows\schemas\WorkflowSchemaRepository;
+use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -25,7 +25,7 @@ class JsonRpcSchemaUpdate extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array $jRpcData = [])
     {
         $update = new JsonRpcUpdate([
-            JsonRpcUpdate::FIELD__REPO_NAME => WorkflowSchemaRepository::class,
+            JsonRpcUpdate::FIELD__REPO_NAME => IWorkflowSchemaRepository::class,
             JsonRpcUpdate::FIELD__ITEM_CLASS => WorkflowSchema::class,
             JsonRpcUpdate::FIELD__ITEM_DATA => $jRpcData['data'] ?? []
         ]);

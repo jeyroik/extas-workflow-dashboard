@@ -4,7 +4,7 @@ namespace extas\components\plugins\workflows\jsonrpc;
 use extas\components\jsonrpc\JsonRpcCreate;
 use extas\components\plugins\Plugin;
 use extas\components\workflows\transitions\WorkflowTransition;
-use extas\components\workflows\transitions\WorkflowTransitionRepository;
+use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -25,7 +25,7 @@ class JsonRpcTransitionCreate extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array $jRpcData = [])
     {
         $create = new JsonRpcCreate([
-            JsonRpcCreate::FIELD__REPO_NAME => WorkflowTransitionRepository::class,
+            JsonRpcCreate::FIELD__REPO_NAME => IWorkflowTransitionRepository::class,
             JsonRpcCreate::FIELD__ITEM_CLASS => WorkflowTransition::class,
             JsonRpcCreate::FIELD__ITEM_DATA => $jRpcData['data'] ?? []
         ]);

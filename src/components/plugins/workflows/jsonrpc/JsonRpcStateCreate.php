@@ -4,7 +4,7 @@ namespace extas\components\plugins\workflows\jsonrpc;
 use extas\components\jsonrpc\JsonRpcCreate;
 use extas\components\plugins\Plugin;
 use extas\components\workflows\states\WorkflowState;
-use extas\components\workflows\states\WorkflowStateRepository;
+use extas\interfaces\workflows\states\IWorkflowStateRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -25,7 +25,7 @@ class JsonRpcStateCreate extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array $jRpcData = [])
     {
         $create = new JsonRpcCreate([
-            JsonRpcCreate::FIELD__REPO_NAME => WorkflowStateRepository::class,
+            JsonRpcCreate::FIELD__REPO_NAME => IWorkflowStateRepository::class,
             JsonRpcCreate::FIELD__ITEM_CLASS => WorkflowState::class,
             JsonRpcCreate::FIELD__ITEM_DATA => $jRpcData['data'] ?? []
         ]);
