@@ -9,6 +9,8 @@ namespace extas\components\jsonrpc;
  */
 class JsonRpcErrors
 {
+    const ERROR__MARKER = '@error';
+
     const ERROR__ALREADY_EXIST = 1010;
     const ERROR__THERE_ARE_TRANSITIONS_TO_STATE = 10201;
     const ERROR__THERE_ARE_TRANSITIONS_FROM_STATE = 10202;

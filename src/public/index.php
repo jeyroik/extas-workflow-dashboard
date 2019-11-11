@@ -19,11 +19,13 @@ $app->post('/api/jsonrpc', function (Request $request, Response $response, array
     foreach ($pluginStub->getPluginsByStage('before.run.jsonrpc.' . $method) as $plugin) {
         $plugin($request, $response, $jrpcRequest);
     }
-    foreach ($pluginStub->getPluginsByStage('run.jsonrpc.' . $method) as $plugin) {
-        $plugin($request, $response, $jrpcRequest);
-    }
-    foreach ($pluginStub->getPluginsByStage('after.run.jsonrpc.' . $method) as $plugin) {
-        $plugin($request, $response, $jrpcRequest);
+    if (!isset($jrpcRequest[\extas\components\jsonrpc\JsonRpcErrors::ERROR__MARKER])) {
+        foreach ($pluginStub->getPluginsByStage('run.jsonrpc.' . $method) as $plugin) {
+            $plugin($request, $response, $jrpcRequest);
+        }
+        foreach ($pluginStub->getPluginsByStage('after.run.jsonrpc.' . $method) as $plugin) {
+            $plugin($request, $response, $jrpcRequest);
+        }
     }
     return $response;
 });
