@@ -2,6 +2,7 @@
 namespace extas\components\jsonrpc;
 
 use extas\components\SystemContainer;
+use extas\interfaces\IHasName;
 use extas\interfaces\IItem;
 use extas\interfaces\jsonrpc\IJsonRpcCreate;
 use extas\interfaces\repositories\IRepository;
@@ -20,23 +21,35 @@ class JsonRpcCreate extends JsonRpcIndex implements IJsonRpcCreate
      */
     public function dumpTo(ResponseInterface &$response)
     {
+        $response = $response
+            ->withHeader('Content-type', 'application/json')
+            ->withStatus(200);
+
         /**
          * @var $repo IRepository
-         * @var $item IItem
+         * @var $item IItem|IHasName
          */
         $repo = SystemContainer::getItem($this->getRepoName());
         $itemClass = $this->getItemClass();
         $item = new $itemClass($this->getItemData());
-        $repo->create($item);
-
-        $response = $response
-            ->withHeader('Content-type', 'application/json')
-            ->withStatus(200);
-        $response
-            ->getBody()->write(json_encode([
+        $exist = $repo->one([IHasName::FIELD__NAME => $item->getName()]);
+        if ($exist || !$item->getName()) {
+            $response->getBody()->write(json_encode([
                 'id' => $jRpcData['id'] ?? '',
-                'result' => $item->__toArray()
+                'error' => [
+                    'code' => 1010,
+                    'data' => [],
+                    'message' => 'Already exist'
+                ]
             ]));
+        } else {
+            $repo->create($item);
+            $response
+                ->getBody()->write(json_encode([
+                    'id' => $jRpcData['id'] ?? '',
+                    'result' => $item->__toArray()
+                ]));
+        }
     }
 
     /**

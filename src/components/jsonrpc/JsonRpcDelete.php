@@ -9,12 +9,12 @@ use extas\interfaces\repositories\IRepository;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Class JsonRpcUpdate
+ * Class JsonRpcDelete
  *
  * @package extas\components\jsonrpc
  * @author jeyroik@gmail.com
  */
-class JsonRpcUpdate extends JsonRpcCreate implements IJsonRpcCreate
+class JsonRpcDelete extends JsonRpcCreate implements IJsonRpcCreate
 {
     /**
      * @param ResponseInterface $response
@@ -43,7 +43,7 @@ class JsonRpcUpdate extends JsonRpcCreate implements IJsonRpcCreate
                     ]
                 ]));
         } else {
-            $repo->update($item);
+            $repo->delete($item);
             $response
                 ->getBody()->write(json_encode([
                     'id' => $jRpcData['id'] ?? '',

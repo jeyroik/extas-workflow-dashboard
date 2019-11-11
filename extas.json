@@ -18,6 +18,10 @@
       "stage": "run.jsonrpc.entity.template.index"
     },
     {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcEntityTemplateDelete",
+      "stage": "run.jsonrpc.entity.template.delete"
+    },
+    {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionCreate",
       "stage": "run.jsonrpc.transition.create"
     },
@@ -28,6 +32,10 @@
     {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionIndex",
       "stage": "run.jsonrpc.transition.index"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionDelete",
+      "stage": "run.jsonrpc.transition.delete"
     },
     {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionDispatcherCreate",
@@ -42,6 +50,10 @@
       "stage": "run.jsonrpc.transition.dispatcher.index"
     },
     {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionDispatcherDelete",
+      "stage": "run.jsonrpc.transition.dispatcher.delete"
+    },
+    {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionDispatcherTemplateCreate",
       "stage": "run.jsonrpc.transition.dispatcher.template.create"
     },
@@ -52,6 +64,10 @@
     {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionDispatcherTemplateIndex",
       "stage": "run.jsonrpc.transition.dispatcher.template.index"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionDispatcherTemplateDelete",
+      "stage": "run.jsonrpc.transition.dispatcher.template.delete"
     },
     {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcSchemaCreate",
@@ -66,6 +82,10 @@
       "stage": "run.jsonrpc.schema.index"
     },
     {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcSchemaDelete",
+      "stage": "run.jsonrpc.schema.delete"
+    },
+    {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcStateCreate",
       "stage": "run.jsonrpc.state.create"
     },
@@ -76,6 +96,10 @@
     {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcStateIndex",
       "stage": "run.jsonrpc.state.index"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcStateDelete",
+      "stage": "run.jsonrpc.state.delete"
     }
   ]
 }
