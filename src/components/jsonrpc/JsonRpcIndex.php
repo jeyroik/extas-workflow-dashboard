@@ -31,7 +31,7 @@ class JsonRpcIndex extends Item implements IJsonRpcIndex
         $limit = $this->getLimit();
 
         foreach ($records as $record) {
-            if ($limit && (count($items) < $limit)) {
+            if (!$limit || ($limit && (count($items) < $limit))) {
                 $items[] = $record->__toArray();
             }
         }
