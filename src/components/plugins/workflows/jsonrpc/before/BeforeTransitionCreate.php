@@ -61,7 +61,16 @@ class BeforeTransitionCreate extends JsonRpcValidationPlugin
         $repo = SystemContainer::getItem(IWorkflowStateRepository::class);
         $wStates = $repo->all([IWorkflowState::FIELD__NAME => $states]);
 
-        if (count($wStates) != count($states)) {
+        if ($item->getStateFromName() == $item->getStateToName()) {
+            $this->setResponseError(
+                $response,
+                $jRpcData,
+                JsonRpcErrors::ERROR__THE_SAME_STATE,
+                [
+                    IWorkflowState::FIELD__NAME => $item->getStateToName()
+                ]
+            );
+        } elseif (count($wStates) != count($states)) {
             $states = array_flip($states);
             foreach ($wStates as $state) {
                 unset($states[$state->getName()]);
@@ -71,15 +80,6 @@ class BeforeTransitionCreate extends JsonRpcValidationPlugin
                 $jRpcData,
                 JsonRpcErrors::ERROR__UNKNOWN_STATES,
                 array_keys($states)
-            );
-        } elseif ($item->getStateFromName() == $item->getStateToName()) {
-            $this->setResponseError(
-                $response,
-                $jRpcData,
-                JsonRpcErrors::ERROR__THE_SAME_STATE,
-                [
-                    IWorkflowState::FIELD__NAME => $item->getStateToName()
-                ]
             );
         }
     }
