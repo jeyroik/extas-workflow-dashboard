@@ -8,6 +8,7 @@ use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
 use extas\interfaces\workflows\schemas\IWorkflowSchema;
 use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
+use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherTemplate;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherTemplateRepository;
 use extas\interfaces\workflows\transitions\IWorkflowTransition;
@@ -34,10 +35,10 @@ class BeforeTransitionDispatcherCreate extends JsonRpcValidationPlugin
         if (!$this->isThereError($jRpcData)) {
             $item = new TransitionDispatcher($jRpcData);
             /**
-             * @var $repo IWorkflowSchemaRepository
+             * @var $repo ITransitionDispatcherRepository
              */
-            $repo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
-            if ($repo->one([IWorkflowSchema::FIELD__NAME => $item->getName()])) {
+            $repo = SystemContainer::getItem(ITransitionDispatcherRepository::class);
+            if ($repo->one([TransitionDispatcher::FIELD__NAME => $item->getName()])) {
                 $this->setResponseError($response, $jRpcData, JsonRpcErrors::ERROR__ALREADY_EXIST);
             } else {
                 $this->checkSchema($response, $jRpcData, $item);

@@ -9,7 +9,6 @@ use extas\interfaces\IHasName;
 use extas\interfaces\repositories\IRepository;
 use extas\interfaces\workflows\schemas\IWorkflowSchema;
 use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
-use extas\interfaces\workflows\states\IWorkflowStateRepository;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
 use extas\interfaces\workflows\transitions\IWorkflowTransition;
@@ -41,7 +40,7 @@ class BeforeTransitionDelete extends JsonRpcValidationPlugin
             /**
              * @var $repo IRepository
              */
-            $repo = SystemContainer::getItem(IWorkflowStateRepository::class);
+            $repo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
             if (!$repo->one([IHasName::FIELD__NAME => $item->getName()])) {
                 $this->setResponseError(
                     $response,
@@ -67,7 +66,7 @@ class BeforeTransitionDelete extends JsonRpcValidationPlugin
          * @var $repo IWorkflowSchemaRepository
          * @var $schemas IWorkflowSchema[]
          */
-        $repo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
+        $repo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
         $schemas = $repo->all([
             IWorkflowSchema::FIELD__TRANSITIONS => $item->getName()
         ]);
@@ -96,7 +95,7 @@ class BeforeTransitionDelete extends JsonRpcValidationPlugin
          * @var $repo ITransitionDispatcherRepository
          * @var $dispatchers ITransitionDispatcher[]
          */
-        $repo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
+        $repo = SystemContainer::getItem(ITransitionDispatcherRepository::class);
         $dispatchers = $repo->all([
             ITransitionDispatcher::FIELD__TRANSITION_NAME => $item->getName()
         ]);

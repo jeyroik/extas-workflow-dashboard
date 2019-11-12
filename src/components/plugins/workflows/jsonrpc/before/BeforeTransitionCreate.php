@@ -6,10 +6,10 @@ use extas\components\plugins\workflows\jsonrpc\JsonRpcValidationPlugin;
 use extas\components\SystemContainer;
 use extas\components\workflows\transitions\WorkflowTransition;
 use extas\interfaces\workflows\schemas\IWorkflowSchema;
-use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
 use extas\interfaces\workflows\states\IWorkflowState;
 use extas\interfaces\workflows\states\IWorkflowStateRepository;
 use extas\interfaces\workflows\transitions\IWorkflowTransition;
+use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -32,9 +32,9 @@ class BeforeTransitionCreate extends JsonRpcValidationPlugin
         if (!$this->isThereError($jRpcData)) {
             $item = new WorkflowTransition($jRpcData);
             /**
-             * @var $repo IWorkflowSchemaRepository
+             * @var $repo IWorkflowTransitionRepository
              */
-            $repo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
+            $repo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
             if ($repo->one([IWorkflowSchema::FIELD__NAME => $item->getName()])) {
                 $this->setResponseError($response, $jRpcData, JsonRpcErrors::ERROR__ALREADY_EXIST);
             } else {

@@ -10,6 +10,7 @@ use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
 use extas\interfaces\workflows\states\IWorkflowState;
 use extas\interfaces\workflows\states\IWorkflowStateRepository;
 use extas\interfaces\workflows\transitions\IWorkflowTransition;
+use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -77,11 +78,11 @@ class BeforeSchemaCreate extends JsonRpcValidationPlugin
     {
         $transitions = $item->getTransitionsNames();
         /**
-         * @var $repo IWorkflowTransition
-         * @var $wTransitions IWorkflowState[]
+         * @var $repo IWorkflowTransitionRepository
+         * @var $wTransitions IWorkflowTransition[]
          */
-        $repo = SystemContainer::getItem(IWorkflowTransition::class);
-        $wTransitions = $repo->all([IWorkflowState::FIELD__NAME => $transitions]);
+        $repo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
+        $wTransitions = $repo->all([IWorkflowTransition::FIELD__NAME => $transitions]);
 
         if (count($wTransitions) != count($transitions)) {
             $transitions = array_flip($transitions);
