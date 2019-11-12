@@ -22,7 +22,7 @@ class JsonRpcTransitionDispatcherTemplateUpdate extends Plugin
      * @param ResponseInterface $response
      * @param array $jRpcData
      */
-    public function __invoke(RequestInterface $request, ResponseInterface &$response, array $jRpcData = [])
+    public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
         $update = new JsonRpcUpdate([
             JsonRpcUpdate::FIELD__REPO_NAME => ITransitionDispatcherTemplateRepository::class,

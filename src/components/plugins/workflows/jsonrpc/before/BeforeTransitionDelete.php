@@ -30,7 +30,7 @@ class BeforeTransitionDelete extends JsonRpcValidationPlugin
      * @param ResponseInterface $response
      * @param array $jRpcData
      */
-    public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData = [])
+    public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
         if (!$this->isThereError($jRpcData)) {
             $response = $response

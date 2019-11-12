@@ -19,7 +19,7 @@ class JsonRpcSpecsOperationListPlugin extends Plugin
      * @param ResponseInterface $response
      * @param array $jRpcData
      */
-    public function __invoke(RequestInterface $request, ResponseInterface &$response, array $jRpcData = [])
+    public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
         $fileName = getenv('WF__OPERATION_ALL') ?: APP__ROOT . '/src/configs/operations.json';
         $specs = is_file($fileName) ? json_decode(file_get_contents($fileName), true) : [];

@@ -21,7 +21,7 @@ class JsonRpcTransitionDispatcherTemplateIndex extends Plugin
      * @param ResponseInterface $response
      * @param array $jRpcData
      */
-    public function __invoke(RequestInterface $request, ResponseInterface &$response, array $jRpcData = [])
+    public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
         $index = new JsonRpcIndex([
             JsonRpcIndex::FIELD__REPO_NAME => ITransitionDispatcherTemplateRepository::class,
