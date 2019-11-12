@@ -72,6 +72,15 @@ class BeforeTransitionCreate extends JsonRpcValidationPlugin
                 JsonRpcErrors::ERROR__UNKNOWN_STATES,
                 array_keys($states)
             );
+        } elseif ($item->getStateFromName() == $item->getStateToName()) {
+            $this->setResponseError(
+                $response,
+                $jRpcData,
+                JsonRpcErrors::ERROR__THE_SAME_STATE,
+                [
+                    IWorkflowState::FIELD__NAME => $item->getStateToName()
+                ]
+            );
         }
     }
 }
