@@ -532,6 +532,101 @@
       }
     }
   },
+  "schema.transition.create": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "transition": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "state_from": {
+                "type": "string"
+              },
+              "state_to": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "dispatcher": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "template": {
+                "type": "string"
+              },
+              "schema_name": {
+                "type": "string"
+              },
+              "parameters": {
+                "type": "array"
+              }
+            }
+          }
+        }
+      },
+      "required": ["data"]
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "transition": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "state_from": {
+              "type": "string"
+            },
+            "state_to": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        },
+        "dispatcher": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "template": {
+              "type": "string"
+            },
+            "schema_name": {
+              "type": "string"
+            },
+            "parameters": {
+              "type": "array"
+            }
+          }
+        }
+      }
+    }
+  },
   "entity.template.create": {
     "request": {
       "type": "object",
