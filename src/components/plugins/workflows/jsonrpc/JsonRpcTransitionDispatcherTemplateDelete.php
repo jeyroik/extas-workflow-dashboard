@@ -30,6 +30,6 @@ class JsonRpcTransitionDispatcherTemplateDelete extends Plugin
             JsonRpcDelete::FIELD__ITEM_DATA => $jRpcData['data'] ?? []
         ]);
 
-        $operation->dumpTo($response);
+        $operation->dumpTo($response, $jRpcData);
     }
 }

@@ -18,8 +18,9 @@ class JsonRpcIndex extends Item implements IJsonRpcIndex
 {
     /**
      * @param ResponseInterface $response
+     * @param array $jRpcData
      */
-    public function dumpTo(ResponseInterface &$response)
+    public function dumpTo(ResponseInterface &$response, array $jRpcData)
     {
         /**
          * @var $repo IRepository

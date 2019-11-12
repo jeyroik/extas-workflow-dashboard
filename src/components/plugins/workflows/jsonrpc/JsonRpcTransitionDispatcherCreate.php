@@ -30,6 +30,6 @@ class JsonRpcTransitionDispatcherCreate extends Plugin
             JsonRpcCreate::FIELD__ITEM_DATA => $jRpcData['data'] ?? []
         ]);
 
-        $create->dumpTo($response);
+        $create->dumpTo($response, $jRpcData);
     }
 }

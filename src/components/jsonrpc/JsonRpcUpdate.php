@@ -18,8 +18,9 @@ class JsonRpcUpdate extends JsonRpcCreate implements IJsonRpcCreate
 {
     /**
      * @param ResponseInterface $response
+     * @param array $jRpcData
      */
-    public function dumpTo(ResponseInterface &$response)
+    public function dumpTo(ResponseInterface &$response, array $jRpcData)
     {
         $response = $response
             ->withHeader('Content-type', 'application/json')

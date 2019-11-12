@@ -43,8 +43,9 @@ interface IJsonRpcIndex extends IItem
 
     /**
      * @param ResponseInterface $response
+     * @param array $jRpcData
      *
      * @return void
      */
-    public function dumpTo(ResponseInterface &$response);
+    public function dumpTo(ResponseInterface &$response, array $jRpcData);
 }

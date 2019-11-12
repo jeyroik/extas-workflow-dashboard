@@ -27,6 +27,6 @@ class JsonRpcTransitionIndex extends Plugin
             JsonRpcIndex::FIELD__REPO_NAME => IWorkflowTransitionRepository::class,
             JsonRpcIndex::FIELD__LIMIT => $jRpcData['limit'] ?? 0
         ]);
-        $index->dumpTo($response);
+        $index->dumpTo($response, $jRpcData);
     }
 }

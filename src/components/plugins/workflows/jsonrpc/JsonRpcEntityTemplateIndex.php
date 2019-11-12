@@ -27,6 +27,6 @@ class JsonRpcEntityTemplateIndex extends Plugin
             JsonRpcIndex::FIELD__REPO_NAME => IWorkflowEntityTemplateRepository::class,
             JsonRpcIndex::FIELD__LIMIT => $jRpcData['limit'] ?? 0
         ]);
-        $index->dumpTo($response);
+        $index->dumpTo($response, $jRpcData);
     }
 }

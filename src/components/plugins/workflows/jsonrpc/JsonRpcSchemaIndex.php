@@ -27,6 +27,6 @@ class JsonRpcSchemaIndex extends Plugin
             JsonRpcIndex::FIELD__REPO_NAME => IWorkflowSchemaRepository::class,
             JsonRpcIndex::FIELD__LIMIT => $jRpcData['limit'] ?? 0
         ]);
-        $index->dumpTo($response);
+        $index->dumpTo($response, $jRpcData);
     }
 }

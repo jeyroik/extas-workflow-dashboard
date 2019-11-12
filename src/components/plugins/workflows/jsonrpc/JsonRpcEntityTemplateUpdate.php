@@ -30,6 +30,6 @@ class JsonRpcEntityTemplateUpdate extends Plugin
             JsonRpcUpdate::FIELD__ITEM_DATA => $jRpcData['data'] ?? []
         ]);
 
-        $update->dumpTo($response);
+        $update->dumpTo($response, $jRpcData);
     }
 }

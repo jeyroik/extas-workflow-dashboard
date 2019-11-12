@@ -66,7 +66,12 @@ class BeforeTransitionCreate extends JsonRpcValidationPlugin
             foreach ($wStates as $state) {
                 unset($states[$state->getName()]);
             }
-            $this->setResponseError($response, $jRpcData, JsonRpcErrors::ERROR__UNKNOWN_STATES, $states);
+            $this->setResponseError(
+                $response,
+                $jRpcData,
+                JsonRpcErrors::ERROR__UNKNOWN_STATES,
+                array_keys($states)
+            );
         }
     }
 }

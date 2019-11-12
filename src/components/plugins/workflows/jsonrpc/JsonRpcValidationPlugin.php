@@ -14,8 +14,6 @@ use Psr\Http\Message\ResponseInterface;
  */
 class JsonRpcValidationPlugin extends Plugin
 {
-    const FIELD__ERROR = '@error';
-
     /**
      * @param ResponseInterface $response
      * @param array $jRpcData
@@ -41,7 +39,7 @@ class JsonRpcValidationPlugin extends Plugin
      */
     protected function markJRpcDataWithError(array &$jRpcData)
     {
-        $jRpcData[static::FIELD__ERROR] = true;
+        $jRpcData[JsonRpcErrors::ERROR__MARKER] = true;
     }
 
     /**
@@ -51,7 +49,7 @@ class JsonRpcValidationPlugin extends Plugin
      */
     protected function isThereError(array $jRpcData)
     {
-        return isset($jRpcData[static::FIELD__ERROR]);
+        return isset($jRpcData[JsonRpcErrors::ERROR__MARKER]);
     }
 
     /**
