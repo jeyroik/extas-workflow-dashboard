@@ -31,7 +31,7 @@ class BeforeSchemaCreate extends JsonRpcValidationPlugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
         if (!$this->isThereError($jRpcData)) {
-            $item = new WorkflowSchema($jRpcData);
+            $item = new WorkflowSchema($jRpcData['data']);
             /**
              * @var $repo IWorkflowSchemaRepository
              */

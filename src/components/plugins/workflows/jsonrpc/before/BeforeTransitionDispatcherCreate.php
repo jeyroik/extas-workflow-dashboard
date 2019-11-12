@@ -33,7 +33,7 @@ class BeforeTransitionDispatcherCreate extends JsonRpcValidationPlugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
         if (!$this->isThereError($jRpcData)) {
-            $item = new TransitionDispatcher($jRpcData);
+            $item = new TransitionDispatcher($jRpcData['data']);
             /**
              * @var $repo ITransitionDispatcherRepository
              */

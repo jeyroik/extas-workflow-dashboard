@@ -30,7 +30,7 @@ class BeforeTransitionCreate extends JsonRpcValidationPlugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
         if (!$this->isThereError($jRpcData)) {
-            $item = new WorkflowTransition($jRpcData);
+            $item = new WorkflowTransition($jRpcData['data']);
             /**
              * @var $repo IWorkflowTransitionRepository
              */
