@@ -22,6 +22,9 @@ class JsonRpcValidationPlugin extends Plugin
      */
     protected function setResponseError(ResponseInterface &$response, array &$jRpcData, int $eCode, array $eData = [])
     {
+        $response = $response
+            ->withHeader('Content-type', 'application/json')
+            ->withStatus(200);
         $response
             ->getBody()->write(json_encode([
                 'id' => $jRpcData['id'] ?? '',
