@@ -41,7 +41,12 @@ class BeforeSchemaDelete extends JsonRpcValidationPlugin
              */
             $repo = SystemContainer::getItem(IWorkflowStateRepository::class);
             if (!$repo->one([IHasName::FIELD__NAME => $item->getName()])) {
-                $this->setResponseError($response, $jRpcData, JsonRpcErrors::ERROR__UNKNOWN_ENTITY);
+                $this->setResponseError(
+                    $response,
+                    $jRpcData,
+                    JsonRpcErrors::ERROR__UNKNOWN_ENTITY,
+                    [WorkflowSchema::FIELD__NAME => $item->getName()]
+                );
             } else {
                 $this->checkTransitionDispatchers($item);
             }

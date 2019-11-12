@@ -40,7 +40,12 @@ class BeforeStateDelete extends JsonRpcValidationPlugin
              */
             $repo = SystemContainer::getItem(IWorkflowStateRepository::class);
             if (!$repo->one([IHasName::FIELD__NAME => $item->getName()])) {
-                $this->setResponseError($response, $jRpcData, JsonRpcErrors::ERROR__UNKNOWN_ENTITY);
+                $this->setResponseError(
+                    $response,
+                    $jRpcData,
+                    JsonRpcErrors::ERROR__UNKNOWN_ENTITY,
+                    [WorkflowState::FIELD__NAME => $item->getName()]
+                );
             } else {
                 $this->checkTransitionsTo($response, $jRpcData, $item);
                 $this->checkTransitionsFrom($response, $jRpcData, $item);
