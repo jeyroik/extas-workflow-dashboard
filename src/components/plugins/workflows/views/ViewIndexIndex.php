@@ -82,7 +82,7 @@ class ViewIndexIndex extends Plugin
                 'to' => $transition->getStateToName(),
                 'dataLabels' => [
                     // ex. Not actual (todo -> not_actual)
-                    'linkFormat' => $transition->getTitle() . '<br>point.fromNode.name} \u2192 {point.toNode.name'
+                    'linkFormat' => $transition->getTitle() . '<br>{point.fromNode.name} \u2192 {point.toNode.name}'
                 ]
             ];
             if (!isset($states[$transition->getStateFromName()])) {
