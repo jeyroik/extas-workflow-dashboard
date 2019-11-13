@@ -133,6 +133,10 @@
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcStateDelete",
       "stage": "run.jsonrpc.state.delete"
     },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcStateLoad",
+      "stage": "run.jsonrpc.state.load"
+    },
 
     {
       "class": "extas\\components\\plugins\\workflows\\views\\ViewIndexIndex",

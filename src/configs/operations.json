@@ -160,6 +160,24 @@
       }
     }
   },
+  "state.load": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array"
+        }
+      }
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer"
+        }
+      }
+    }
+  },
   "transition.update": {
     "request": {
       "type": "object",
