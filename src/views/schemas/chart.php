@@ -3,7 +3,7 @@
         chart: {
             type: 'networkgraph',
             height: '100%',
-            width: 300
+            width: 600
         },
         title: {
             text: '@chart.title'
@@ -12,9 +12,15 @@
             text: '@chart.subTitle'
         },
         plotOptions: {
+            series: {
+                marker: {
+                    radius: 15
+                }
+            },
             networkgraph: {
-                keys: ['from', 'to'],
+                keys: ['from', 'to', 'connectionLabel'],
                 layoutAlgorithm: {
+                    linkLength: 60,
                     enableSimulation: true,
                     friction: -0.9
                 }
@@ -22,9 +28,9 @@
         },
         series: [{
             dataLabels: {
-                enabled: true,
-                linkFormat: ''
+                enabled: true
             },
+            nodes: @chart.nodes,
             id: 'lang-tree',
             data: @chart.data
         }]

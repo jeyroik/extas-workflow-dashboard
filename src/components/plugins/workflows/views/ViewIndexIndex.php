@@ -74,8 +74,35 @@ class ViewIndexIndex extends Plugin
     {
         $chartTemplate = file_get_contents(APP__ROOT . '/src/views/schemas/chart.php');
         $chartData = [];
+        $nodes = [];
+        $states = [];
         foreach ($transitions as $transition) {
-            $chartData[] = [$transition->getStateFromName(), $transition->getStateToName()];
+            $chartData[] = [
+                'from' => $transition->getStateFromName(),
+                'to' => $transition->getStateToName(),
+                'dataLabels' => [
+                    // ex. Not actual (todo -> not_actual)
+                    'linkFormat' => $transition->getTitle() . '<br>point.fromNode.name} \u2192 {point.toNode.name'
+                ]
+            ];
+            if (!isset($states[$transition->getStateFromName()])) {
+                $states[$transition->getStateFromName()] = true;
+                $nodes[] = [
+                    'id' => $transition->getStateFromName(),
+                    'dataLabels' => [
+                        'format' => $transition->getStateFrom()->getTitle()
+                    ]
+                ];
+            }
+            if (!isset($states[$transition->getStateToName()])) {
+                $states[$transition->getStateToName()] = true;
+                $nodes[] = [
+                    'id' => $transition->getStateToName(),
+                    'dataLabels' => [
+                        'format' => $transition->getStateTo()->getTitle()
+                    ]
+                ];
+            }
         }
 
         return $replace->apply([
@@ -83,7 +110,8 @@ class ViewIndexIndex extends Plugin
                 'name' => $schema->getName(),
                 'title' => $schema->getTitle(),
                 'subTitle' => $schema->getDescription(),
-                'data' => json_encode($chartData)
+                'data' => json_encode($chartData),
+                'nodes' => json_encode($nodes)
             ]
         ])->to($chartTemplate);
     }

@@ -2,7 +2,7 @@
     <div class="card-header">@schema.title</div>
     <div class="card-body">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div id="container_@schema.name"></div>
             </div>
         </div>
