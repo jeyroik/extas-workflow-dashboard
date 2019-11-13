@@ -27,7 +27,7 @@ class JsonRpcTransitionDelete extends Plugin
         $operation = new JsonRpcDelete([
             JsonRpcDelete::FIELD__REPO_NAME => IWorkflowTransitionRepository::class,
             JsonRpcDelete::FIELD__ITEM_CLASS => WorkflowTransition::class,
-            JsonRpcDelete::FIELD__ITEM_DATA => $jRpcData['data'] ?? []
+            JsonRpcDelete::FIELD__ITEM_DATA => $jRpcData
         ]);
 
         $operation->dumpTo($response, $jRpcData);

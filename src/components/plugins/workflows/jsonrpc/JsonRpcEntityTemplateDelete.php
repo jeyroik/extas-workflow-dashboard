@@ -27,7 +27,7 @@ class JsonRpcEntityTemplateDelete extends Plugin
         $operation = new JsonRpcDelete([
             JsonRpcDelete::FIELD__REPO_NAME => IWorkflowEntityTemplateRepository::class,
             JsonRpcDelete::FIELD__ITEM_CLASS => WorkflowEntityTemplate::class,
-            JsonRpcDelete::FIELD__ITEM_DATA => $jRpcData['data'] ?? []
+            JsonRpcDelete::FIELD__ITEM_DATA => $jRpcData
         ]);
 
         $operation->dumpTo($response, $jRpcData);

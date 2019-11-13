@@ -27,7 +27,7 @@ class JsonRpcSchemaDelete extends Plugin
         $operation = new JsonRpcDelete([
             JsonRpcDelete::FIELD__REPO_NAME => IWorkflowSchemaRepository::class,
             JsonRpcDelete::FIELD__ITEM_CLASS => WorkflowSchema::class,
-            JsonRpcDelete::FIELD__ITEM_DATA => $jRpcData['data'] ?? []
+            JsonRpcDelete::FIELD__ITEM_DATA => $jRpcData
         ]);
 
         $operation->dumpTo($response, $jRpcData);

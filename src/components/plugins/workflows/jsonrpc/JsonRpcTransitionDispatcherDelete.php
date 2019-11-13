@@ -27,7 +27,7 @@ class JsonRpcTransitionDispatcherDelete extends Plugin
         $operation = new JsonRpcDelete([
             JsonRpcDelete::FIELD__REPO_NAME => ITransitionDispatcherRepository::class,
             JsonRpcDelete::FIELD__ITEM_CLASS => TransitionDispatcher::class,
-            JsonRpcDelete::FIELD__ITEM_DATA => $jRpcData['data'] ?? []
+            JsonRpcDelete::FIELD__ITEM_DATA => $jRpcData
         ]);
 
         $operation->dumpTo($response, $jRpcData);
