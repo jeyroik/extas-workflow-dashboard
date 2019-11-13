@@ -31,7 +31,7 @@ class JsonRpcSchemaTransitionAdd extends Plugin
      */
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
-        $transitionName = $jRpcData['transition'] ?? '';
+        $transitionName = $jRpcData['transition_name'] ?? '';
         $schemaName = $jRpcData['schema_name'] ?? '';
         $dispatchersData = $jRpcData['dispatchers'];
 
