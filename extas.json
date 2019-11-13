@@ -114,6 +114,14 @@
       "stage": "run.jsonrpc.schema.transition.create"
     },
     {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\BeforeSchemaTransitionAdd",
+      "stage": "before.run.jsonrpc.schema.transition.add"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcSchemaTransitionAdd",
+      "stage": "run.jsonrpc.schema.transition.add"
+    },
+    {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionLoad",
       "stage": "run.jsonrpc.transition.load"
     },
@@ -145,6 +153,14 @@
     {
       "class": "extas\\components\\plugins\\workflows\\views\\ViewIndexIndex",
       "stage": "view.index.index"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\views\\ViewStatesIndex",
+      "stage": "view.states.index"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\views\\ViewTransitionsIndex",
+      "stage": "view.transitions.index"
     }
   ]
 }

@@ -574,6 +574,58 @@
       }
     }
   },
+  "schema.transition.add": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "transition_name": {
+          "type": "string"
+        },
+        "schema_name": {
+          "type": "string"
+        },
+        "dispatchers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "template": {
+                "type": "string"
+              },
+              "parameters": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    }
+  },
   "schema.transition.create": {
     "request": {
       "type": "object",
