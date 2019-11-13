@@ -6,7 +6,8 @@
     </head>
     <body>
         @page.content
-        @page.footer
         <script src="https://code.highcharts.com/highcharts.js"></script>
+        @page.footer
+
     </body>
 </html>
