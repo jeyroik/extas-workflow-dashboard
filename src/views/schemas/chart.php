@@ -2,7 +2,8 @@
     Highcharts.chart('container_@chart.name', {
         chart: {
             type: 'networkgraph',
-            height: '100%'
+            height: '100%',
+            width: 300
         },
         title: {
             text: '@chart.title'
