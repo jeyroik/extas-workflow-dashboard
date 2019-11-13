@@ -40,4 +40,14 @@ $app->any('/specs/', function (Request $request, Response $response, array $args
     return $response;
 });
 
+$app->get('/[{section}][/{action}][/{name}]/', function (Request $request, Response $response, array $args) {
+    $pluginStub = new \extas\components\plugins\Plugin();
+    $section = $args['section'] ?? 'index';
+    $action = $args['action'] ?? 'index';
+    foreach ($pluginStub->getPluginsByStage('view.' . $section . '.' . $action) as $plugin) {
+        $plugin($request, $response, $args);
+    }
+    return $response;
+});
+
 $app->run();
