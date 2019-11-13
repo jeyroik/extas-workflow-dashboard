@@ -172,7 +172,10 @@
     "response": {
       "type": "object",
       "properties": {
-        "count": {
+        "created_count": {
+          "type": "integer"
+        },
+        "got_count": {
           "type": "integer"
         }
       }
@@ -258,6 +261,27 @@
         },
         "total": {
           "type": "number"
+        }
+      }
+    }
+  },
+  "transition.load": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array"
+        }
+      }
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "created_count": {
+          "type": "integer"
+        },
+        "got_count": {
+          "type": "integer"
         }
       }
     }

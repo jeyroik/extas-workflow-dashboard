@@ -56,7 +56,10 @@ class JsonRpcStateLoad extends Plugin
         $response
             ->getBody()->write(json_encode([
                 'id' => $jRpcData['id'] ?? '',
-                'result' => ['count' => $created]
+                'result' => [
+                    'created_count' => $created,
+                    'got_count' => count($states)
+                ]
             ]));
     }
 }

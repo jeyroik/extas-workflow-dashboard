@@ -114,6 +114,10 @@
       "stage": "run.jsonrpc.schema.transition.create"
     },
     {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionLoad",
+      "stage": "run.jsonrpc.transition.load"
+    },
+    {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\BeforeStateDelete",
       "stage": "before.run.jsonrpc.state.delete"
     },
