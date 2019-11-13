@@ -49,6 +49,7 @@ class JsonRpcSchemaTransitionAdd extends Plugin
 
         if (!$schema->hasTransition($transitionName)) {
             $schema->addTransition($transition);
+            $schemaRepo->update([], $schema);
         }
         $dispatcherRepo = SystemContainer::getItem(ITransitionDispatcherRepository::class);
         $unknownTemplates = $this->getUnknownTemplates($dispatchersData);
