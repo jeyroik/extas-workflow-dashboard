@@ -1,10 +1,7 @@
 <div class="card">
     <div class="card-header">@schema.title</div>
     <div class="card-body">
-        @schema.description
-    </div>
-    <div class="card-body">
-        @schema.transitions
+        <div id="container_@schema.name"></div>
     </div>
     <div class="card-footer">
         <form action="/schema/edit/@schema.name">

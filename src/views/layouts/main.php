@@ -7,5 +7,6 @@
     <body>
         @page.content
         @page.footer
+        <script src="https://code.highcharts.com/highcharts.js"></script>
     </body>
 </html>

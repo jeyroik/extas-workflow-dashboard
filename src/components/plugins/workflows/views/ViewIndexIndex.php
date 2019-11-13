@@ -4,8 +4,10 @@ namespace extas\components\plugins\workflows\views;
 use extas\components\plugins\Plugin;
 use extas\components\Replace;
 use extas\components\SystemContainer;
+use extas\interfaces\IReplace;
 use extas\interfaces\workflows\schemas\IWorkflowSchema;
 use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
+use extas\interfaces\workflows\transitions\IWorkflowTransition;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -34,6 +36,7 @@ class ViewIndexIndex extends Plugin
         $replace = new Replace();
         $itemsView = '';
         $itemTemplate = file_get_contents(APP__ROOT . '/src/views/schemas/item.php');
+        $footer = '';
         foreach ($schemas as $index => $schema) {
             $transitions = '';
             $transitionsSelf = $schema->getTransitions();
@@ -42,6 +45,7 @@ class ViewIndexIndex extends Plugin
             }
             $schema['transitions'] = $transitions;
             $itemsView .= $replace->apply(['schema' => $schema])->to($itemTemplate);
+            $footer .= $this->makeChart($schema, $transitionsSelf, $replace);
         }
 
         $listTemplate = file_get_contents(APP__ROOT . '/src/views/schemas/index.php');
@@ -53,10 +57,34 @@ class ViewIndexIndex extends Plugin
                 'title' => 'Схемы',
                 'head' => '',
                 'content' => $listView,
-                'footer' => ''
+                'footer' => $footer
             ]
         ])->to($pageTemplate);
 
         $response->getBody()->write($page);
+    }
+
+    /**
+     * @param IWorkflowSchema $schema
+     * @param IWorkflowTransition[] $transitions
+     * @param IReplace $replace
+     * @return string
+     */
+    protected function makeChart(IWorkflowSchema $schema, array $transitions, IReplace $replace)
+    {
+        $chartTemplate = file_get_contents(APP__ROOT . '/src/views/schemas/chart.php');
+        $chartData = [];
+        foreach ($transitions as $transition) {
+            $chartData[] = [$transition->getStateFromName(), $transition->getStateToName()];
+        }
+
+        return $replace->apply([
+            'chart' => [
+                'name' => $schema->getName(),
+                'title' => $schema->getTitle(),
+                'subTitle' => $schema->getDescription(),
+                'data' => json_encode($chartData)
+            ]
+        ])->to($chartTemplate);
     }
 }
