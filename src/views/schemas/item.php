@@ -1,7 +1,11 @@
 <div class="card">
     <div class="card-header">@schema.title</div>
     <div class="card-body">
-        <div id="container_@schema.name"></div>
+        <div class="row">
+            <div class="col-md-6">
+                <div id="container_@schema.name"></div>
+            </div>
+        </div>
     </div>
     <div class="card-footer">
         <form action="/schema/edit/@schema.name">
