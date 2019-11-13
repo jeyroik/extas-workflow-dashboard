@@ -8,10 +8,10 @@
     </div>
     <div class="card-footer">
         <form action="/schema/edit/@schema.name">
-            <input type="submit" value="Редактировать">
+            <input class="btn btn-primary" type="submit" value="Редактировать">
         </form>
         <form action="/schema/delete/@schema.name">
-            <input type="submit" value="Удалить">
+            <input class="btn btn-danger" type="submit" value="Удалить">
         </form>
     </div>
 </div>
