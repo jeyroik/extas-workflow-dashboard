@@ -25,7 +25,7 @@
                 linkFormat: ''
             },
             id: 'lang-tree',
-            data: @data
+            data: @chart.data
         }]
     });
 </script>
