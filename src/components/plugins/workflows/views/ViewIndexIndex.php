@@ -55,7 +55,7 @@ class ViewIndexIndex extends Plugin
         $page = $replace->apply([
             'page' => [
                 'title' => 'Схемы',
-                'head' => '',
+                'head' => '<script src="https://code.highcharts.com/highcharts.js"></script>',
                 'content' => $listView,
                 'footer' => $footer
             ]
