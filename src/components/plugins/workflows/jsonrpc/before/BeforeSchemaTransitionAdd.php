@@ -39,7 +39,7 @@ class BeforeSchemaTransitionAdd extends JsonRpcValidationPlugin
      */
     protected function checkTransition(ResponseInterface &$response, array &$jRpcData)
     {
-        $transitionName = $jRpcData['transition'] ?? '';
+        $transitionName = $jRpcData['transition_name'] ?? '';
         /**
          * @var $transitRepo IWorkflowTransitionRepository
          */
