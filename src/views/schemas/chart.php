@@ -20,7 +20,7 @@
             networkgraph: {
                 keys: ['from', 'to', 'connectionLabel'],
                 layoutAlgorithm: {
-                    linkLength: 60,
+                    linkLength: 80,
                     enableSimulation: true,
                     friction: -0.9
                 }
