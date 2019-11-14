@@ -115,6 +115,60 @@
       }
     }
   },
+  "state.load": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array"
+        }
+      }
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "created_count": {
+          "type": "integer"
+        },
+        "got_count": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "transition.by_state_from.index": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "state_name": {
+          "type": "string"
+        }
+      }
+    },
+    "response": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "state_from": {
+            "type": "string"
+          },
+          "state_to": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
   "transition.create": {
     "request": {
       "type": "object",
@@ -156,27 +210,6 @@
         },
         "state_to": {
           "type": "string"
-        }
-      }
-    }
-  },
-  "state.load": {
-    "request": {
-      "type": "object",
-      "properties": {
-        "data": {
-          "type": "array"
-        }
-      }
-    },
-    "response": {
-      "type": "object",
-      "properties": {
-        "created_count": {
-          "type": "integer"
-        },
-        "got_count": {
-          "type": "integer"
         }
       }
     }

@@ -126,6 +126,10 @@
       "stage": "run.jsonrpc.transition.load"
     },
     {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcTransitionByStateFromIndex",
+      "stage": "run.jsonrpc.transition.by_state_from.index"
+    },
+    {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\BeforeStateDelete",
       "stage": "before.run.jsonrpc.state.delete"
     },
