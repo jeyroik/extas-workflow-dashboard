@@ -882,5 +882,42 @@
         }
       }
     }
+  },
+  "entity.transit": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "schema_name": {
+          "type": "string"
+        },
+        "transition_name": {
+          "type": "string"
+        },
+        "entity": {
+          "type": "object",
+          "properties": {
+            "state": {
+              "type": "string"
+            }
+          }
+        },
+        "context": {
+          "type": "object"
+        }
+      }
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "entity": {
+          "type": "object",
+          "properties": {
+            "state": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
   }
 }
