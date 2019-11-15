@@ -9,6 +9,7 @@ use extas\components\workflows\Workflow;
 use extas\interfaces\workflows\entities\IWorkflowEntity;
 use extas\interfaces\workflows\schemas\IWorkflowSchema;
 use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
+use extas\interfaces\workflows\transitions\errors\ITransitionError;
 use extas\interfaces\workflows\transitions\IWorkflowTransition;
 use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
 use Psr\Http\Message\RequestInterface;
@@ -101,22 +102,34 @@ class JsonRpcEntityTransit extends JsonRpcValidationPlugin
                 ]
             );
         } else {
-            $transited = Workflow::transitByTransition(
+            $result = Workflow::transitByTransition(
                 $entity,
                 $transition->getName(),
                 $schema,
                 new WorkflowEntityContext($context)
             );
-            if (!$transited) {
-                $this->setResponseError(
-                    $response,
-                    $jRpcData,
-                    JsonRpcErrors::ERROR__CAN_NOT_TRANSIT
-                );
+            if (!$result->isSuccess()) {
+                $this->setError($response, $result->getError());
             } else {
                 $this->setSuccess($response, $entity);
             }
         }
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @param ITransitionError $error
+     */
+    protected function setError(ResponseInterface &$response, ITransitionError $error)
+    {
+        $response = $response
+            ->withHeader('Content-type', 'application/json')
+            ->withStatus(200);
+        $response
+            ->getBody()->write(json_encode([
+                'id' => $jRpcData['id'] ?? '',
+                'error' => $error->__toArray()
+            ]));
     }
 
     /**
