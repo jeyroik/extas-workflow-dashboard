@@ -68,7 +68,7 @@ class JsonRpcEntityTransit extends JsonRpcValidationPlugin
                     [IWorkflowTransition::FIELD__NAME => $transitionName]
                 );
             } else {
-                $this->transit($entity, $context, $transition, $schema, $response);
+                $this->transit($entity, $context, $transition, $schema, $response, $jRpcData);
             }
         }
     }
@@ -79,13 +79,15 @@ class JsonRpcEntityTransit extends JsonRpcValidationPlugin
      * @param IWorkflowTransition $transition
      * @param IWorkflowSchema $schema
      * @param ResponseInterface $response
+     * @param array $jRpcData
      */
     protected function transit(
         IWorkflowEntity $entity,
         array $context,
         IWorkflowTransition $transition,
         IWorkflowSchema $schema,
-        ResponseInterface &$response
+        ResponseInterface &$response,
+        array $jRpcData
     )
     {
         if ($transition->getStateFromName() != $entity->getStateName()) {
