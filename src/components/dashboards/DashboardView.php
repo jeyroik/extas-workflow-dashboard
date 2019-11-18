@@ -18,6 +18,7 @@ class DashboardView extends Item implements IDashboardView
      * @var IReplace
      */
     protected $replace = null;
+    protected $view = '';
 
     /**
      * DashboardView constructor.
@@ -33,8 +34,10 @@ class DashboardView extends Item implements IDashboardView
         if (!$this->getBasePath()) {
             $this->setBasePath(getenv('EXTAS__WF__VIEW_BASE_PATH') ?: APP__ROOT . '/src/views');
         }
-
         $this->setViewPath($this->getViewPath() . '.php');
+        $this->view = is_file($this->getBasePath() . '/' . $this->getViewPath())
+            ? file_get_contents($this->getBasePath() . '/' . $this->getViewPath())
+            : '';
     }
 
     /**
@@ -44,7 +47,7 @@ class DashboardView extends Item implements IDashboardView
      */
     public function render($data = []): string
     {
-        return $this->replace->apply($data)->to($this->getBasePath() . '/' . $this->getViewPath());
+        return $this->replace->apply($data)->to($this->view);
     }
 
     /**
