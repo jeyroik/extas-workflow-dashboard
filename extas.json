@@ -1,5 +1,12 @@
 {
   "name": "extas/workflow-dashboard",
+  "env_params": [
+    {
+      "name": "EXTAS__WF__VIEW_BASE_PATH",
+      "title": "WF. Base path",
+      "description": "Base path for Workflow dashboard views"
+    }
+  ],
   "plugins": [
     {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcSpecsOperationListPlugin",

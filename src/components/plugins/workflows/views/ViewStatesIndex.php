@@ -1,8 +1,8 @@
 <?php
 namespace extas\components\plugins\workflows\views;
 
+use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
-use extas\components\Replace;
 use extas\components\SystemContainer;
 use extas\interfaces\workflows\states\IWorkflowState;
 use extas\interfaces\workflows\states\IWorkflowStateRepository;
@@ -31,26 +31,25 @@ class ViewStatesIndex extends Plugin
          */
         $stateRepo = SystemContainer::getItem(IWorkflowStateRepository::class);
         $states = $stateRepo->all([]);
-        $replace = new Replace();
         $itemsView = '';
-        $itemTemplate = file_get_contents(APP__ROOT . '/src/views/states/item.php');
+        $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'states/item']);
 
         foreach ($states as $index => $state) {
-            $itemsView .= $replace->apply(['state' => $state])->to($itemTemplate);
+            $itemsView .= $itemTemplate->render(['state' => $state]);
         }
 
-        $listTemplate = file_get_contents(APP__ROOT . '/src/views/states/index.php');
-        $listView = $replace->apply(['states' => $itemsView])->to($listTemplate);
+        $listTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'states/index']);
+        $listView = $listTemplate->render(['states' => $itemsView]);
 
-        $pageTemplate = file_get_contents(APP__ROOT . '/src/views/layouts/main.php');
-        $page = $replace->apply([
+        $pageTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'layouts/main']);
+        $page = $pageTemplate->render([
             'page' => [
                 'title' => 'Состояния',
                 'head' => '',
                 'content' => $listView,
                 'footer' => ''
             ]
-        ])->to($pageTemplate);
+        ]);
 
         $response->getBody()->write($page);
     }
