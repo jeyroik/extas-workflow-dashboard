@@ -184,11 +184,11 @@
       "stage": "view.states.index"
     },
     {
-      "class": "extas\\components\\plugins\\workflows\\views\\ViewStatesEdit",
+      "class": "extas\\components\\plugins\\workflows\\views\\ViewStateEdit",
       "stage": "view.states.edit"
     },
     {
-      "class": "extas\\components\\plugins\\workflows\\views\\ViewStatesSave",
+      "class": "extas\\components\\plugins\\workflows\\views\\ViewStateSave",
       "stage": "view.states.save"
     },
     {
