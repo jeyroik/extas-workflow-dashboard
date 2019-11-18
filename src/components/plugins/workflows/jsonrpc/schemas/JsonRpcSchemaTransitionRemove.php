@@ -1,6 +1,7 @@
 <?php
 namespace extas\components\plugins\workflows\jsonrpc\schemas;
 
+use extas\components\jsonrpc\JsonRpcErrors;
 use extas\components\plugins\Plugin;
 use extas\components\SystemContainer;
 use extas\interfaces\workflows\schemas\IWorkflowSchema;
@@ -38,21 +39,31 @@ class JsonRpcSchemaTransitionRemove extends Plugin
         $transition = $transitRepo->one([IWorkflowTransition::FIELD__NAME => $transitionName]);
         $schemaRepo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
         $schema = $schemaRepo->one([IWorkflowSchema::FIELD__NAME => $schemaName]);
-
-        if ($schema->hasTransition($transitionName)) {
-            $schema->removeTransition($transition);
-            $schemaRepo->update($schema);
-        }
-
         $response = $response
             ->withHeader('Content-type', 'application/json')
             ->withStatus(200);
-        $response
-            ->getBody()->write(json_encode([
+
+        if (!$schema) {
+            $response->getBody()->write(json_encode([
+                'id' => $jRpcData['id'] ?? '',
+                'error' => [
+                    'code' => JsonRpcErrors::ERROR__UNKNOWN_SCHEMA,
+                    'data' => [IWorkflowSchema::FIELD__NAME => $schemaName],
+                    'message' => 'Unknown schema'
+                ]
+            ]));
+        } else {
+            if ($schema->hasTransition($transitionName)) {
+                $schema->removeTransition($transition);
+                $schemaRepo->update($schema);
+            }
+
+            $response->getBody()->write(json_encode([
                 'id' => $jRpcData['id'] ?? '',
                 'result' => [
                     'name' => $transitionName
                 ]
             ]));
+        }
     }
 }
