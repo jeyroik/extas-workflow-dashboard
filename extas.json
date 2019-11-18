@@ -138,6 +138,10 @@
       "stage": "run.jsonrpc.schema.transition.add"
     },
     {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\schemas\\JsonRpcSchemaTransitioRemove",
+      "stage": "run.jsonrpc.schema.transition.remove"
+    },
+    {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\transitions\\JsonRpcTransitionLoad",
       "stage": "run.jsonrpc.transition.load"
     },

@@ -39,33 +39,8 @@ class BeforeSchemaCreate extends JsonRpcValidationPlugin
             if ($repo->one([IWorkflowSchema::FIELD__NAME => $item->getName()])) {
                 $this->setResponseError($response, $jRpcData, JsonRpcErrors::ERROR__ALREADY_EXIST);
             } else {
-                $this->checkStates($response, $jRpcData, $item);
                 $this->checkTransitions($response, $jRpcData, $item);
             }
-        }
-    }
-
-    /**
-     * @param ResponseInterface $response
-     * @param array $jRpcData
-     * @param IWorkflowSchema $item
-     */
-    protected function checkStates(ResponseInterface &$response, array &$jRpcData, IWorkflowSchema $item)
-    {
-        $states = $item->getStatesNames();
-        /**
-         * @var $repo IWorkflowStateRepository
-         * @var $wStates IWorkflowState[]
-         */
-        $repo = SystemContainer::getItem(IWorkflowStateRepository::class);
-        $wStates = $repo->all([IWorkflowState::FIELD__NAME => $states]);
-
-        if (count($wStates) != count($states)) {
-            $states = array_flip($states);
-            foreach ($wStates as $state) {
-                unset($states[$state->getName()]);
-            }
-            $this->setResponseError($response, $jRpcData, JsonRpcErrors::ERROR__UNKNOWN_STATES, $states);
         }
     }
 

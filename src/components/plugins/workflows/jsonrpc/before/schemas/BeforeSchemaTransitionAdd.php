@@ -1,6 +1,7 @@
 <?php
 namespace extas\components\plugins\workflows\jsonrpc\before\schemas;
 
+use extas\components\jsonrpc\JsonRpcErrors;
 use extas\components\plugins\workflows\jsonrpc\JsonRpcValidationPlugin;
 use extas\components\SystemContainer;
 use extas\interfaces\workflows\schemas\IWorkflowSchema;
@@ -47,7 +48,7 @@ class BeforeSchemaTransitionAdd extends JsonRpcValidationPlugin
         $transition = $transitRepo->one([IWorkflowTransition::FIELD__NAME => $transitionName]);
 
         if (!$transition) {
-            $this->setResponseError($response, $jRpcData, 10602);
+            $this->setResponseError($response, $jRpcData, JsonRpcErrors::ERROR__UNKNOWN_TRANSITION);
         }
     }
 
@@ -66,7 +67,7 @@ class BeforeSchemaTransitionAdd extends JsonRpcValidationPlugin
         $schemaRepo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
         $schema = $schemaRepo->one([IWorkflowSchema::FIELD__NAME => $schemaName]);
         if (!$schema) {
-            $this->setResponseError($response, $jRpcData, 10701);
+            $this->setResponseError($response, $jRpcData, JsonRpcErrors::ERROR__UNKNOWN_SCHEMA);
         }
     }
 }

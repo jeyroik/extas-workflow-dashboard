@@ -662,6 +662,27 @@
       }
     }
   },
+  "schema.transition.remove": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "transition_name": {
+          "type": "string"
+        },
+        "schema_name": {
+          "type": "string"
+        }
+      }
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    }
+  },
   "schema.transition.create": {
     "request": {
       "type": "object",
