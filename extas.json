@@ -5,6 +5,11 @@
       "name": "EXTAS__WF__VIEW_BASE_PATH",
       "title": "WF. Base path",
       "description": "Base path for Workflow dashboard views"
+    },
+    {
+      "name": "EXTAS__WF__OPERATION_ALL",
+      "title": "WF. Operations specs",
+      "description": "Path for the operations json-rpc specs"
     }
   ],
   "plugins": [
