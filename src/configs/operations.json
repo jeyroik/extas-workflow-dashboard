@@ -140,6 +140,9 @@
     "request": {
       "type": "object",
       "properties": {
+        "schema_name": {
+          "type": "string"
+        },
         "state_name": {
           "type": "string"
         }
