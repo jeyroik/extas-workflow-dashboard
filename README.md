@@ -5,6 +5,7 @@ Simple api-dashboard for extas-workflow package using
 # install
 
 `composer require jeyroik/extas-workflow-dashboard:*`
+
 `/vendor/bin/extas i`
 
 # api
