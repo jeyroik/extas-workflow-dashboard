@@ -39,7 +39,7 @@ $app->any('/specs/', function (Request $request, Response $response, array $args
     return $response;
 });
 
-$app->get('/[{section}[/{action}[/{name}]]]', function (Request $request, Response $response, array $args) {
+$app->any('/[{section}[/{action}[/{name}]]]', function (Request $request, Response $response, array $args) {
     $pluginStub = new \extas\components\plugins\Plugin();
     $section = $args['section'] ?? 'index';
     $action = $args['action'] ?? 'index';
