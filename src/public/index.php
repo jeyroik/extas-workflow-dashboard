@@ -1,10 +1,9 @@
 <?php
-require(__DIR__ . '/../../vendor/autoload.php');
+define('APP__ROOT', getenv('EXTAS__BASE_PATH') ?: __DIR__ . '/../..');
+require(APP__ROOT . '/vendor/autoload.php');
 
-define('APP__ROOT', __DIR__ . '/../..');
-
-if (is_file(__DIR__ . '/../../.env')) {
-    $dotenv = \Dotenv\Dotenv::create(__DIR__ . '/../../');
+if (is_file(APP__ROOT . '/.env')) {
+    $dotenv = \Dotenv\Dotenv::create(APP__ROOT . '/');
     $dotenv->load();
 }
 
