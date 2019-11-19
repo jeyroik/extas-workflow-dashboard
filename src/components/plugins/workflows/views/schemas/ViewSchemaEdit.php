@@ -44,7 +44,7 @@ class ViewSchemaEdit extends Plugin
 
             $templatesRepo = SystemContainer::getItem(IWorkflowEntityTemplateRepository::class);
             $templates = $templatesRepo->all([]);
-            $schema['entity_templates'] = $this->drawTemplatesList($templates, $schema);
+            $schema['entity_template'] = $this->drawTemplatesList($templates, $schema);
 
             $itemView = $editTemplate->render(['schema' => $schema]);
             $pageTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'layouts/main']);
