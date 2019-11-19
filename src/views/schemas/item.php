@@ -7,11 +7,8 @@
         </div>
     </div>
     <div class="card-footer">
-        <form action="/schema/edit/@schema.name">
+        <form action="/schemas/edit/@schema.name">
             <input class="btn btn-primary" type="submit" value="Редактировать">
-        </form>
-        <form action="/schema/delete/@schema.name">
-            <input class="btn btn-danger" type="submit" value="Удалить">
         </form>
     </div>
 </div>

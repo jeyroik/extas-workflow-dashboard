@@ -8,6 +8,12 @@
                 <div class="card-body">
                     <textarea name="description" class="form-control">@schema.description</textarea>
                 </div>
+                <div class="card-body">
+                    <textarea name="transitions" class="form-control">@schema.transitions</textarea>
+                </div>
+                <div class="card-body">
+                    <textarea name="entity_template" class="form-control">@schema.entity_template</textarea>
+                </div>
                 <div class="card-footer">
                     <input type="submit" value="Сохранить">
                 </div>
