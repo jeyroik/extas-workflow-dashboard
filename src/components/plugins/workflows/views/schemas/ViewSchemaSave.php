@@ -1,5 +1,5 @@
 <?php
-namespace extas\components\plugins\workflows\views;
+namespace extas\components\plugins\workflows\views\schemas;
 
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
