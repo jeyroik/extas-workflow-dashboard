@@ -39,7 +39,10 @@ class ViewTransitionCreate extends Plugin
         $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'transitions/item']);
         $editTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'transitions/edit']);
 
-        array_unshift($transitions, new WorkflowTransition());
+        array_unshift($transitions, new WorkflowTransition([
+            WorkflowTransition::FIELD__TITLE => '',
+            WorkflowTransition::FIELD__DESCRIPTION => ''
+        ]));
 
         foreach ($transitions as $index => $transition) {
             if (!$transition->getName()) {
