@@ -43,14 +43,11 @@ class ViewSchemaSave extends Plugin
 
         foreach ($schemas as $index => $schema) {
             if ($schema->getName() == $schemaName) {
-                $schemaTransitions = explode(',', $schemaTransitions);
-                foreach ($schemaTransitions as $i => $schemaTransition) {
-                    $schemaTransitions[$i] = trim($schemaTransition);
-                }
+                preg_match_all('/[^,\s]+/', $schemaTransitions, $matches);
                 $schema
                     ->setTitle($schemaTitle)
                     ->setDescription($schemaDesc)
-                    ->setTransitions($schemaTransitions)
+                    ->setTransitions($matches[0] ?? [])
                     ->setEntityTemplateName($schemaEntity);
                 $schemaRepo->update($schema);
             }
