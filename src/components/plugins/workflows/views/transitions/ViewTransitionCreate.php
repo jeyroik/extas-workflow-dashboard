@@ -41,7 +41,8 @@ class ViewTransitionCreate extends Plugin
 
         array_unshift($transitions, new WorkflowTransition([
             WorkflowTransition::FIELD__TITLE => '',
-            WorkflowTransition::FIELD__DESCRIPTION => ''
+            WorkflowTransition::FIELD__DESCRIPTION => '',
+            WorkflowTransition::FIELD__NAME => '__created__'
         ]));
 
         foreach ($transitions as $index => $transition) {
