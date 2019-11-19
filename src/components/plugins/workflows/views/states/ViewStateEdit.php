@@ -38,9 +38,11 @@ class ViewStateEdit extends Plugin
         $stateName = $args['name'] ?? '';
 
         foreach ($states as $index => $state) {
-            $itemsView .= $state->getName() == $stateName
-                ? $editTemplate->render(['state' => $state])
-                : $itemTemplate->render(['state' => $state]);
+            if ($state->getName() == $stateName) {
+                $itemsView = $editTemplate->render(['state' => $state]) . $itemsView;
+            } else {
+                $itemsView .= $itemTemplate->render(['state' => $state]);
+            }
         }
 
         $listTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'states/index']);
