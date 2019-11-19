@@ -81,7 +81,7 @@ class ViewStateSave extends Plugin
     protected function createState($title, $description, $template, $repo, &$view)
     {
         $newState = new WorkflowState([
-            WorkflowState::FIELD__NAME => uniqid('state_', true),
+            WorkflowState::FIELD__NAME => uniqid(),
             WorkflowState::FIELD__TITLE => $title,
             WorkflowState::FIELD__DESCRIPTION => $description
         ]);
