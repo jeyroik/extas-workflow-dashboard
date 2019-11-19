@@ -25,7 +25,7 @@ class DashboardList extends DashboardView
     {
         $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'layouts/select.item']);
         $itemsView = '';
-        $current = $this;
+        $current = $this->getSelected();
         $items = $this->getItems();
 
         foreach ($items as $item) {
