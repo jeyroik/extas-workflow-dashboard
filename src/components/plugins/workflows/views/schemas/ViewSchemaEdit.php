@@ -6,7 +6,6 @@ use extas\components\plugins\Plugin;
 use extas\components\SystemContainer;
 use extas\interfaces\workflows\schemas\IWorkflowSchema;
 use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
-use extas\interfaces\workflows\states\IWorkflowStateRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -30,7 +29,7 @@ class ViewSchemaEdit extends Plugin
          * @var $repo IWorkflowSchemaRepository
          * @var $schema IWorkflowSchema
          */
-        $repo = SystemContainer::getItem(IWorkflowStateRepository::class);
+        $repo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
         $schema = $repo->one([IWorkflowSchema::FIELD__NAME => $args['name'] ?? '']);
 
         if (!$schema) {
