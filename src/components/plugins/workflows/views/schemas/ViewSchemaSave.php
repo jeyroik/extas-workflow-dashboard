@@ -44,6 +44,9 @@ class ViewSchemaSave extends Plugin
         foreach ($schemas as $index => $schema) {
             if ($schema->getName() == $schemaName) {
                 $schemaTransitions = explode(',', $schemaTransitions);
+                foreach ($schemaTransitions as $i => $schemaTransition) {
+                    $schemaTransitions[$i] = trim($schemaTransition);
+                }
                 $schema
                     ->setTitle($schemaTitle)
                     ->setDescription($schemaDesc)
