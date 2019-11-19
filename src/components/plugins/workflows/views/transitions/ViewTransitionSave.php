@@ -4,6 +4,7 @@ namespace extas\components\plugins\workflows\views\transitions;
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
 use extas\components\SystemContainer;
+use extas\components\workflows\transitions\WorkflowTransition;
 use extas\interfaces\workflows\transitions\IWorkflowTransition;
 use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
 use Psr\Http\Message\RequestInterface;
@@ -40,6 +41,8 @@ class ViewTransitionSave extends Plugin
         $transitionStateFrom = $_REQUEST['state_from'] ?? '';
         $transitionStateTo = $_REQUEST['state_to'] ?? '';
 
+        $updated = false;
+
         foreach ($transitions as $index => $transition) {
             if ($transition->getName() == $transitionName) {
                 $transition
@@ -48,8 +51,16 @@ class ViewTransitionSave extends Plugin
                     ->setStateFrom($transitionStateFrom)
                     ->setStateTo($transitionStateTo);
                 $repo->update($transition);
+                $updated = true;
             }
             $itemsView .= $itemTemplate->render(['transition' => $transition]);
+        }
+
+        if (!$updated) {
+            $this->createTransition(
+                $transitionTitle, $transitionDesc, $transitionStateFrom,
+                $transitionStateTo, $itemTemplate, $repo, $itemsView
+            );
         }
 
         $listTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'transitions/index']);
@@ -66,5 +77,27 @@ class ViewTransitionSave extends Plugin
         ]);
 
         $response->getBody()->write($page);
+    }
+
+    /**
+     * @param string $title
+     * @param string $description
+     * @param string $stateFrom
+     * @param string $stateTo
+     * @param DashboardView $template
+     * @param IWorkflowTransitionRepository $repo
+     * @param string $view
+     */
+    protected function createTransition($title, $description, $stateFrom, $stateTo, $template, $repo, &$view)
+    {
+        $newTransition = new WorkflowTransition([
+            WorkflowTransition::FIELD__NAME => 'from__' . $stateFrom . '__to__' . $stateTo,
+            WorkflowTransition::FIELD__TITLE => $title,
+            WorkflowTransition::FIELD__DESCRIPTION => $description,
+            WorkflowTransition::FIELD__STATE_FROM => $stateFrom,
+            WorkflowTransition::FIELD__STATE_TO => $stateTo
+        ]);
+        $repo->create($newTransition);
+        $view = $template->render(['transition' => $newTransition]) . $view;
     }
 }

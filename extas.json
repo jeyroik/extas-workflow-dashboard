@@ -206,6 +206,10 @@
     {
       "class": "extas\\components\\plugins\\workflows\\views\\transitions\\ViewTransitionSave",
       "stage": "view.transitions.save"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\views\\transitions\\ViewTransitionCreate",
+      "stage": "view.transitions.create"
     }
   ]
 }
