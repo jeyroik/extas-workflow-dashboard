@@ -36,6 +36,7 @@ class ViewSchemaEdit extends Plugin
             $response->withHeader('Location', '/');
         } else {
             $editTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'schemas/edit']);
+            $schema['transitions'] = implode(',', $schema->getTransitionsNames());
 
             $itemView = $editTemplate->render(['schema' => $schema]);
             $pageTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'layouts/main']);
