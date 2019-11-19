@@ -12,7 +12,7 @@
                     <textarea name="transitions" class="form-control">@schema.transitions</textarea>
                 </div>
                 <div class="card-body">
-                    <textarea name="entity_template" class="form-control">@schema.entity_template</textarea>
+                    @schema.entity_templates
                 </div>
                 <div class="card-footer">
                     <input type="submit" value="Сохранить">
