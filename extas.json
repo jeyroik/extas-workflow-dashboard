@@ -180,6 +180,14 @@
       "stage": "view.index.index"
     },
     {
+      "class": "extas\\components\\plugins\\workflows\\views\\schemas\\ViewSchemaEdit",
+      "stage": "view.schemas.edit"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\views\\schemas\\ViewSchemaSave",
+      "stage": "view.schemas.save"
+    },
+    {
       "class": "extas\\components\\plugins\\workflows\\views\\states\\ViewStatesIndex",
       "stage": "view.states.index"
     },
