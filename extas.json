@@ -196,6 +196,10 @@
       "stage": "view.states.save"
     },
     {
+      "class": "extas\\components\\plugins\\workflows\\views\\states\\ViewStateCreate",
+      "stage": "view.states.create"
+    },
+    {
       "class": "extas\\components\\plugins\\workflows\\views\\transitions\\ViewTransitionsIndex",
       "stage": "view.transitions.index"
     },

@@ -9,19 +9,18 @@ use extas\interfaces\workflows\states\IWorkflowState;
 use extas\interfaces\workflows\states\IWorkflowStateRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Class ViewStateSave
+ * Class ViewStateCreate
  *
- * @stage view.states.save
+ * @stage view.states.create
  * @package extas\components\plugins\workflows\views
  * @author jeyroik@gmail.com
  */
-class ViewStateSave extends Plugin
+class ViewStateCreate extends Plugin
 {
     /**
-     * @param RequestInterface|ServerRequestInterface $request
+     * @param RequestInterface $request
      * @param ResponseInterface $response
      * @param array $args
      */
@@ -35,24 +34,18 @@ class ViewStateSave extends Plugin
         $states = $stateRepo->all([]);
         $itemsView = '';
         $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'states/item']);
+        $editTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'states/edit']);
 
-        $stateName = $args['name'] ?? '';
-        $stateTitle = $_REQUEST['title'] ?? '';
-        $stateDesc = $_REQUEST['description'] ?? '';
+        array_unshift($states, new WorkflowState([
+            WorkflowState::FIELD__TITLE => '',
+            WorkflowState::FIELD__DESCRIPTION => '',
+            WorkflowState::FIELD__NAME => '__created__'
+        ]));
 
-        $updated = false;
         foreach ($states as $index => $state) {
-            if ($state->getName() == $stateName) {
-                $state->setTitle(htmlspecialchars($stateTitle))
-                    ->setDescription(htmlspecialchars($stateDesc));
-                $stateRepo->update($state);
-                $updated = true;
-            }
-            $itemsView .= $itemTemplate->render(['state' => $state]);
-        }
-
-        if (!$updated) {
-            $this->createState($stateTitle, $stateDesc, $itemTemplate, $stateRepo, $itemsView);
+            $itemsView .= $state->getName() == '__created__'
+                ? $editTemplate->render(['state' => $state])
+                : $itemTemplate->render(['state' => $state]);
         }
 
         $listTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'states/index']);
@@ -69,23 +62,5 @@ class ViewStateSave extends Plugin
         ]);
 
         $response->getBody()->write($page);
-    }
-
-    /**
-     * @param string $title
-     * @param string $description
-     * @param DashboardView $template
-     * @param IWorkflowStateRepository $repo
-     * @param string $view
-     */
-    protected function createState($title, $description, $template, $repo, &$view)
-    {
-        $newState = new WorkflowState([
-            WorkflowState::FIELD__NAME => uniqid('state_', true),
-            WorkflowState::FIELD__TITLE => $title,
-            WorkflowState::FIELD__DESCRIPTION => $description
-        ]);
-        $repo->create($newState);
-        $view = $template->render(['state' => $newState]) . $view;
     }
 }
