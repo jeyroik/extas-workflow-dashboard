@@ -43,7 +43,7 @@ class ViewTransitionEdit extends Plugin
         foreach ($transitions as $index => $transition) {
             if ($transition->getName() == $transitionName) {
                 $this->renderStates($transition);
-                $itemsView .= $editTemplate->render(['transition' => $transition]);
+                $itemsView = $editTemplate->render(['transition' => $transition]) . $itemsView;
             } else {
                 $itemsView .= $itemTemplate->render(['transition' => $transition]);
             }
