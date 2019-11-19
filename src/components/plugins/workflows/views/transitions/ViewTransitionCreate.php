@@ -46,7 +46,7 @@ class ViewTransitionCreate extends Plugin
         ]));
 
         foreach ($transitions as $index => $transition) {
-            if (!$transition->getName()) {
+            if ($transition->getName() == '__created__') {
                 $this->renderStates($transition);
                 $itemsView .= $editTemplate->render(['transition' => $transition]);
             } else {
