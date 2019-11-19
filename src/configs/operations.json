@@ -39,6 +39,42 @@
       }
     }
   },
+  "state.delete": {
+    "request": {
+      "properties": {
+        "data": {
+          "type": "object",
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["data"],
+      "type": "object"
+    },
+    "response": {
+      "type": "array",
+      "properties": {
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "parameters": {
+              "type": "array"
+            }
+          }
+        }
+      }
+    }
+  },
   "state.update": {
     "request": {
       "type": "object",
@@ -90,7 +126,7 @@
       }
     },
     "response": {
-      "type": "object",
+      "type": "array",
       "properties": {
         "items": {
           "type": "object",
@@ -217,6 +253,41 @@
       }
     }
   },
+  "transition.delete": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "response": {
+      "type": "array",
+      "properties": {
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "state_from": {
+              "type": "string"
+            },
+            "state_to": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
   "transition.update": {
     "request": {
       "type": "object",
@@ -322,6 +393,188 @@
       }
     }
   },
+  "transition.dispatcher.create": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "template": {
+            "type": "string"
+          },
+          "schema_name": {
+            "type": "string"
+          },
+          "transition_name": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array"
+          }
+        }
+      },
+      "required": ["data"]
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "template": {
+          "type": "string"
+        },
+        "schema_name": {
+          "type": "string"
+        },
+        "transition_name": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "array"
+        }
+      }
+    }
+  },
+  "transition.dispatcher.delete": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "response": {
+      "type": "array",
+      "properties": {
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "template": {
+              "type": "string"
+            },
+            "schema_name": {
+              "type": "string"
+            },
+            "transition_name": {
+              "type": "string"
+            },
+            "parameters": {
+              "type": "array"
+            }
+          }
+        }
+      }
+    }
+  },
+  "transition.dispatcher.update": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "template": {
+            "type": "string"
+          },
+          "schema_name": {
+            "type": "string"
+          },
+          "transition_name": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array"
+          }
+        }
+      },
+      "required": ["data"]
+    },
+    "response": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "template": {
+            "type": "string"
+          },
+          "schema_name": {
+            "type": "string"
+          },
+          "transition_name": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  },
+  "transition.dispatcher.index": {
+    "request": {
+      "type": "object",
+      "limit": {
+        "type": "number"
+      }
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "template": {
+              "type": "string"
+            },
+            "schema_name": {
+              "type": "string"
+            },
+            "transition_name": {
+              "type": "string"
+            },
+            "parameters": {
+              "type": "array"
+            }
+          }
+        },
+        "total": {
+          "type": "number"
+        }
+      }
+    }
+  },
   "transition.dispatcher.template.create": {
     "request": {
       "type": "object",
@@ -363,6 +616,41 @@
         },
         "parameters": {
           "type": "array"
+        }
+      }
+    }
+  },
+  "transition.dispatcher.template.delete": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "response": {
+      "type": "array",
+      "properties": {
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "class": {
+              "type": "string"
+            },
+            "parameters": {
+              "type": "array"
+            }
+          }
         }
       }
     }
@@ -468,9 +756,6 @@
           "entity_template": {
             "type": "string"
           },
-          "states": {
-            "type": "array"
-          },
           "transitions": {
             "type": "array"
           },
@@ -496,14 +781,49 @@
         "entity_template": {
           "type": "string"
         },
-        "states": {
-          "type": "array"
-        },
         "transitions": {
           "type": "array"
         },
         "parameters": {
           "type": "array"
+        }
+      }
+    }
+  },
+  "schema.delete": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "response": {
+      "type": "array",
+      "properties": {
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "entity_template": {
+              "type": "string"
+            },
+            "transitions": {
+              "type": "array"
+            },
+            "parameters": {
+              "type": "array"
+            }
+          }
         }
       }
     }
@@ -524,9 +844,6 @@
           },
           "entity_template": {
             "type": "string"
-          },
-          "states": {
-            "type": "array"
           },
           "transitions": {
             "type": "array"
@@ -554,9 +871,6 @@
           },
           "entity_template": {
             "type": "string"
-          },
-          "states": {
-            "type": "array"
           },
           "transitions": {
             "type": "array"
@@ -592,9 +906,6 @@
             },
             "entity_template": {
               "type": "string"
-            },
-            "states": {
-              "type": "array"
             },
             "transitions": {
               "type": "array"
@@ -683,101 +994,6 @@
       }
     }
   },
-  "schema.transition.create": {
-    "request": {
-      "type": "object",
-      "properties": {
-        "data": {
-          "transition": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "state_from": {
-                "type": "string"
-              },
-              "state_to": {
-                "type": "string"
-              },
-              "title": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              }
-            }
-          },
-          "dispatcher": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string"
-              },
-              "template": {
-                "type": "string"
-              },
-              "schema_name": {
-                "type": "string"
-              },
-              "parameters": {
-                "type": "array"
-              }
-            }
-          }
-        }
-      },
-      "required": ["data"]
-    },
-    "response": {
-      "type": "object",
-      "properties": {
-        "transition": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "state_from": {
-              "type": "string"
-            },
-            "state_to": {
-              "type": "string"
-            },
-            "title": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            }
-          }
-        },
-        "dispatcher": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "type": {
-              "type": "string"
-            },
-            "template": {
-              "type": "string"
-            },
-            "schema_name": {
-              "type": "string"
-            },
-            "parameters": {
-              "type": "array"
-            }
-          }
-        }
-      }
-    }
-  },
   "entity.template.create": {
     "request": {
       "type": "object",
@@ -819,6 +1035,42 @@
         },
         "parameters": {
           "type": "array"
+        }
+      }
+    }
+  },
+  "entity.template.delete": {
+    "request": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": ["data"]
+    },
+    "response": {
+      "type": "array",
+      "properties": {
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "class": {
+              "type": "string"
+            },
+            "parameters": {
+              "type": "array"
+            }
+          }
         }
       }
     }
