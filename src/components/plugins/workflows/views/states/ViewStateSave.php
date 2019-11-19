@@ -1,5 +1,5 @@
 <?php
-namespace extas\components\plugins\workflows\views;
+namespace extas\components\plugins\workflows\views\states;
 
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
@@ -8,18 +8,19 @@ use extas\interfaces\workflows\states\IWorkflowState;
 use extas\interfaces\workflows\states\IWorkflowStateRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Class ViewStatesIndex
+ * Class ViewStateSave
  *
- * @stage view.states.index
+ * @stage view.states.save
  * @package extas\components\plugins\workflows\views
  * @author jeyroik@gmail.com
  */
-class ViewStatesIndex extends Plugin
+class ViewStateSave extends Plugin
 {
     /**
-     * @param RequestInterface $request
+     * @param RequestInterface|ServerRequestInterface $request
      * @param ResponseInterface $response
      * @param array $args
      */
@@ -34,7 +35,16 @@ class ViewStatesIndex extends Plugin
         $itemsView = '';
         $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'states/item']);
 
+        $stateName = $args['name'] ?? '';
+        $stateTitle = $_REQUEST['title'] ?? '';
+        $stateDesc = $_REQUEST['description'] ?? '';
+
         foreach ($states as $index => $state) {
+            if ($state->getName() == $stateName) {
+                $state->setTitle(htmlspecialchars($stateTitle))
+                    ->setDescription(htmlspecialchars($stateDesc));
+                $stateRepo->update($state);
+            }
             $itemsView .= $itemTemplate->render(['state' => $state]);
         }
 

@@ -1,5 +1,5 @@
 <?php
-namespace extas\components\plugins\workflows\views;
+namespace extas\components\plugins\workflows\views\transitions;
 
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
@@ -10,13 +10,13 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Class ViewTransitionsIndex
+ * Class ViewTransitionSave
  *
- * @stage view.transitions.index
+ * @stage view.transitions.save
  * @package extas\components\plugins\workflows\views
  * @author jeyroik@gmail.com
  */
-class ViewTransitionsIndex extends Plugin
+class ViewTransitionSave extends Plugin
 {
     /**
      * @param RequestInterface $request
@@ -34,7 +34,21 @@ class ViewTransitionsIndex extends Plugin
         $itemsView = '';
         $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'transitions/item']);
 
+        $transitionName = $args['name'] ?? '';
+        $transitionTitle = $_REQUEST['title'] ?? '';
+        $transitionDesc = $_REQUEST['description'] ?? '';
+        $transitionStateFrom = $_REQUEST['state_from'] ?? '';
+        $transitionStateTo = $_REQUEST['state_to'] ?? '';
+
         foreach ($transitions as $index => $transition) {
+            if ($transition->getName() == $transitionName) {
+                $transition
+                    ->setTitle($transitionTitle)
+                    ->setDescription($transitionDesc)
+                    ->setStateFrom($transitionStateFrom)
+                    ->setStateTo($transitionStateTo);
+                $repo->update($transition);
+            }
             $itemsView .= $itemTemplate->render(['transition' => $transition]);
         }
 

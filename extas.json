@@ -180,20 +180,28 @@
       "stage": "view.index.index"
     },
     {
-      "class": "extas\\components\\plugins\\workflows\\views\\ViewStatesIndex",
+      "class": "extas\\components\\plugins\\workflows\\views\\states\\ViewStatesIndex",
       "stage": "view.states.index"
     },
     {
-      "class": "extas\\components\\plugins\\workflows\\views\\ViewStateEdit",
+      "class": "extas\\components\\plugins\\workflows\\views\\states\\ViewStateEdit",
       "stage": "view.states.edit"
     },
     {
-      "class": "extas\\components\\plugins\\workflows\\views\\ViewStateSave",
+      "class": "extas\\components\\plugins\\workflows\\views\\states\\ViewStateSave",
       "stage": "view.states.save"
     },
     {
-      "class": "extas\\components\\plugins\\workflows\\views\\ViewTransitionsIndex",
+      "class": "extas\\components\\plugins\\workflows\\views\\transitions\\ViewTransitionsIndex",
       "stage": "view.transitions.index"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\views\\transitions\\ViewTransitionEdit",
+      "stage": "view.transitions.edit"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\views\\transitions\\ViewTransitionSave",
+      "stage": "view.transitions.save"
     }
   ]
 }
