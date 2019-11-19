@@ -1,6 +1,7 @@
 <?php
 namespace extas\components\plugins\workflows\views\schemas;
 
+use extas\components\dashboards\DashboardList;
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
 use extas\components\SystemContainer;
@@ -43,8 +44,13 @@ class ViewSchemaEdit extends Plugin
             $schema['transitions'] = implode(', ', $schema->getTransitionsNames());
 
             $templatesRepo = SystemContainer::getItem(IWorkflowEntityTemplateRepository::class);
-            $templates = $templatesRepo->all([]);
-            $schema['entity_template'] = $this->drawTemplatesList($templates, $schema);
+            $entity = new DashboardList([
+                DashboardList::FIELD__SELECTED => $schema->getEntityTemplateName(),
+                DashboardList::FIELD__TITLE => 'Шаблон сущности',
+                DashboardList::FIELD__NAME => 'entity_template',
+                DashboardList::FIELD__ITEMS => $templatesRepo->all([])
+            ]);
+            $schema['entity_template'] = $entity->render();
 
             $itemView = $editTemplate->render(['schema' => $schema]);
             $pageTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'layouts/main']);
@@ -59,32 +65,5 @@ class ViewSchemaEdit extends Plugin
 
             $response->getBody()->write($page);
         }
-    }
-
-    /**
-     * @param IWorkflowEntityTemplate[] $templates
-     * @param IWorkflowSchema $schema
-     * @return string
-     */
-    protected function drawTemplatesList(array $templates, IWorkflowSchema $schema): string
-    {
-        $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'layouts/select.item']);
-        $items = '';
-        $currentTemplate = $schema->getEntityTemplateName();
-        foreach ($templates as $template) {
-            $template['selected'] = $template->getName() == $currentTemplate
-                ? 'selected'
-                : '';
-            $items .= $itemTemplate->render(['item' => $template]);
-        }
-
-        $listTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'layouts/select.list']);
-        return $listTemplate->render([
-            'list' => [
-                'title' => 'Шаблон сущности',
-                'name' => 'entity_template'
-            ],
-            'items' => $items
-        ]);
     }
 }

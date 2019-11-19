@@ -1,9 +1,12 @@
 <?php
 namespace extas\components\plugins\workflows\views\transitions;
 
+use extas\components\dashboards\DashboardList;
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
 use extas\components\SystemContainer;
+use extas\interfaces\workflows\states\IWorkflowState;
+use extas\interfaces\workflows\states\IWorkflowStateRepository;
 use extas\interfaces\workflows\transitions\IWorkflowTransition;
 use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
 use Psr\Http\Message\RequestInterface;
@@ -38,9 +41,12 @@ class ViewTransitionEdit extends Plugin
         $transitionName = $args['name'] ?? '';
 
         foreach ($transitions as $index => $transition) {
-            $itemsView .= $transition->getName() == $transitionName
-                ? $editTemplate->render(['transition' => $transition])
-                : $itemTemplate->render(['transition' => $transition]);
+            if ($transition->getName() == $transitionName) {
+                $this->renderStates($transition);
+                $itemsView .= $editTemplate->render(['transition' => $transition]);
+            } else {
+                $itemsView .= $itemTemplate->render(['transition' => $transition]);
+            }
         }
 
         $listTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'transitions/index']);
@@ -57,5 +63,34 @@ class ViewTransitionEdit extends Plugin
         ]);
 
         $response->getBody()->write($page);
+    }
+
+    /**
+     * @param IWorkflowTransition $transition
+     */
+    protected function renderStates(IWorkflowTransition &$transition)
+    {
+        /**
+         * @var $statesRepo IWorkflowStateRepository
+         * @var $states IWorkflowState[]
+         */
+        $statesRepo = SystemContainer::getItem(IWorkflowStateRepository::class);
+        $states = $statesRepo->all([]);
+
+        $list = new DashboardList([
+            DashboardList::FIELD__ITEMS => $states,
+            DashboardList::FIELD__NAME => 'state_from',
+            DashboardList::FIELD__TITLE => 'Из состояния',
+            DashboardList::FIELD__SELECTED => $transition->getStateFromName()
+        ]);
+        $transition['state_from'] = $list->render();
+
+        $list = new DashboardList([
+            DashboardList::FIELD__ITEMS => $states,
+            DashboardList::FIELD__NAME => 'state_to',
+            DashboardList::FIELD__TITLE => 'В состояние',
+            DashboardList::FIELD__SELECTED => $transition->getStateToName()
+        ]);
+        $transition['state_to'] = $list->render();
     }
 }
