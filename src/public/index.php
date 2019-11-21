@@ -1,4 +1,5 @@
 <?php
+header("Access-Control-Allow-Origin: *");
 define('APP__ROOT', getenv('EXTAS__BASE_PATH') ?: __DIR__ . '/../..');
 require(APP__ROOT . '/vendor/autoload.php');
 
