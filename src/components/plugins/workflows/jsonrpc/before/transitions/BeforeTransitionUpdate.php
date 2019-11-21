@@ -35,8 +35,8 @@ class BeforeTransitionUpdate extends JsonRpcValidationPlugin
              * @var $repo IWorkflowTransitionRepository
              */
             $repo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
-            if ($repo->one([IWorkflowSchema::FIELD__NAME => $item->getName()])) {
-                $this->setResponseError($response, $jRpcData, JsonRpcErrors::ERROR__ALREADY_EXIST);
+            if (!$repo->one([IWorkflowSchema::FIELD__NAME => $item->getName()])) {
+                $this->setResponseError($response, $jRpcData, JsonRpcErrors::ERROR__UNKNOWN_TRANSITION);
             } else {
                 $this->checkStates($response, $jRpcData, $item);
             }
