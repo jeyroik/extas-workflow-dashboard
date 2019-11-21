@@ -25,6 +25,7 @@ class JsonRpcEntityTemplateDelete extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
         $operation = new JsonRpcDelete([
+            JsonRpcDelete::FIELD__ENTITY_NAME => 'entity template',
             JsonRpcDelete::FIELD__REPO_NAME => IWorkflowEntityTemplateRepository::class,
             JsonRpcDelete::FIELD__ITEM_CLASS => WorkflowEntityTemplate::class,
             JsonRpcDelete::FIELD__ITEM_DATA => $jRpcData

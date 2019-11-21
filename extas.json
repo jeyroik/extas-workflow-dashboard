@@ -42,6 +42,10 @@
       "stage": "before.run.jsonrpc.transition.create"
     },
     {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\transitions\\BeforeTransitionUpdate",
+      "stage": "before.run.jsonrpc.transition.update"
+    },
+    {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\transitions\\BeforeTransitionDelete",
       "stage": "before.run.jsonrpc.transition.delete"
     },

@@ -25,6 +25,7 @@ class JsonRpcTransitionDispatcherCreate extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
         $create = new JsonRpcCreate([
+            JsonRpcCreate::FIELD__ENTITY_NAME => 'transition dispatcher',
             JsonRpcCreate::FIELD__REPO_NAME => ITransitionDispatcherRepository::class,
             JsonRpcCreate::FIELD__ITEM_CLASS => TransitionDispatcher::class,
             JsonRpcCreate::FIELD__ITEM_DATA => $jRpcData['data'] ?? []

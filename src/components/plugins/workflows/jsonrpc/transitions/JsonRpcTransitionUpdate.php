@@ -25,6 +25,7 @@ class JsonRpcTransitionUpdate extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
         $update = new JsonRpcUpdate([
+            JsonRpcUpdate::FIELD__ENTITY_NAME => 'transition',
             JsonRpcUpdate::FIELD__REPO_NAME => IWorkflowTransitionRepository::class,
             JsonRpcUpdate::FIELD__ITEM_CLASS => WorkflowTransition::class,
             JsonRpcUpdate::FIELD__ITEM_DATA => $jRpcData['data'] ?? []

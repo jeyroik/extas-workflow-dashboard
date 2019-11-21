@@ -11,6 +11,12 @@ interface IJsonRpcCreate extends IJsonRpcIndex
 {
     const FIELD__ITEM_CLASS = 'item_class';
     const FIELD__ITEM_DATA = 'item_data';
+    const FIELD__ENTITY_NAME = 'entity_name';
+
+    /**
+     * @return string
+     */
+    public function getEntityName(): string;
 
     /**
      * @return string
@@ -21,6 +27,13 @@ interface IJsonRpcCreate extends IJsonRpcIndex
      * @return array
      */
     public function getItemData(): array;
+
+    /**
+     * @param string $entityName
+     *
+     * @return IJsonRpcCreate
+     */
+    public function setEntityName(string $entityName): IJsonRpcCreate;
 
     /**
      * @param string $className

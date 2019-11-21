@@ -25,6 +25,7 @@ class JsonRpcStateUpdate extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
         $update = new JsonRpcUpdate([
+            JsonRpcUpdate::FIELD__ENTITY_NAME => 'state',
             JsonRpcUpdate::FIELD__REPO_NAME => IWorkflowStateRepository::class,
             JsonRpcUpdate::FIELD__ITEM_CLASS => WorkflowState::class,
             JsonRpcUpdate::FIELD__ITEM_DATA => $jRpcData['data'] ?? []

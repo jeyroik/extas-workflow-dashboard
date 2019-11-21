@@ -25,6 +25,7 @@ class JsonRpcEntityTemplateUpdate extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
         $update = new JsonRpcUpdate([
+            JsonRpcUpdate::FIELD__ENTITY_NAME => 'entity template',
             JsonRpcUpdate::FIELD__REPO_NAME => IWorkflowEntityTemplateRepository::class,
             JsonRpcUpdate::FIELD__ITEM_CLASS => WorkflowEntityTemplate::class,
             JsonRpcUpdate::FIELD__ITEM_DATA => $jRpcData['data'] ?? []

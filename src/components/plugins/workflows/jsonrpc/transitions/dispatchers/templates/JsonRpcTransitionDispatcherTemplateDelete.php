@@ -25,6 +25,7 @@ class JsonRpcTransitionDispatcherTemplateDelete extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
         $operation = new JsonRpcDelete([
+            JsonRpcDelete::FIELD__ENTITY_NAME => 'transition dispatcher template',
             JsonRpcDelete::FIELD__REPO_NAME => ITransitionDispatcherTemplateRepository::class,
             JsonRpcDelete::FIELD__ITEM_CLASS => TransitionDispatcherTemplate::class,
             JsonRpcDelete::FIELD__ITEM_DATA => $jRpcData

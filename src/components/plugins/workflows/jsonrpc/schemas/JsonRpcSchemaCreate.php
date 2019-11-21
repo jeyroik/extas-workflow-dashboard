@@ -25,6 +25,7 @@ class JsonRpcSchemaCreate extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
         $create = new JsonRpcCreate([
+            JsonRpcCreate::FIELD__ENTITY_NAME => 'schema',
             JsonRpcCreate::FIELD__REPO_NAME => IWorkflowSchemaRepository::class,
             JsonRpcCreate::FIELD__ITEM_CLASS => WorkflowSchema::class,
             JsonRpcCreate::FIELD__ITEM_DATA => $jRpcData['data'] ?? []

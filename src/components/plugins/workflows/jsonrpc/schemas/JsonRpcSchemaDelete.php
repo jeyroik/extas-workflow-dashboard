@@ -25,6 +25,7 @@ class JsonRpcSchemaDelete extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
         $operation = new JsonRpcDelete([
+            JsonRpcDelete::FIELD__ENTITY_NAME => 'schema',
             JsonRpcDelete::FIELD__REPO_NAME => IWorkflowSchemaRepository::class,
             JsonRpcDelete::FIELD__ITEM_CLASS => WorkflowSchema::class,
             JsonRpcDelete::FIELD__ITEM_DATA => $jRpcData

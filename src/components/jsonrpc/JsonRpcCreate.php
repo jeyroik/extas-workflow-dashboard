@@ -38,19 +38,26 @@ class JsonRpcCreate extends JsonRpcIndex implements IJsonRpcCreate
             $response->getBody()->write(json_encode([
                 'id' => $jRpcData['id'] ?? '',
                 'error' => [
-                    'code' => 1010,
+                    'code' => JsonRpcErrors::ERROR__ALREADY_EXIST,
                     'data' => [],
-                    'message' => 'Already exist'
+                    'message' => ucfirst($this->getEntityName()) . ' already exist'
                 ]
             ]));
         } else {
             $repo->create($item);
-            $response
-                ->getBody()->write(json_encode([
-                    'id' => $jRpcData['id'] ?? '',
-                    'result' => $item->__toArray()
-                ]));
+            $response->getBody()->write(json_encode([
+                'id' => $jRpcData['id'] ?? '',
+                'result' => $item->__toArray()
+            ]));
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getEntityName(): string
+    {
+        return $this->config[static::FIELD__ENTITY_NAME] ?? '';
     }
 
     /**
@@ -67,6 +74,18 @@ class JsonRpcCreate extends JsonRpcIndex implements IJsonRpcCreate
     public function getItemData(): array
     {
         return (array) ($this->config[static::FIELD__ITEM_DATA] ?? []);
+    }
+
+    /**
+     * @param string $entityName
+     *
+     * @return IJsonRpcCreate
+     */
+    public function setEntityName(string $entityName): IJsonRpcCreate
+    {
+        $this->config[static::FIELD__ENTITY_NAME] = $entityName;
+
+        return $this;
     }
 
     /**

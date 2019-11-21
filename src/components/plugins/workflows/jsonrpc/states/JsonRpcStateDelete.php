@@ -25,6 +25,7 @@ class JsonRpcStateDelete extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
         $operation = new JsonRpcDelete([
+            JsonRpcDelete::FIELD__ENTITY_NAME => 'state',
             JsonRpcDelete::FIELD__REPO_NAME => IWorkflowStateRepository::class,
             JsonRpcDelete::FIELD__ITEM_CLASS => WorkflowState::class,
             JsonRpcDelete::FIELD__ITEM_DATA => $jRpcData

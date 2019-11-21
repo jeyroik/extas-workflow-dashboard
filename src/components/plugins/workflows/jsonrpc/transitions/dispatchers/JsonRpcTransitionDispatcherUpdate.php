@@ -25,6 +25,7 @@ class JsonRpcTransitionDispatcherUpdate extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
         $update = new JsonRpcUpdate([
+            JsonRpcUpdate::FIELD__ENTITY_NAME => 'transition dispatcher',
             JsonRpcUpdate::FIELD__REPO_NAME => ITransitionDispatcherRepository::class,
             JsonRpcUpdate::FIELD__ITEM_CLASS => TransitionDispatcher::class,
             JsonRpcUpdate::FIELD__ITEM_DATA => $jRpcData['data'] ?? []

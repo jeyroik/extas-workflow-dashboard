@@ -71,8 +71,7 @@
               "type": "array"
             }
           }
-        }
-      }
+
     }
   },
   "state.update": {

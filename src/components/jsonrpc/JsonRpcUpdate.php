@@ -34,22 +34,20 @@ class JsonRpcUpdate extends JsonRpcCreate implements IJsonRpcCreate
         $item = new $itemClass($this->getItemData());
         $exist = $repo->one([IHasName::FIELD__NAME => $item->getName()]);
         if (!$exist) {
-            $response
-                ->getBody()->write(json_encode([
-                    'id' => $jRpcData['id'] ?? '',
-                    'error' => [
-                        'code' => 10404,
-                        'data' => [],
-                        'message' => 'Unknown'
-                    ]
-                ]));
+            $response->getBody()->write(json_encode([
+                'id' => $jRpcData['id'] ?? '',
+                'error' => [
+                    'code' => JsonRpcErrors::ERROR__UNKNOWN_ENTITY,
+                    'data' => [],
+                    'message' => 'Unknown ' . $this->getEntityName()
+                ]
+            ]));
         } else {
             $repo->update($item);
-            $response
-                ->getBody()->write(json_encode([
-                    'id' => $jRpcData['id'] ?? '',
-                    'result' => [$item->__toArray()]
-                ]));
+            $response->getBody()->write(json_encode([
+                'id' => $jRpcData['id'] ?? '',
+                'result' => [$item->__toArray()]
+            ]));
         }
     }
 

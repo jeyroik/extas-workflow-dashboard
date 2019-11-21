@@ -25,12 +25,14 @@ class JsonRpcErrors
     const ERROR__UNKNOWN_SCHEMA = 10701;
     const ERROR__UNKNOWN_TEMPLATE = 10702;
     const ERROR__CAN_NOT_TRANSIT = 10801;
+    const ERROR__VALIDATION_FAILED = 1011;
 
     /**
      * @var array
      */
     protected static $errorMap = [
         1010 => 'Already exist',
+        1011 => 'Validation failed',
         10201 => 'There are transitions to this state. Please, delete them first',
         10202 => 'There are transitions from this state. Please, delete them first',
         10301 => 'There are schemas with this transition. Please, delete transition from them first',

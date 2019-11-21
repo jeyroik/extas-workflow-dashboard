@@ -25,6 +25,7 @@ class JsonRpcStateCreate extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
         $create = new JsonRpcCreate([
+            JsonRpcCreate::FIELD__ENTITY_NAME => 'state',
             JsonRpcCreate::FIELD__REPO_NAME => IWorkflowStateRepository::class,
             JsonRpcCreate::FIELD__ITEM_CLASS => WorkflowState::class,
             JsonRpcCreate::FIELD__ITEM_DATA => $jRpcData['data'] ?? []
