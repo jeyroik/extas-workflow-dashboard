@@ -25,15 +25,14 @@ class JsonRpcValidationPlugin extends Plugin
         $response = $response
             ->withHeader('Content-type', 'application/json')
             ->withStatus(200);
-        $response
-            ->getBody()->write(json_encode([
-                'id' => $jRpcData['id'] ?? '',
-                'error' => [
-                    'code' => $eCode,
-                    'data' => $eData,
-                    'message' => JsonRpcErrors::errorText($eCode)
-                ]
-            ]));
+        $response->getBody()->write(json_encode([
+            'id' => $jRpcData['id'] ?? '',
+            'error' => [
+                'code' => $eCode,
+                'data' => $eData,
+                'message' => JsonRpcErrors::errorText($eCode)
+            ]
+        ]));
         $this->markJRpcDataWithError($jRpcData);
     }
 

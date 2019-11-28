@@ -71,7 +71,8 @@
               "type": "array"
             }
           }
-
+        }
+      }
     }
   },
   "state.update": {
@@ -180,6 +181,28 @@
         },
         "state_name": {
           "type": "string"
+        },
+        "entity": {
+          "type": "object"
+        },
+        "context": {
+          "type": "object"
+        },
+        "filter": {
+          "type": "object",
+          "format": "filter",
+          "properties": {
+            "transition_name": {
+              "type": "string"
+            },
+            "$in": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Один из"
+            }
+          }
         }
       }
     },

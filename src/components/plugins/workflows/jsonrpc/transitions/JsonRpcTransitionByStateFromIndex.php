@@ -4,6 +4,9 @@ namespace extas\components\plugins\workflows\jsonrpc\transitions;
 use extas\components\jsonrpc\JsonRpcErrors;
 use extas\components\plugins\Plugin;
 use extas\components\SystemContainer;
+use extas\components\workflows\entities\WorkflowEntityContext;
+use extas\components\workflows\transitions\results\TransitionResult;
+use extas\components\workflows\Workflow;
 use extas\interfaces\workflows\schemas\IWorkflowSchema;
 use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
 use extas\interfaces\workflows\transitions\IWorkflowTransition;
@@ -49,6 +52,8 @@ class JsonRpcTransitionByStateFromIndex extends Plugin
                 ]
             ]));
         } else {
+            $entity = $schema->getEntityTemplate()->buildClassWithParameters($jRpcData['entity'] ?? []);
+            $workflow = new Workflow();
             $repo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
             $stateName = $jRpcData['state_name'] ?? '';
             $transitions = $repo->all([
@@ -57,8 +62,20 @@ class JsonRpcTransitionByStateFromIndex extends Plugin
             ]);
 
             $result = [];
+            $context = new WorkflowEntityContext($jRpcData['context'] ?? []);
+            $filter = $jRpcData['filter'] ?? [];
+            $filterNames = isset($filter['transition_name'], $filter['transition_name']['$in'])
+                ? array_flip($filter['transition_name']['$in'])
+                : [];
+
             foreach ($transitions as $transition) {
-                $result[] = $transition->__toArray();
+                $transitionResult = new TransitionResult();
+                if ($workflow->isTransitionValid($transition, $entity, $schema, $context, $transitionResult)) {
+                    if (!empty($filterNames) && !isset($filterNames[$transition->getName()])) {
+                        continue;
+                    }
+                    $result[] = $transition->__toArray();
+                }
             }
 
             $response->getBody()->write(json_encode([
