@@ -14,8 +14,43 @@
   ],
   "plugins": [
     {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\JsonRpcSpecsOperationListPlugin",
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\specs\\SpecsOperationListPlugin",
       "stage": "run.specs.operation.all"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\specs\\SpecsOperationOnePlugin",
+      "stage": [
+        "run.specs.entity.template.create",
+        "run.specs.entity.template.update",
+        "run.specs.entity.template.delete",
+        "run.specs.entity.template.index",
+        "run.specs.entity.transit",
+        "run.specs.transition.create",
+        "run.specs.transition.update",
+        "run.specs.transition.delete",
+        "run.specs.transition.index",
+        "run.specs.transition.load",
+        "run.specs.transition.by_state_from.index",
+        "run.specs.transition.dispatcher.create",
+        "run.specs.transition.dispatcher.update",
+        "run.specs.transition.dispatcher.delete",
+        "run.specs.transition.dispatcher.index",
+        "run.specs.transition.dispatcher.template.create",
+        "run.specs.transition.dispatcher.template.update",
+        "run.specs.transition.dispatcher.template.delete",
+        "run.specs.transition.dispatcher.template.index",
+        "run.specs.schema.create",
+        "run.specs.schema.update",
+        "run.specs.schema.delete",
+        "run.specs.schema.index",
+        "run.specs.schema.transition.add",
+        "run.specs.schema.transition.remove",
+        "run.specs.state.create",
+        "run.specs.state.update",
+        "run.specs.state.delete",
+        "run.specs.state.index",
+        "run.specs.state.load"
+      ]
     },
     {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\entities\\templates\\JsonRpcEntityTemplateCreate",

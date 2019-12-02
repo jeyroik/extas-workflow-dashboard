@@ -1,18 +1,18 @@
 <?php
-namespace extas\components\plugins\workflows\jsonrpc;
+namespace extas\components\plugins\workflows\jsonrpc\specs;
 
 use extas\components\plugins\Plugin;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Class JsonRpcSpecsOperationListPlugin
+ * Class SpecsOperationListPlugin
  *
  * @stage run.specs.operation.all
- * @package extas\components\plugins\workflows
+ * @package extas\components\plugins\workflows\jsonrpc\specs
  * @author jeyroik@gmail.com
  */
-class JsonRpcSpecsOperationListPlugin extends Plugin
+class SpecsOperationListPlugin extends Plugin
 {
     /**
      * @param RequestInterface $request

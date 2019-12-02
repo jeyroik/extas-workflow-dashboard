@@ -30,7 +30,7 @@ $app->post('/api/jsonrpc', function (Request $request, Response $response, array
     return $response;
 });
 
-$app->any('/specs/', function (Request $request, Response $response, array $args) {
+$app->any('/specs', function (Request $request, Response $response, array $args) {
     $jrpcRequest = json_decode($request->getBody()->getContents(), true);
     $method = $jrpcRequest['method'] ?? 'app.index';
     $pluginStub = new \extas\components\plugins\Plugin();
