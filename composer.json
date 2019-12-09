@@ -5,7 +5,8 @@
     "slim/slim": "^3.0",
     "jeyroik/extas-workflow": "0.9.*",
     "jeyroik/extas-installer": "*",
-    "jeyroik/extas-expands": "*"
+    "jeyroik/extas-expands": "*",
+    "jeyroik/extas-protocols": "*"
   },
   "autoload": {
     "psr-4": {
