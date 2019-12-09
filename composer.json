@@ -6,7 +6,8 @@
     "jeyroik/extas-workflow": "0.9.*",
     "jeyroik/extas-installer": "*",
     "jeyroik/extas-expands": "*",
-    "jeyroik/extas-protocols": "*"
+    "jeyroik/extas-protocols": "*",
+    "jeyroik/extas-servers": "*"
   },
   "autoload": {
     "psr-4": {
