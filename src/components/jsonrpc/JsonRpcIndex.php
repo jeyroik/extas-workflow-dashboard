@@ -42,10 +42,10 @@ class JsonRpcIndex extends Item implements IJsonRpcIndex
 
         if ($this->getServerRequest()) {
             $box = Expander::getExpandingBox('index', $this->getItemName());
-            $box->setData(['schemas' => $items]);
+            $box->setData([$this->getItemName() . 's' => $items]);
             $box->expand($this->getServerRequest(), $this->getServerResponse());
             $box->pack();
-            $items = $box->__toArray()['schemas'];
+            $items = $box->getValue()[$this->getItemName() . 's'];
         }
 
         $response = $response

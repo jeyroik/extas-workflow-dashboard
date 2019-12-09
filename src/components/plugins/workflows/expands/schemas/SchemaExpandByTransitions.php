@@ -45,7 +45,7 @@ class SchemaExpandByTransitions extends PluginExpandAbstract
             $transitionsByName[$transition->getName()] = $transition->__toArray();
         }
 
-        foreach ($schemas as $schema) {
+        foreach ($schemas as &$schema) {
             foreach ($schema[IWorkflowSchema::FIELD__TRANSITIONS] as $index => $transition) {
                 $schema[IWorkflowSchema::FIELD__TRANSITIONS][$index] = $transitionsByName[$transition] ?? [
                     IWorkflowTransition::FIELD__NAME => $transition,
@@ -70,6 +70,6 @@ class SchemaExpandByTransitions extends PluginExpandAbstract
      */
     protected function getExpandName(): string
     {
-        return 'schema.transitions';
+        return 'transitions';
     }
 }
