@@ -1,11 +1,14 @@
 <?php
 namespace extas\components\jsonrpc;
 
+use extas\components\expands\Expander;
 use extas\components\Item;
 use extas\components\SystemContainer;
 use extas\interfaces\IItem;
 use extas\interfaces\jsonrpc\IJsonRpcIndex;
 use extas\interfaces\repositories\IRepository;
+use extas\interfaces\servers\requests\IServerRequest;
+use extas\interfaces\servers\responses\IServerResponse;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -37,6 +40,14 @@ class JsonRpcIndex extends Item implements IJsonRpcIndex
             }
         }
 
+        if ($this->getServerRequest()) {
+            $box = Expander::getExpandingBox('index', $this->getItemName());
+            $box->setData(['schemas' => $items]);
+            $box->expand($this->getServerRequest(), $this->getServerResponse());
+            $box->pack();
+            $items = $box->__toArray()['schemas'];
+        }
+
         $response = $response
             ->withHeader('Content-type', 'application/json')
             ->withStatus(200);
@@ -48,6 +59,30 @@ class JsonRpcIndex extends Item implements IJsonRpcIndex
                     'total' => count($items)
                 ]
             ]));
+    }
+
+    /**
+     * @return IServerRequest|null
+     */
+    public function getServerRequest(): ?IServerRequest
+    {
+        return $this->config[static::FIELD__SERVER_REQUEST] ?? null;
+    }
+
+    /**
+     * @return IServerResponse|null
+     */
+    public function getServerResponse(): ?IServerResponse
+    {
+        return $this->config[static::FIELD__SERVER_RESPONSE] ?? null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getItemName(): string
+    {
+        return $this->config[static::FIELD__ITEM_NAME] ?? '';
     }
 
     /**
@@ -64,6 +99,42 @@ class JsonRpcIndex extends Item implements IJsonRpcIndex
     public function getRepoName(): string
     {
         return $this->config[static::FIELD__REPO_NAME] ?? '';
+    }
+
+    /**
+     * @param IServerRequest $request
+     *
+     * @return IJsonRpcIndex
+     */
+    public function setServerRequest(IServerRequest $request): IJsonRpcIndex
+    {
+        $this->config[static::FIELD__SERVER_REQUEST] = $request;
+
+        return $this;
+    }
+
+    /**
+     * @param IServerResponse $response
+     *
+     * @return IJsonRpcIndex
+     */
+    public function setServerResponse(IServerResponse $response): IJsonRpcIndex
+    {
+        $this->config[static::FIELD__SERVER_RESPONSE] = $response;
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return IJsonRpcIndex
+     */
+    public function setItemName(string $name): IJsonRpcIndex
+    {
+        $this->config[static::FIELD__ITEM_NAME] = $name;
+
+        return $this;
     }
 
     /**
