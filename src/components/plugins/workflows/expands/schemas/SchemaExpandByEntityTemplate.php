@@ -9,7 +9,6 @@ use extas\interfaces\servers\responses\IServerResponse;
 use extas\interfaces\workflows\entities\IWorkflowEntityTemplate;
 use extas\interfaces\workflows\entities\IWorkflowEntityTemplateRepository;
 use extas\interfaces\workflows\schemas\IWorkflowSchema;
-use extas\interfaces\workflows\transitions\IWorkflowTransition;
 
 /**
  * Class SchemaExpandByEntityTemplate
@@ -49,8 +48,8 @@ class SchemaExpandByEntityTemplate extends PluginExpandAbstract
         foreach ($schemas as &$schema) {
             $template = $schema[IWorkflowSchema::FIELD__ENTITY_TEMPLATE];
             $schema[IWorkflowSchema::FIELD__ENTITY_TEMPLATE] = $byName[$template] ?? [
-                IWorkflowTransition::FIELD__NAME => $template,
-                IWorkflowTransition::FIELD__TITLE => 'Ошибка: Неизвестный шаблон сущности [' . $template . ']'
+                IWorkflowEntityTemplate::FIELD__NAME => $template,
+                IWorkflowEntityTemplate::FIELD__TITLE => 'Ошибка: Неизвестный шаблон сущности [' . $template . ']'
             ];
         }
 

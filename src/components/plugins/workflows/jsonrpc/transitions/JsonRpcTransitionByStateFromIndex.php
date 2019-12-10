@@ -7,6 +7,7 @@ use extas\components\SystemContainer;
 use extas\components\workflows\entities\WorkflowEntityContext;
 use extas\components\workflows\transitions\results\TransitionResult;
 use extas\components\workflows\Workflow;
+use extas\interfaces\workflows\entities\IWorkflowEntity;
 use extas\interfaces\workflows\schemas\IWorkflowSchema;
 use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
 use extas\interfaces\workflows\transitions\IWorkflowTransition;
@@ -30,36 +31,16 @@ class JsonRpcTransitionByStateFromIndex extends Plugin
      */
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
     {
-        /**
-         * @var $schemaRepo IWorkflowSchemaRepository
-         * @var $schema IWorkflowSchema
-         * @var $repo IWorkflowTransitionRepository
-         * @var $transitions IWorkflowTransition[]
-         */
-        $schemaRepo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
-        $schema = $schemaRepo->one([IWorkflowSchema::FIELD__NAME => $jRpcData['schema_name'] ?? '']);
+        $schema = $this->getSchema($jRpcData);
         $response = $response
             ->withHeader('Content-type', 'application/json')
             ->withStatus(200);
 
         if (!$schema) {
-            $response->getBody()->write(json_encode([
-                'id' => $jRpcData['id'] ?? '',
-                'error' => [
-                    'code' => JsonRpcErrors::ERROR__UNKNOWN_SCHEMA,
-                    'data' => [IWorkflowSchema::FIELD__NAME => $jRpcData['schema_name'] ?? ''],
-                    'message' => 'Unknown schema'
-                ]
-            ]));
+            $response->getBody()->write($this->fail($jRpcData));
         } else {
             $entity = $schema->getEntityTemplate()->buildClassWithParameters($jRpcData['entity'] ?? []);
-            $workflow = new Workflow();
-            $repo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
-            $stateName = $jRpcData['state_name'] ?? '';
-            $transitions = $repo->all([
-                IWorkflowTransition::FIELD__NAME => $schema->getTransitionsNames(),
-                IWorkflowTransition::FIELD__STATE_FROM => $stateName
-            ]);
+            $transitions = $this->getTransitions($jRpcData, $schema);
 
             $result = [];
             $context = new WorkflowEntityContext($jRpcData['context'] ?? []);
@@ -69,8 +50,7 @@ class JsonRpcTransitionByStateFromIndex extends Plugin
                 : [];
 
             foreach ($transitions as $transition) {
-                $transitionResult = new TransitionResult();
-                if ($workflow->isTransitionValid($transition, $entity, $schema, $context, $transitionResult)) {
+                if ($this->isValid($transition, $entity, $schema, $context)) {
                     if (!empty($filterNames) && !isset($filterNames[$transition->getName()])) {
                         continue;
                     }
@@ -83,5 +63,80 @@ class JsonRpcTransitionByStateFromIndex extends Plugin
                 'result' => $result
             ]));
         }
+    }
+
+    /**
+     * @param IWorkflowTransition $transition
+     * @param IWorkflowEntity $entity
+     * @param IWorkflowSchema $schema
+     * @param $context
+     * @return bool
+     */
+    protected function isValid($transition, $entity, $schema, $context): bool
+    {
+        $workflow = new Workflow();
+        $transitionResult = new TransitionResult();
+        $transitionResult = $workflow->isTransitionValid(
+            $transition,
+            $entity,
+            $schema,
+            $context,
+            $transitionResult
+        );
+
+        return $transitionResult->isSuccess();
+    }
+
+    /**
+     * @param $jRpcData
+     *
+     * @return string
+     */
+    protected function fail($jRpcData)
+    {
+        return json_encode([
+            'id' => $jRpcData['id'] ?? '',
+            'error' => [
+                'code' => JsonRpcErrors::ERROR__UNKNOWN_SCHEMA,
+                'data' => [IWorkflowSchema::FIELD__NAME => $jRpcData['schema_name'] ?? ''],
+                'message' => 'Unknown schema'
+            ]
+        ]);
+    }
+
+    /**
+     * @param array $jRpcData
+     *
+     * @return IWorkflowSchema|null
+     */
+    protected function getSchema($jRpcData): ?IWorkflowSchema
+    {
+        /**
+         * @var $schemaRepo IWorkflowSchemaRepository
+         * @var $schema IWorkflowSchema
+         */
+        $schemaRepo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
+        return $schemaRepo->one([IWorkflowSchema::FIELD__NAME => $jRpcData['schema_name'] ?? '']);
+    }
+
+    /**
+     * @param array $jRpcData
+     * @param IWorkflowSchema $schema
+     *
+     * @return array|IWorkflowTransition[]
+     */
+    protected function getTransitions(array $jRpcData, IWorkflowSchema $schema): array
+    {
+        /**
+         * @var $repo IWorkflowTransitionRepository
+         * @var $transitions IWorkflowTransition[]
+         */
+        $repo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
+        $stateName = $jRpcData['state_name'] ?? '';
+
+        return $repo->all([
+            IWorkflowTransition::FIELD__NAME => $schema->getTransitionsNames(),
+            IWorkflowTransition::FIELD__STATE_FROM => $stateName
+        ]);
     }
 }
