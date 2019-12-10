@@ -3,9 +3,17 @@ namespace extas\components\jsonrpc;
 
 use extas\components\expands\Expander;
 use extas\components\Item;
+use extas\components\plugins\workflows\conditions\ConditionFieldValueCompare;
 use extas\components\SystemContainer;
+use extas\components\workflows\entities\WorkflowEntity;
+use extas\components\workflows\entities\WorkflowEntityContext;
+use extas\components\workflows\schemas\WorkflowSchema;
+use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
+use extas\components\workflows\transitions\results\TransitionResult;
+use extas\components\workflows\transitions\WorkflowTransition;
 use extas\interfaces\IItem;
 use extas\interfaces\jsonrpc\IJsonRpcIndex;
+use extas\interfaces\parameters\IParameter;
 use extas\interfaces\repositories\IRepository;
 use extas\interfaces\servers\requests\IServerRequest;
 use extas\interfaces\servers\responses\IServerResponse;
@@ -30,6 +38,7 @@ class JsonRpcIndex extends Item implements IJsonRpcIndex
          * @var $records IItem[]
          */
         $repo = SystemContainer::getItem($this->getRepoName());
+
         $records = $repo->all([]);
         $items = [];
         $limit = $this->getLimit();
@@ -39,6 +48,8 @@ class JsonRpcIndex extends Item implements IJsonRpcIndex
                 $items[] = $record->__toArray();
             }
         }
+
+        $items = $this->filter($jRpcData, $items);
 
         if ($this->getServerRequest()) {
             $box = Expander::getExpandingBox('index', $this->getItemName());
@@ -160,6 +171,81 @@ class JsonRpcIndex extends Item implements IJsonRpcIndex
         $this->config[static::FIELD__REPO_NAME] = $repoName;
 
         return $this;
+    }
+
+    /**
+     * @param array $jRpcData
+     * @param IItem[] $items
+     *
+     * @return array
+     */
+    protected function filter($jRpcData, $items)
+    {
+        $filter = $jRpcData['filter'] ?? [];
+
+        if (empty($filter)) {
+            return $items;
+        }
+
+        $result = [];
+        $comparePlugin = new ConditionFieldValueCompare();
+        $fakeTransition = new WorkflowTransition();
+        $fakeContext = new WorkflowEntityContext();
+        $fakeSchema = new WorkflowSchema();
+
+        foreach ($items as $item) {
+            foreach ($filter as $fieldName => $filterOptions) {
+                foreach ($filterOptions as $filterCompare => $filterValue) {
+                    $transitionResult = new TransitionResult();
+                    $filterCompare = str_replace('$', '', $filterCompare);
+                    $comparePlugin(
+                        $this->createDispatcher($fieldName, $filterValue, $filterCompare),
+                        $fakeTransition,
+                        new WorkflowEntity($item->__toArray()),
+                        $fakeSchema,
+                        $fakeContext,
+                        $transitionResult
+                    );
+
+                    if ($transitionResult->isSuccess()) {
+                        $result[] = $item;
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $fieldName
+     * @param $filterValue
+     * @param $filterCompare
+     *
+     * @return TransitionDispatcher
+     */
+    protected function createDispatcher($fieldName, $filterValue, $filterCompare)
+    {
+        return new TransitionDispatcher([
+            TransitionDispatcher::FIELD__PARAMETERS => [
+                [
+                    IParameter::FIELD__NAME => 'field_name',
+                    IParameter::FIELD__VALUE => $fieldName
+                ],
+                [
+                    IParameter::FIELD__NAME => 'field_value',
+                    IParameter::FIELD__VALUE => $filterValue
+                ],
+                [
+                    IParameter::FIELD__NAME => 'field_compare',
+                    IParameter::FIELD__VALUE => $filterCompare
+                ],
+                [
+                    IParameter::FIELD__NAME => 'field_type',
+                    IParameter::FIELD__VALUE => 'string'
+                ]
+            ]
+        ]);
     }
 
     /**
