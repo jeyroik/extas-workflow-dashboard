@@ -201,7 +201,7 @@ class JsonRpcIndex extends Item implements IJsonRpcIndex
                     $comparePlugin(
                         $this->createDispatcher($fieldName, $filterValue, $filterCompare),
                         $fakeTransition,
-                        new WorkflowEntity($item->__toArray()),
+                        new WorkflowEntity($item),
                         $fakeSchema,
                         $fakeContext,
                         $transitionResult
