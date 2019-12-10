@@ -18,6 +18,10 @@
       "stage": "expand.index.schema"
     },
     {
+      "class": "extas\\components\\plugins\\workflows\\expands\\schemas\\SchemaExpandByEntityTemplate",
+      "stage": "expand.index.schema"
+    },
+    {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\specs\\SpecsOperationListPlugin",
       "stage": "run.specs.operation.all"
     },
