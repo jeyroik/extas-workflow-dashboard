@@ -31,8 +31,13 @@ class SchemaExpandByEntityTemplate extends PluginExpandAbstract
          * @var $repo IWorkflowEntityTemplateRepository
          * @var $items IWorkflowEntityTemplate[]
          */
-        $schemasIndex = $parent->getData();
-        $schemas = $schemasIndex['schemas'] ?? [];
+        $value = $parent->getValue([]);
+        if (empty($value)) {
+            $schemasIndex = $parent->getData();
+            $schemas = $schemasIndex['schemas'] ?? [];
+        } else {
+            $schemas = $value['schemas'];
+        }
         $names = [];
         foreach ($schemas as $schema) {
             $names[] = $schema[IWorkflowSchema::FIELD__ENTITY_TEMPLATE];

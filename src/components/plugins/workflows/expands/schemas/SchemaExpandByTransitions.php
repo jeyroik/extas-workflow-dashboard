@@ -31,8 +31,13 @@ class SchemaExpandByTransitions extends PluginExpandAbstract
          * @var $transitRepo IWorkflowTransitionRepository
          * @var $transitions IWorkflowTransition[]
          */
-        $schemasIndex = $parent->getData();
-        $schemas = $schemasIndex['schemas'] ?? [];
+        $value = $parent->getValue([]);
+        if (empty($value)) {
+            $schemasIndex = $parent->getData();
+            $schemas = $schemasIndex['schemas'] ?? [];
+        } else {
+            $schemas = $value['schemas'];
+        }
         $transitionsNames = [];
         foreach ($schemas as $schema) {
             $transitionsNames = array_merge($transitionsNames, $schema[IWorkflowSchema::FIELD__TRANSITIONS]);
