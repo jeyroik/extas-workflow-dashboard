@@ -43,6 +43,11 @@ class JsonRpcUpdate extends JsonRpcCreate implements IJsonRpcCreate
                 ]
             ]));
         } else {
+            foreach ($exist as $field => $value) {
+                if (!isset($item[$field])) {
+                    $item[$field] = $value;
+                }
+            }
             $repo->update($item);
             $response->getBody()->write(json_encode([
                 'id' => $jRpcData['id'] ?? '',
