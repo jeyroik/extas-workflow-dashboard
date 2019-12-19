@@ -605,6 +605,9 @@
           "name": {
             "type": "string"
           },
+          "type": {
+            "type": "string"
+          },
           "title": {
             "type": "string"
           },
@@ -615,7 +618,24 @@
             "type": "string"
           },
           "parameters": {
-            "type": "array"
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
@@ -625,6 +645,9 @@
       "type": "object",
       "properties": {
         "name": {
+          "type": "string"
+        },
+        "type": {
           "type": "string"
         },
         "title": {
@@ -637,7 +660,24 @@
           "type": "string"
         },
         "parameters": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          }
         }
       }
     }
@@ -660,6 +700,9 @@
             "name": {
               "type": "string"
             },
+            "type": {
+              "type": "string"
+            },
             "title": {
               "type": "string"
             },
@@ -670,7 +713,24 @@
               "type": "string"
             },
             "parameters": {
-              "type": "array"
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           }
         }
@@ -685,6 +745,9 @@
           "name": {
             "type": "string"
           },
+          "type": {
+            "type": "string"
+          },
           "title": {
             "type": "string"
           },
@@ -695,7 +758,24 @@
             "type": "string"
           },
           "parameters": {
-            "type": "array"
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
@@ -709,6 +789,9 @@
           "name": {
             "type": "string"
           },
+          "type": {
+            "type": "string"
+          },
           "title": {
             "type": "string"
           },
@@ -719,7 +802,24 @@
             "type": "string"
           },
           "parameters": {
-            "type": "array"
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -741,6 +841,9 @@
             "name": {
               "type": "string"
             },
+            "type": {
+              "type": "string"
+            },
             "title": {
               "type": "string"
             },
@@ -751,7 +854,24 @@
               "type": "string"
             },
             "parameters": {
-              "type": "array"
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           }
         },
