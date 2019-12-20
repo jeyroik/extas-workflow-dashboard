@@ -194,6 +194,7 @@ class JsonRpcIndex extends Item implements IJsonRpcIndex
         $fakeSchema = new WorkflowSchema();
 
         foreach ($items as $item) {
+            $success = true;
             foreach ($filter as $fieldName => $filterOptions) {
                 foreach ($filterOptions as $filterCompare => $filterValue) {
                     $transitionResult = new TransitionResult();
@@ -207,11 +208,14 @@ class JsonRpcIndex extends Item implements IJsonRpcIndex
                         $transitionResult
                     );
 
-                    if ($transitionResult->isSuccess()) {
-                        $result[] = $item;
+                    if (!$transitionResult->isSuccess()) {
+                        $success = false;
+                        break 2;
                     }
                 }
             }
+            
+            $success && ($result[] = $item);
         }
 
         return $result;
