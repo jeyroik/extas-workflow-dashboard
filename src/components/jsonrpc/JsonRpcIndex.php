@@ -214,7 +214,7 @@ class JsonRpcIndex extends Item implements IJsonRpcIndex
                     }
                 }
             }
-            
+
             $success && ($result[] = $item);
         }
 
