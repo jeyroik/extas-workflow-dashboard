@@ -192,6 +192,7 @@ class JsonRpcIndex extends Item implements IJsonRpcIndex
         $fakeTransition = new WorkflowTransition();
         $fakeContext = new WorkflowEntityContext();
         $fakeSchema = new WorkflowSchema();
+        $entityEdited = new WorkflowEntity();
 
         foreach ($items as $item) {
             $success = true;
@@ -205,7 +206,8 @@ class JsonRpcIndex extends Item implements IJsonRpcIndex
                         new WorkflowEntity($item),
                         $fakeSchema,
                         $fakeContext,
-                        $transitionResult
+                        $transitionResult,
+                        $entityEdited
                     );
 
                     if (!$transitionResult->isSuccess()) {
