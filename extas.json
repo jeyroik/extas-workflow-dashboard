@@ -110,7 +110,7 @@
                 "transition_name": {
                   "type": "string"
                 },
-                "$in": {
+                "in": {
                   "type": "array",
                   "items": {
                     "type": "string"
