@@ -1,9 +1,11 @@
 <?php
-namespace extas\components\plugins\workflows\jsonrpc\schemas;
+namespace extas\components\jsonrpc\schemas;
 
-use extas\components\plugins\Plugin;
+use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
+use extas\interfaces\jsonrpc\IRequest;
+use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\workflows\schemas\IWorkflowSchema;
 use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
@@ -12,25 +14,23 @@ use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherTemp
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherTemplateRepository;
 use extas\interfaces\workflows\transitions\IWorkflowTransition;
 use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 /**
- * Class JsonRpcSchemaTransitionAdd
+ * Class SchemaTransitionAdd
  *
  * @stage run.jsonrpc.schema.transition.add
- * @package extas\components\plugins\workflows\jsonrpc\schemas
+ * @package extas\components\jsonrpc\schemas
  * @author jeyroik@gmail.com
  */
-class JsonRpcSchemaTransitionAdd extends Plugin
+class SchemaTransitionAdd extends OperationDispatcher
 {
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @param array $jRpcData
+     * @param IRequest $request
+     * @param IResponse $response
      */
-    public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
+    protected function dispatch(IRequest $request, IResponse &$response)
     {
+        $jRpcData = $request->getData();
         $transitionName = $jRpcData['transition_name'] ?? '';
         $schemaName = $jRpcData['schema_name'] ?? '';
         $dispatchersData = $jRpcData['dispatchers'];
@@ -64,16 +64,7 @@ class JsonRpcSchemaTransitionAdd extends Plugin
             $dispatcherRepo->create($dispatcher);
         }
 
-        $response = $response
-            ->withHeader('Content-type', 'application/json')
-            ->withStatus(200);
-        $response
-            ->getBody()->write(json_encode([
-                'id' => $jRpcData['id'] ?? '',
-                'result' => [
-                    'name' => $transitionName
-                ]
-            ]));
+        $response->success(['name' => $transitionName]);
     }
 
     /**

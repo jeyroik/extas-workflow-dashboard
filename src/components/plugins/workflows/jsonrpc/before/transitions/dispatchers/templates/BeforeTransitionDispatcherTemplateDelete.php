@@ -1,19 +1,17 @@
 <?php
 namespace extas\components\plugins\workflows\jsonrpc\before\transitions\dispatchers\templates;
 
-use extas\components\jsonrpc\JsonRpcErrors;
-use extas\components\plugins\workflows\jsonrpc\JsonRpcValidationPlugin;
+use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcherTemplate;
-use extas\interfaces\IHasName;
+use extas\interfaces\jsonrpc\IRequest;
+use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\repositories\IRepository;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherTemplate;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherTemplateRepository;
 use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class BeforeTransitionDispatcherTemplateDelete
@@ -22,47 +20,29 @@ use Psr\Http\Message\ResponseInterface;
  * @package extas\components\plugins\workflows\jsonrpc\before
  * @author jeyroik@gmail.com
  */
-class BeforeTransitionDispatcherTemplateDelete extends JsonRpcValidationPlugin
+class BeforeTransitionDispatcherTemplateDelete extends OperationDispatcher
 {
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @param array $jRpcData
+     * @param IRequest $request
+     * @param IResponse $response
      */
-    public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
+    protected function dispatch(IRequest $request, IResponse &$response)
     {
-        if (!$this->isThereError($jRpcData)) {
-            $response = $response
-                ->withHeader('Content-type', 'application/json')
-                ->withStatus(200);
-            $item = new TransitionDispatcherTemplate($jRpcData);
+        if (!$response->hasError()) {
+            $item = new TransitionDispatcherTemplate($request->getData());
             /**
              * @var $repo IRepository
              */
             $repo = SystemContainer::getItem(ITransitionDispatcherTemplateRepository::class);
-            if (!$repo->one([IHasName::FIELD__NAME => $item->getName()])) {
-                $this->setResponseError(
-                    $response,
-                    $jRpcData,
-                    JsonRpcErrors::ERROR__UNKNOWN_ENTITY,
-                    [TransitionDispatcherTemplate::FIELD__NAME => $item->getName()]
-                );
-            } else {
-                $this->checkTransitionDispatchers($response, $jRpcData, $item);
-            }
+            $this->checkTransitionDispatchers($response, $item);
         }
     }
 
     /**
-     * @param ResponseInterface $response
-     * @param array $jRpcData
+     * @param IResponse $response
      * @param ITransitionDispatcherTemplate $item
      */
-    protected function checkTransitionDispatchers(
-        ResponseInterface &$response,
-        array &$jRpcData,
-        ITransitionDispatcherTemplate $item
-    )
+    protected function checkTransitionDispatchers(IResponse &$response, ITransitionDispatcherTemplate $item)
     {
         /**
          * @var $repo ITransitionDispatcherRepository
@@ -73,12 +53,7 @@ class BeforeTransitionDispatcherTemplateDelete extends JsonRpcValidationPlugin
             ITransitionDispatcher::FIELD__TEMPLATE => $item->getName()
         ]);
         if (count($dispatchers)) {
-            $this->setResponseError(
-                $response,
-                $jRpcData,
-                JsonRpcErrors::ERROR__THERE_ARE_DISPATCHERS_BY_TEMPLATE,
-                $this->prepare($dispatchers)
-            );
+            $response->error('There are dispatchers for a template', 400);
         }
     }
 }

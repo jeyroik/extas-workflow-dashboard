@@ -1,17 +1,14 @@
 <?php
 namespace extas\components\plugins\workflows\jsonrpc\before\transitions;
 
-use extas\components\jsonrpc\JsonRpcErrors;
-use extas\components\plugins\workflows\jsonrpc\JsonRpcValidationPlugin;
+use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
 use extas\components\workflows\transitions\WorkflowTransition;
-use extas\interfaces\workflows\schemas\IWorkflowSchema;
+use extas\interfaces\jsonrpc\IRequest;
+use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\workflows\states\IWorkflowState;
 use extas\interfaces\workflows\states\IWorkflowStateRepository;
 use extas\interfaces\workflows\transitions\IWorkflowTransition;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class BeforeTransitionCreate
@@ -20,35 +17,25 @@ use Psr\Http\Message\ResponseInterface;
  * @package extas\components\plugins\workflows\jsonrpc\before
  * @author jeyroik@gmail.com
  */
-class BeforeTransitionCreate extends JsonRpcValidationPlugin
+class BeforeTransitionCreate extends OperationDispatcher
 {
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @param array $jRpcData
+     * @param IRequest $request
+     * @param IResponse $response
      */
-    public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
+    protected function dispatch(IRequest $request, IResponse &$response)
     {
-        if (!$this->isThereError($jRpcData)) {
-            $item = new WorkflowTransition($jRpcData['data']);
-            /**
-             * @var $repo IWorkflowTransitionRepository
-             */
-            $repo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
-            if ($repo->one([IWorkflowSchema::FIELD__NAME => $item->getName()])) {
-                $this->setResponseError($response, $jRpcData, JsonRpcErrors::ERROR__ALREADY_EXIST);
-            } else {
-                $this->checkStates($response, $jRpcData, $item);
-            }
+        if (!$response->hasError()) {
+            $item = new WorkflowTransition($request->getData());
+            $this->checkStates($response, $item);
         }
     }
 
     /**
-     * @param ResponseInterface $response
-     * @param array $jRpcData
+     * @param IResponse $response
      * @param IWorkflowTransition $item
      */
-    protected function checkStates(ResponseInterface &$response, array &$jRpcData, IWorkflowTransition $item)
+    protected function checkStates(IResponse &$response, IWorkflowTransition $item)
     {
         $states = [
             $item->getStateFromName(),
@@ -62,25 +49,13 @@ class BeforeTransitionCreate extends JsonRpcValidationPlugin
         $wStates = $repo->all([IWorkflowState::FIELD__NAME => $states]);
 
         if ($item->getStateFromName() == $item->getStateToName()) {
-            $this->setResponseError(
-                $response,
-                $jRpcData,
-                JsonRpcErrors::ERROR__THE_SAME_STATE,
-                [
-                    IWorkflowState::FIELD__NAME => $item->getStateToName()
-                ]
-            );
+            $response->error('The same state', 400);
         } elseif (count($wStates) != count($states)) {
             $states = array_flip($states);
             foreach ($wStates as $state) {
                 unset($states[$state->getName()]);
             }
-            $this->setResponseError(
-                $response,
-                $jRpcData,
-                JsonRpcErrors::ERROR__UNKNOWN_STATES,
-                array_keys($states)
-            );
+            $response->error('Unknown states', 400);
         }
     }
 }

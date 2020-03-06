@@ -1,50 +1,45 @@
 <?php
-namespace extas\components\plugins\workflows\jsonrpc\transitions;
+namespace extas\components\jsonrpc\transitions;
 
-use extas\components\jsonrpc\JsonRpcErrors;
-use extas\components\plugins\Plugin;
+use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
 use extas\components\workflows\entities\WorkflowEntityContext;
 use extas\components\workflows\transitions\results\TransitionResult;
 use extas\components\workflows\Workflow;
+use extas\interfaces\jsonrpc\IRequest;
+use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\workflows\entities\IWorkflowEntity;
 use extas\interfaces\workflows\schemas\IWorkflowSchema;
 use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
 use extas\interfaces\workflows\transitions\IWorkflowTransition;
 use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 /**
- * Class JsonRpcTransitionByStateIndex
+ * Class TransitionByStateFrom
  *
  * @stage run.jsonrpc.transition.by_state_from.index
- * @package extas\components\plugins\workflows\jsonrpc\transitions
+ * @package extas\components\jsonrpc\transitions
  * @author jeyroik@gmail.com
  */
-class JsonRpcTransitionByStateFromIndex extends Plugin
+class TransitionByStateFrom extends OperationDispatcher
 {
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @param array $jRpcData
+     * @param IRequest $request
+     * @param IResponse $response
      */
-    public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
+    protected function dispatch(IRequest $request, IResponse &$response)
     {
-        $schema = $this->getSchema($jRpcData);
-        $response = $response
-            ->withHeader('Content-type', 'application/json')
-            ->withStatus(200);
+        $schema = $this->getSchema($request->getData());
 
         if (!$schema) {
-            $response->getBody()->write($this->fail($jRpcData));
+            $response->error('Unknown schema', 400);
         } else {
             $entity = $schema->getEntityTemplate()->buildClassWithParameters($jRpcData['entity'] ?? []);
-            $transitions = $this->getTransitions($jRpcData, $schema);
+            $transitions = $this->getTransitions($request->getData(), $schema);
 
             $result = [];
             $context = new WorkflowEntityContext($jRpcData['context'] ?? []);
-            $filter = $jRpcData['filter'] ?? [];
+            $filter = $request->getFilter();
             $filterNames = isset($filter['transition_name'], $filter['transition_name']['$in'])
                 ? array_flip($filter['transition_name']['$in'])
                 : [];
@@ -58,10 +53,7 @@ class JsonRpcTransitionByStateFromIndex extends Plugin
                 }
             }
 
-            $response->getBody()->write(json_encode([
-                'id' => $jRpcData['id'] ?? '',
-                'result' => $result
-            ]));
+            $response->success($result);
         }
     }
 
@@ -85,23 +77,6 @@ class JsonRpcTransitionByStateFromIndex extends Plugin
         );
 
         return $transitionResult->isSuccess();
-    }
-
-    /**
-     * @param $jRpcData
-     *
-     * @return string
-     */
-    protected function fail($jRpcData)
-    {
-        return json_encode([
-            'id' => $jRpcData['id'] ?? '',
-            'error' => [
-                'code' => JsonRpcErrors::ERROR__UNKNOWN_SCHEMA,
-                'data' => [IWorkflowSchema::FIELD__NAME => $jRpcData['schema_name'] ?? ''],
-                'message' => 'Unknown schema'
-            ]
-        ]);
     }
 
     /**

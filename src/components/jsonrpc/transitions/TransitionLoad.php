@@ -1,33 +1,32 @@
 <?php
-namespace extas\components\plugins\workflows\jsonrpc\transitions;
+namespace extas\components\jsonrpc\transitions;
 
-use extas\components\plugins\Plugin;
+use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
 use extas\components\workflows\transitions\WorkflowTransition;
+use extas\interfaces\jsonrpc\IRequest;
+use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\workflows\states\IWorkflowState;
 use extas\interfaces\workflows\states\IWorkflowStateRepository;
 use extas\interfaces\workflows\transitions\IWorkflowTransition;
 use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 /**
- * Class JsonRpcTransitionLoad
+ * Class TransitionLoad
  *
  * @stage run.jsonrpc.transition.load
- * @package extas\components\plugins\workflows\jsonrpc\transitions
+ * @package extas\components\jsonrpc\transitions
  * @author jeyroik@gmail.com
  */
-class JsonRpcTransitionLoad extends Plugin
+class TransitionLoad extends OperationDispatcher
 {
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @param array $jRpcData
+     * @param IRequest $request
+     * @param IResponse $response
      */
-    public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
+    protected function dispatch(IRequest $request, IResponse &$response)
     {
-        $transitions = $jRpcData['data'];
+        $transitions = $request->getData();
         $transitionsNames = array_column($transitions, IWorkflowTransition::FIELD__NAME);
         $transitionsByName = array_column($transitions, null, IWorkflowTransition::FIELD__NAME);
 
@@ -75,16 +74,9 @@ class JsonRpcTransitionLoad extends Plugin
             }
         }
 
-        $response = $response
-            ->withHeader('Content-type', 'application/json')
-            ->withStatus(200);
-        $response
-            ->getBody()->write(json_encode([
-                'id' => $jRpcData['id'] ?? '',
-                'result' => [
-                    'created_count' => $created,
-                    'got_count' => count($transitions)
-                ]
-            ]));
+        $response->success([
+            'created_count' => $created,
+            'got_count' => count($transitions)
+        ]);
     }
 }

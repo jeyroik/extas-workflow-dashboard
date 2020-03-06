@@ -48,11 +48,16 @@
 
 `composer require jeyroik/extas-workflow-dashboard:*`
 
-`/vendor/bin/extas i`
+```
+# vendor/bin/extas i
+# vendor/bin/extas jsonrpc -s resources/extas.json
+# vendor/bin/extas i
+```
+
 
 # Использование
 
-`# php -S 0.0.0.0:8080 -t src/public`
+`# php -S 0.0.0.0:8080 -t vendor/jeyroik/extas-jsonrpc/src/public`
 
 После запуска при переходе по localhost:8080 должен отобразиться экран "Схемы".
 

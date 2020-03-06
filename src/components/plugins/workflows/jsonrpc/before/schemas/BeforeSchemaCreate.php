@@ -1,18 +1,15 @@
 <?php
 namespace extas\components\plugins\workflows\jsonrpc\before\schemas;
 
-use extas\components\jsonrpc\JsonRpcErrors;
-use extas\components\plugins\workflows\jsonrpc\JsonRpcValidationPlugin;
+use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
 use extas\components\workflows\schemas\WorkflowSchema;
+use extas\interfaces\jsonrpc\IRequest;
+use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\workflows\schemas\IWorkflowSchema;
 use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
-use extas\interfaces\workflows\states\IWorkflowState;
-use extas\interfaces\workflows\states\IWorkflowStateRepository;
 use extas\interfaces\workflows\transitions\IWorkflowTransition;
 use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class BeforeSchemaCreate
@@ -21,35 +18,33 @@ use Psr\Http\Message\ResponseInterface;
  * @package extas\components\plugins\workflows\jsonrpc\before
  * @author jeyroik@gmail.com
  */
-class BeforeSchemaCreate extends JsonRpcValidationPlugin
+class BeforeSchemaCreate extends OperationDispatcher
 {
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @param array $jRpcData
+     * @param IRequest $request
+     * @param IResponse $response
      */
-    public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
+    protected function dispatch(IRequest $request, IResponse &$response)
     {
-        if (!$this->isThereError($jRpcData)) {
-            $item = new WorkflowSchema($jRpcData['data']);
+        if (!$response->hasError()) {
+            $item = new WorkflowSchema($request->getData());
             /**
              * @var $repo IWorkflowSchemaRepository
              */
             $repo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
             if ($repo->one([IWorkflowSchema::FIELD__NAME => $item->getName()])) {
-                $this->setResponseError($response, $jRpcData, JsonRpcErrors::ERROR__ALREADY_EXIST);
+                $response->error('Schema already exist', 400);
             } else {
-                $this->checkTransitions($response, $jRpcData, $item);
+                $this->checkTransitions($response, $item);
             }
         }
     }
 
     /**
-     * @param ResponseInterface $response
-     * @param array $jRpcData
+     * @param IResponse $response
      * @param IWorkflowSchema $item
      */
-    protected function checkTransitions(ResponseInterface &$response, array &$jRpcData, IWorkflowSchema $item)
+    protected function checkTransitions(IResponse &$response, IWorkflowSchema $item)
     {
         $transitions = $item->getTransitionsNames();
         /**
@@ -64,12 +59,7 @@ class BeforeSchemaCreate extends JsonRpcValidationPlugin
             foreach ($wTransitions as $transition) {
                 unset($transitions[$transition->getName()]);
             }
-            $this->setResponseError(
-                $response,
-                $jRpcData,
-                JsonRpcErrors::ERROR__UNKNOWN_TRANSITION,
-                $transitions
-            );
+            $response->error('Unknown transition', 400);
         }
     }
 }

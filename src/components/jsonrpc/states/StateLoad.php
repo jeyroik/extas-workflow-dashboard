@@ -1,31 +1,30 @@
 <?php
-namespace extas\components\plugins\workflows\jsonrpc\states;
+namespace extas\components\jsonrpc\states;
 
-use extas\components\plugins\Plugin;
+use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
 use extas\components\workflows\states\WorkflowState;
+use extas\interfaces\jsonrpc\IRequest;
+use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\workflows\states\IWorkflowState;
 use extas\interfaces\workflows\states\IWorkflowStateRepository;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 /**
- * Class JsonRpcStateLoad
+ * Class StateLoad
  *
  * @stage run.jsonrpc.state.load
- * @package extas\components\plugins\workflows\jsonrpc\states
+ * @package extas\components\jsonrpc\states
  * @author jeyroik@gmail.com
  */
-class JsonRpcStateLoad extends Plugin
+class StateLoad extends OperationDispatcher
 {
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @param array $jRpcData
+     * @param IRequest $request
+     * @param IResponse $response
      */
-    public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
+    protected function dispatch(IRequest $request, IResponse &$response)
     {
-        $states = $jRpcData['data'];
+        $states = $request->getData();
         $statesNames = array_column($states, IWorkflowState::FIELD__NAME);
         $statesByName = array_column($states, null, IWorkflowState::FIELD__NAME);
 
@@ -50,16 +49,9 @@ class JsonRpcStateLoad extends Plugin
             $created++;
         }
 
-        $response = $response
-            ->withHeader('Content-type', 'application/json')
-            ->withStatus(200);
-        $response
-            ->getBody()->write(json_encode([
-                'id' => $jRpcData['id'] ?? '',
-                'result' => [
-                    'created_count' => $created,
-                    'got_count' => count($states)
-                ]
-            ]));
+        $response->success([
+            'created_count' => $created,
+            'got_count' => count($states)
+        ]);
     }
 }

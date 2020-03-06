@@ -12,7 +12,289 @@
       "description": "Path for the operations json-rpc specs"
     }
   ],
+  "jsonrpc_operations": [
+    {
+      "name": "state.load",
+      "title": "Load states",
+      "description": "Load states",
+      "method": "create",
+      "item_name": "",
+      "item_class": "",
+      "item_repo": "",
+      "class": "extas\\components\\jsonrpc\\states\\StateLoad",
+      "filter": "",
+      "spec": {
+        "request": {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "array"
+            }
+          }
+        },
+        "response": {
+          "type": "object",
+          "properties": {
+            "created_count": {
+              "type": "integer"
+            },
+            "got_count": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "transition.load",
+      "title": "Load transitions",
+      "description": "Load transitions",
+      "method": "create",
+      "item_name": "",
+      "item_class": "",
+      "item_repo": "",
+      "class": "extas\\components\\jsonrpc\\transitions\\TransitionLoad",
+      "filter": "",
+      "spec": {
+        "request": {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "array"
+            }
+          }
+        },
+        "response": {
+          "type": "object",
+          "properties": {
+            "created_count": {
+              "type": "integer"
+            },
+            "got_count": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "transition.by_state_from.index",
+      "title": "List transitions by state from",
+      "description": "List transitions by state from",
+      "method": "create",
+      "item_name": "",
+      "item_class": "",
+      "item_repo": "",
+      "class": "extas\\components\\jsonrpc\\transitions\\TransitionByStateFrom",
+      "filter": "",
+      "spec": {
+        "request": {
+          "type": "object",
+          "properties": {
+            "schema_name": {
+              "type": "string"
+            },
+            "state_name": {
+              "type": "string"
+            },
+            "entity": {
+              "type": "object"
+            },
+            "context": {
+              "type": "object"
+            },
+            "filter": {
+              "type": "object",
+              "format": "filter",
+              "properties": {
+                "transition_name": {
+                  "type": "string"
+                },
+                "$in": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Один из"
+                }
+              }
+            }
+          }
+        },
+        "response": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "state_from": {
+                "type": "string"
+              },
+              "state_to": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "schema.transition.add",
+      "title": "Schema. Add transition",
+      "description": "Add transition to the specific schema",
+      "method": "create",
+      "item_name": "",
+      "item_class": "",
+      "item_repo": "",
+      "class": "extas\\components\\jsonrpc\\schemas\\SchemaTransitionAdd",
+      "filter": "",
+      "spec": {
+        "request": {
+          "type": "object",
+          "properties": {
+            "transition_name": {
+              "type": "string"
+            },
+            "schema_name": {
+              "type": "string"
+            },
+            "dispatchers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "template": {
+                    "type": "string"
+                  },
+                  "parameters": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "response": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "schema.transition.remove",
+      "title": "Schema. Remove transition",
+      "description": "Remove transition from the specific schema",
+      "method": "create",
+      "item_name": "",
+      "item_class": "",
+      "item_repo": "",
+      "class": "extas\\components\\jsonrpc\\schemas\\SchemaTransitionRemove",
+      "filter": "",
+      "spec": {
+        "request": {
+          "type": "object",
+          "properties": {
+            "transition_name": {
+              "type": "string"
+            },
+            "schema_name": {
+              "type": "string"
+            }
+          }
+        },
+        "response": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "entity.transit",
+      "title": "Transit entity",
+      "description": "Transit entity from one state to another",
+      "method": "create",
+      "item_name": "",
+      "item_class": "",
+      "item_repo": "",
+      "class": "extas\\components\\jsonrpc\\entities\\EntityTransit",
+      "filter": "",
+      "spec": {
+        "request": {
+          "type": "object",
+          "properties": {
+            "schema_name": {
+              "type": "string"
+            },
+            "transition_name": {
+              "type": "string"
+            },
+            "entity": {
+              "type": "object",
+              "properties": {
+                "state": {
+                  "type": "string"
+                }
+              }
+            },
+            "context": {
+              "type": "object"
+            }
+          }
+        },
+        "response": {
+          "type": "object",
+          "properties": {
+            "entity": {
+              "type": "object",
+              "properties": {
+                "state": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
   "plugins": [
+    {
+      "class": "extas\\components\\plugins\\jsonrpc\\PluginBoardRoute",
+      "stage": "extas.jsonrpc.init"
+    },
     {
       "class": "extas\\components\\plugins\\workflows\\expands\\schemas\\SchemaExpandByTransitions",
       "stage": "expand.index.schema"
@@ -21,65 +303,8 @@
       "class": "extas\\components\\plugins\\workflows\\expands\\schemas\\SchemaExpandByEntityTemplate",
       "stage": "expand.index.schema"
     },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\specs\\SpecsOperationListPlugin",
-      "stage": "run.specs.operation.all"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\specs\\SpecsOperationOnePlugin",
-      "stage": [
-        "run.specs.entity.template.create",
-        "run.specs.entity.template.update",
-        "run.specs.entity.template.delete",
-        "run.specs.entity.template.index",
-        "run.specs.entity.transit",
-        "run.specs.transition.create",
-        "run.specs.transition.update",
-        "run.specs.transition.delete",
-        "run.specs.transition.index",
-        "run.specs.transition.load",
-        "run.specs.transition.by_state_from.index",
-        "run.specs.transition.dispatcher.create",
-        "run.specs.transition.dispatcher.update",
-        "run.specs.transition.dispatcher.delete",
-        "run.specs.transition.dispatcher.index",
-        "run.specs.transition.dispatcher.template.create",
-        "run.specs.transition.dispatcher.template.update",
-        "run.specs.transition.dispatcher.template.delete",
-        "run.specs.transition.dispatcher.template.index",
-        "run.specs.schema.create",
-        "run.specs.schema.update",
-        "run.specs.schema.delete",
-        "run.specs.schema.index",
-        "run.specs.schema.transition.add",
-        "run.specs.schema.transition.remove",
-        "run.specs.state.create",
-        "run.specs.state.update",
-        "run.specs.state.delete",
-        "run.specs.state.index",
-        "run.specs.state.load"
-      ]
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\entities\\templates\\JsonRpcEntityTemplateCreate",
-      "stage": "run.jsonrpc.entity.template.create"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\entities\\templates\\JsonRpcEntityTemplateUpdate",
-      "stage": "run.jsonrpc.entity.template.update"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\entities\\templates\\JsonRpcEntityTemplateIndex",
-      "stage": "run.jsonrpc.entity.template.index"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\entities\\templates\\JsonRpcEntityTemplateDelete",
-      "stage": "run.jsonrpc.entity.template.delete"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\entities\\JsonRpcEntityTransit",
-      "stage": "run.jsonrpc.entity.transit"
-    },
+
+
     {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\transitions\\BeforeTransitionCreate",
       "stage": "before.run.jsonrpc.transition.create"
@@ -93,60 +318,12 @@
       "stage": "before.run.jsonrpc.transition.delete"
     },
     {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\transitions\\JsonRpcTransitionCreate",
-      "stage": "run.jsonrpc.transition.create"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\transitions\\JsonRpcTransitionUpdate",
-      "stage": "run.jsonrpc.transition.update"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\transitions\\JsonRpcTransitionIndex",
-      "stage": "run.jsonrpc.transition.index"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\transitions\\JsonRpcTransitionDelete",
-      "stage": "run.jsonrpc.transition.delete"
-    },
-    {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\transitions\\dispatchers\\BeforeTransitionDispatcherCreate",
       "stage": "before.run.jsonrpc.transition.dispatcher.create"
     },
     {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\transitions\\dispatchers\\JsonRpcTransitionDispatcherCreate",
-      "stage": "run.jsonrpc.transition.dispatcher.create"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\transitions\\dispatchers\\JsonRpcTransitionDispatcherUpdate",
-      "stage": "run.jsonrpc.transition.dispatcher.update"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\transitions\\dispatchers\\JsonRpcTransitionDispatcherIndex",
-      "stage": "run.jsonrpc.transition.dispatcher.index"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\transitions\\dispatchers\\JsonRpcTransitionDispatcherDelete",
-      "stage": "run.jsonrpc.transition.dispatcher.delete"
-    },
-    {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\transitions\\dispatchers\\templates\\BeforeTransitionDispatcherTemplateDelete",
       "stage": "before.run.jsonrpc.transition.dispatcher.template.delete"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\transitions\\dispatchers\\templates\\JsonRpcTransitionDispatcherTemplateCreate",
-      "stage": "run.jsonrpc.transition.dispatcher.template.create"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\transitions\\dispatchers\\templates\\JsonRpcTransitionDispatcherTemplateUpdate",
-      "stage": "run.jsonrpc.transition.dispatcher.template.update"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\transitions\\dispatchers\\templates\\JsonRpcTransitionDispatcherTemplateIndex",
-      "stage": "run.jsonrpc.transition.dispatcher.template.index"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\transitions\\dispatchers\\templates\\JsonRpcTransitionDispatcherTemplateDelete",
-      "stage": "run.jsonrpc.transition.dispatcher.template.delete"
     },
     {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\schemas\\BeforeSchemaCreate",
@@ -157,66 +334,13 @@
       "stage": "before.run.jsonrpc.schema.delete"
     },
     {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\schemas\\JsonRpcSchemaCreate",
-      "stage": "run.jsonrpc.schema.create"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\schemas\\JsonRpcSchemaUpdate",
-      "stage": "run.jsonrpc.schema.update"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\schemas\\JsonRpcSchemaIndex",
-      "stage": "run.jsonrpc.schema.index"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\schemas\\JsonRpcSchemaDelete",
-      "stage": "run.jsonrpc.schema.delete"
-    },
-    {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\schemas\\BeforeSchemaTransitionAdd",
       "stage": "before.run.jsonrpc.schema.transition.add"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\schemas\\JsonRpcSchemaTransitionAdd",
-      "stage": "run.jsonrpc.schema.transition.add"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\schemas\\JsonRpcSchemaTransitionRemove",
-      "stage": "run.jsonrpc.schema.transition.remove"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\transitions\\JsonRpcTransitionLoad",
-      "stage": "run.jsonrpc.transition.load"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\transitions\\JsonRpcTransitionByStateFromIndex",
-      "stage": "run.jsonrpc.transition.by_state_from.index"
     },
     {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\states\\BeforeStateDelete",
       "stage": "before.run.jsonrpc.state.delete"
     },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\states\\JsonRpcStateCreate",
-      "stage": "run.jsonrpc.state.create"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\states\\JsonRpcStateUpdate",
-      "stage": "run.jsonrpc.state.update"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\states\\JsonRpcStateIndex",
-      "stage": "run.jsonrpc.state.index"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\states\\JsonRpcStateDelete",
-      "stage": "run.jsonrpc.state.delete"
-    },
-    {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\states\\JsonRpcStateLoad",
-      "stage": "run.jsonrpc.state.load"
-    },
-
 
     {
       "class": "extas\\components\\plugins\\workflows\\views\\ViewIndexIndex",

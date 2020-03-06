@@ -1,18 +1,17 @@
 <?php
 namespace extas\components\plugins\workflows\jsonrpc\before\states;
 
-use extas\components\jsonrpc\JsonRpcErrors;
-use extas\components\plugins\workflows\jsonrpc\JsonRpcValidationPlugin;
+use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
 use extas\components\workflows\states\WorkflowState;
 use extas\interfaces\IHasName;
+use extas\interfaces\jsonrpc\IRequest;
+use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\repositories\IRepository;
 use extas\interfaces\workflows\states\IWorkflowState;
 use extas\interfaces\workflows\states\IWorkflowStateRepository;
 use extas\interfaces\workflows\transitions\IWorkflowTransition;
 use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class BeforeStateDelete
@@ -21,44 +20,34 @@ use Psr\Http\Message\ResponseInterface;
  * @package extas\components\plugins\workflows\jsonrpc\before
  * @author jeyroik@gmail.com
  */
-class BeforeStateDelete extends JsonRpcValidationPlugin
+class BeforeStateDelete extends OperationDispatcher
 {
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @param array $jRpcData
+     * @param IRequest $request
+     * @param IResponse $response
      */
-    public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
+    protected function dispatch(IRequest $request, IResponse &$response)
     {
-        if (!$this->isThereError($jRpcData)) {
-            $response = $response
-                ->withHeader('Content-type', 'application/json')
-                ->withStatus(200);
-            $item = new WorkflowState($jRpcData);
+        if (!$response->hasError()) {
+            $item = new WorkflowState($request->getData());
             /**
              * @var $repo IRepository
              */
             $repo = SystemContainer::getItem(IWorkflowStateRepository::class);
             if (!$repo->one([IHasName::FIELD__NAME => $item->getName()])) {
-                $this->setResponseError(
-                    $response,
-                    $jRpcData,
-                    JsonRpcErrors::ERROR__UNKNOWN_ENTITY,
-                    [WorkflowState::FIELD__NAME => $item->getName()]
-                );
+                $response->error('Unknown state', 400);
             } else {
-                $this->checkTransitionsTo($response, $jRpcData, $item);
-                $this->checkTransitionsFrom($response, $jRpcData, $item);
+                $this->checkTransitionsTo($response, $item);
+                $this->checkTransitionsFrom($response, $item);
             }
         }
     }
 
     /**
-     * @param ResponseInterface $response
-     * @param array $jRpcData
+     * @param IResponse $response
      * @param IWorkflowState $item
      */
-    protected function checkTransitionsTo(ResponseInterface &$response, array &$jRpcData, IWorkflowState $item)
+    protected function checkTransitionsTo(IResponse &$response, IWorkflowState $item)
     {
         /**
          * @var $transitRepo IWorkflowTransitionRepository
@@ -69,21 +58,15 @@ class BeforeStateDelete extends JsonRpcValidationPlugin
             IWorkflowTransition::FIELD__STATE_TO => $item->getName()
         ]);
         if (count($transitionsToState)) {
-            $this->setResponseError(
-                $response,
-                $jRpcData,
-                JsonRpcErrors::ERROR__THERE_ARE_TRANSITIONS_TO_STATE,
-                $this->prepare($transitionsToState)
-            );
+            $response->error('There are transitions to a state', 400);
         }
     }
 
     /**
-     * @param ResponseInterface $response
-     * @param array $jRpcData
+     * @param IResponse $response
      * @param IWorkflowState $item
      */
-    protected function checkTransitionsFrom(ResponseInterface &$response, array &$jRpcData, IWorkflowState $item)
+    protected function checkTransitionsFrom(IResponse &$response, IWorkflowState $item)
     {
         /**
          * @var $transitRepo IWorkflowTransitionRepository
@@ -93,12 +76,7 @@ class BeforeStateDelete extends JsonRpcValidationPlugin
             IWorkflowTransition::FIELD__STATE_FROM => $item->getName()
         ]);
         if (count($transitionsFromState)) {
-            $this->setResponseError(
-                $response,
-                $jRpcData,
-                JsonRpcErrors::ERROR__THERE_ARE_TRANSITIONS_FROM_STATE,
-                $this->prepare($transitionsFromState)
-            );
+            $response->error('There are transitions from a state', 400);
         }
     }
 }

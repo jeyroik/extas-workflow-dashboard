@@ -1,20 +1,16 @@
 <?php
 namespace extas\components\plugins\workflows\jsonrpc\before\transitions;
 
-use extas\components\jsonrpc\JsonRpcErrors;
-use extas\components\plugins\workflows\jsonrpc\JsonRpcValidationPlugin;
+use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
 use extas\components\workflows\transitions\WorkflowTransition;
-use extas\interfaces\IHasName;
-use extas\interfaces\repositories\IRepository;
+use extas\interfaces\jsonrpc\IRequest;
+use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\workflows\schemas\IWorkflowSchema;
 use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
 use extas\interfaces\workflows\transitions\IWorkflowTransition;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class BeforeTransitionDelete
@@ -23,44 +19,26 @@ use Psr\Http\Message\ResponseInterface;
  * @package extas\components\plugins\workflows\jsonrpc\before
  * @author jeyroik@gmail.com
  */
-class BeforeTransitionDelete extends JsonRpcValidationPlugin
+class BeforeTransitionDelete extends OperationDispatcher
 {
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @param array $jRpcData
+     * @param IRequest $request
+     * @param IResponse $response
      */
-    public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
+    protected function dispatch(IRequest $request, IResponse &$response)
     {
-        if (!$this->isThereError($jRpcData)) {
-            $response = $response
-                ->withHeader('Content-type', 'application/json')
-                ->withStatus(200);
-            $item = new WorkflowTransition($jRpcData);
-            /**
-             * @var $repo IRepository
-             */
-            $repo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
-            if (!$repo->one([IHasName::FIELD__NAME => $item->getName()])) {
-                $this->setResponseError(
-                    $response,
-                    $jRpcData,
-                    JsonRpcErrors::ERROR__UNKNOWN_ENTITY,
-                    [WorkflowTransition::FIELD__NAME => $item->getName()]
-                );
-            } else {
-                $this->checkSchemas($response, $jRpcData, $item);
-                $this->checkTransitionDispatchers($response, $jRpcData, $item);
-            }
+        if (!$response->hasError()) {
+            $item = new WorkflowTransition($request->getData());
+            $this->checkSchemas($response, $item);
+            $this->checkTransitionDispatchers($response, $item);
         }
     }
 
     /**
-     * @param ResponseInterface $response
-     * @param array $jRpcData
+     * @param IResponse $response
      * @param IWorkflowTransition $item
      */
-    protected function checkSchemas(ResponseInterface &$response, array &$jRpcData, IWorkflowTransition $item)
+    protected function checkSchemas(IResponse &$response, IWorkflowTransition $item)
     {
         /**
          * @var $repo IWorkflowSchemaRepository
@@ -71,25 +49,15 @@ class BeforeTransitionDelete extends JsonRpcValidationPlugin
             IWorkflowSchema::FIELD__TRANSITIONS => $item->getName()
         ]);
         if (count($schemas)) {
-            $this->setResponseError(
-                $response,
-                $jRpcData,
-                JsonRpcErrors::ERROR__THERE_ARE_SCHEMAS_WITH_TRANSITION,
-                $this->prepare($schemas)
-            );
+            $response->error('There are schemas with a transition', 400);
         }
     }
 
     /**
-     * @param ResponseInterface $response
-     * @param array $jRpcData
+     * @param IResponse $response
      * @param IWorkflowTransition $item
      */
-    protected function checkTransitionDispatchers(
-        ResponseInterface &$response,
-        array &$jRpcData,
-        IWorkflowTransition $item
-    )
+    protected function checkTransitionDispatchers(IResponse &$response, IWorkflowTransition $item)
     {
         /**
          * @var $repo ITransitionDispatcherRepository
@@ -100,12 +68,7 @@ class BeforeTransitionDelete extends JsonRpcValidationPlugin
             ITransitionDispatcher::FIELD__TRANSITION_NAME => $item->getName()
         ]);
         if (count($dispatchers)) {
-            $this->setResponseError(
-                $response,
-                $jRpcData,
-                JsonRpcErrors::ERROR__THERE_ARE_DISPATCHERS_FOR_TRANSITION,
-                $this->prepare($dispatchers)
-            );
+            $response->error('There are dispatchers for a transition', 400);
         }
     }
 }

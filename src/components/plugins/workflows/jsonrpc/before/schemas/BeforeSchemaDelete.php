@@ -1,17 +1,14 @@
 <?php
 namespace extas\components\plugins\workflows\jsonrpc\before\schemas;
 
-use extas\components\jsonrpc\JsonRpcErrors;
-use extas\components\plugins\workflows\jsonrpc\JsonRpcValidationPlugin;
+use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
 use extas\components\workflows\schemas\WorkflowSchema;
-use extas\interfaces\IHasName;
-use extas\interfaces\repositories\IRepository;
+use extas\interfaces\jsonrpc\IRequest;
+use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\workflows\schemas\IWorkflowSchema;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class BeforeSchemaDelete
@@ -20,34 +17,17 @@ use Psr\Http\Message\ResponseInterface;
  * @package extas\components\plugins\workflows\jsonrpc\before
  * @author jeyroik@gmail.com
  */
-class BeforeSchemaDelete extends JsonRpcValidationPlugin
+class BeforeSchemaDelete extends OperationDispatcher
 {
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @param array $jRpcData
+     * @param IRequest $request
+     * @param IResponse $response
      */
-    public function __invoke(RequestInterface $request, ResponseInterface &$response, array &$jRpcData)
+    protected function dispatch(IRequest $request, IResponse &$response)
     {
-        if (!$this->isThereError($jRpcData)) {
-            $response = $response
-                ->withHeader('Content-type', 'application/json')
-                ->withStatus(200);
-            $item = new WorkflowSchema($jRpcData);
-            /**
-             * @var $repo IRepository
-             */
-            $repo = SystemContainer::getItem(IWorkflowSchema::class);
-            if (!$repo->one([IHasName::FIELD__NAME => $item->getName()])) {
-                $this->setResponseError(
-                    $response,
-                    $jRpcData,
-                    JsonRpcErrors::ERROR__UNKNOWN_ENTITY,
-                    [WorkflowSchema::FIELD__NAME => $item->getName()]
-                );
-            } else {
-                $this->checkTransitionDispatchers($item);
-            }
+        if (!$response->hasError()) {
+            $item = new WorkflowSchema($request->getData());
+            $this->checkTransitionDispatchers($item);
         }
     }
 
