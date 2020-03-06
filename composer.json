@@ -3,7 +3,7 @@
   "description": "Simple dashboard for the extas workflow",
   "require": {
     "slim/slim": "^3.0",
-    "jeyroik/extas-workflow": "0.10.*",
+    "jeyroik/extas-workflow": "1.*",
     "jeyroik/extas-installer": "*",
     "jeyroik/extas-jsonrpc": "*"
   },
