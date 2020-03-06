@@ -1,4 +1,5 @@
 <?php
+namespace extas\components\plugins\jsonrpc;
 
 use \extas\components\plugins\Plugin;
 use Psr\Http\Message\RequestInterface as Request;
