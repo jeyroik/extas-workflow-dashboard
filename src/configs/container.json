@@ -1,0 +1,28 @@
+[
+ 
+  {
+    "interface": "extas\\interfaces\\plugins\\IPluginRepository",
+    "class": "extas\\components\\plugins\\PluginRepository"
+  },
+  {
+    "interface": "extas\\interfaces\\extensions\\IExtensionRepository",
+    "class": "extas\\components\\extensions\\ExtensionRepository"
+  },
+  
+  {
+    "interface": "extas\\interfaces\\stages\\IStageRepository",
+    "class": "extas\\components\\stages\\StageRepository"
+  },
+  {
+    "interface": "extas\\interfaces\\packages\\IPackageClassRepository",
+    "class": "extas\\components\\packages\\PackageClassRepository"
+  },
+  {
+    "interface": "extas\\interfaces\\repositories\\IRepository",
+    "class": "extas\\components\\repositories\\Repository"
+  },
+  {
+    "interface": "extas\\interfaces\\repositories\\drivers\\IDriverRepository",
+    "class": "extas\\components\\repositories\\drivers\\DriverRepository"
+  }
+]

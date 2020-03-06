@@ -5,9 +5,6 @@
     "slim/slim": "^3.0",
     "jeyroik/extas-workflow": "0.10.*",
     "jeyroik/extas-installer": "*",
-    "jeyroik/extas-expands": "*",
-    "jeyroik/extas-protocols": "*",
-    "jeyroik/extas-servers": "*",
     "jeyroik/extas-jsonrpc": "*"
   },
   "require-dev": {

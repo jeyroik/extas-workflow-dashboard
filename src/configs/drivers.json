@@ -1,0 +1,6 @@
+[
+  {
+    "name": "mongo",
+    "class": "extas\\components\\repositories\\drivers\\DriverMongo"
+  }
+]
