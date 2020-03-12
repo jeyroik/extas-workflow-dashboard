@@ -4,7 +4,7 @@
   "require": {
     "slim/slim": "^3.0",
     "jeyroik/extas-workflow": "1.*",
-    "jeyroik/extas-installer": "*",
+    "jeyroik/extas-installer": "1.*",
     "jeyroik/extas-jsonrpc": "*"
   },
   "require-dev": {
