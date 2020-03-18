@@ -83,20 +83,22 @@ class ViewIndexIndex extends Plugin
                 ]
             ];
             if (!isset($states[$transition->getStateFromName()])) {
+                $title = ($state = $transition->getStateFrom()) ? $state->getTitle() : '';
                 $states[$transition->getStateFromName()] = true;
                 $nodes[] = [
                     'id' => $transition->getStateFromName(),
                     'dataLabels' => [
-                        'format' => $transition->getStateFrom()->getTitle()
+                        'format' => $title
                     ]
                 ];
             }
             if (!isset($states[$transition->getStateToName()])) {
+                $title = ($state = $transition->getStateTo()) ? $state->getTitle() : '';
                 $states[$transition->getStateToName()] = true;
                 $nodes[] = [
                     'id' => $transition->getStateToName(),
                     'dataLabels' => [
-                        'format' => $transition->getStateTo()->getTitle()
+                        'format' => $title
                     ]
                 ];
             }
