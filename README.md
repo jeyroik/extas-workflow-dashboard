@@ -78,16 +78,3 @@ Body:
 
 - (json-rpc) Добавить во все методы со списками поддержку фильтров.
 - (json-rpc) Добавить во все методы со списками поддержку сортировки. 
-
-- (ui) Удаление состояния (deprecated - предлагается использовать [отдельный клиент](https://github.com/jeyroik/extas-workflow-dashboard-svelte))
-- (ui) Удаление перехода (deprecated - предлагается использовать [отдельный клиент](https://github.com/jeyroik/extas-workflow-dashboard-svelte))
-- (ui) Удаление схемы (deprecated - предлагается использовать [отдельный клиент](https://github.com/jeyroik/extas-workflow-dashboard-svelte))
-- (ui) Добавить отображение обработчиков по переходу в редактировании схемы. (deprecated - предлагается использовать [отдельный клиент](https://github.com/jeyroik/extas-workflow-dashboard-svelte))
-- (ui) Реализовать добавление обработчиков по переходу в редактировании схемы. (deprecated - предлагается использовать [отдельный клиент](https://github.com/jeyroik/extas-workflow-dashboard-svelte))
-- (ui) Реализовать редактирование обработчиков по переходу в редактировании схемы. (deprecated - предлагается использовать [отдельный клиент](https://github.com/jeyroik/extas-workflow-dashboard-svelte))
-- (ui) Реализовать удаление обработчиков по перехожу в редактировании схемы. (deprecated - предлагается использовать [отдельный клиент](https://github.com/jeyroik/extas-workflow-dashboard-svelte))
-- (ui) Добавить страницу со списком шаблонов обработчиков переходов. (deprecated - предлагается использовать [отдельный клиент](https://github.com/jeyroik/extas-workflow-dashboard-svelte))
-- (ui) Добавить редактирование шаблона обработчика переходов. (deprecated - предлагается использовать [отдельный клиент](https://github.com/jeyroik/extas-workflow-dashboard-svelte)) 
-- (ui) Добавить создание шаблона обработчика переходов. (deprecated - предлагается использовать [отдельный клиент](https://github.com/jeyroik/extas-workflow-dashboard-svelte))
-- (ui) Добавить удаление шаблона обработчика переходов. (deprecated - предлагается использовать [отдельный клиент](https://github.com/jeyroik/extas-workflow-dashboard-svelte))
-- (ui) Добавить возможность "прогнать" сущность по схеме. (deprecated - предлагается использовать [отдельный клиент](https://github.com/jeyroik/extas-workflow-dashboard-svelte))
