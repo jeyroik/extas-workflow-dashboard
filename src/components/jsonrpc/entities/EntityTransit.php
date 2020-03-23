@@ -87,7 +87,7 @@ class EntityTransit extends OperationDispatcher
                 new WorkflowEntityContext($context)
             );
             if (!$result->isSuccess()) {
-                $response->error($result->getError()->getMessage(), 400);
+                $response->error($result->getError()->getMessage(), 400, $result->getError()->getData());
             } else {
                 $response->success($entity->__toArray());
             }
