@@ -28,7 +28,7 @@ class EntityTransit extends OperationDispatcher
      */
     protected function dispatch(IRequest $request, IResponse &$response)
     {
-        $jRpcData = $request->getData();
+        $jRpcData = $request->getParams();
         $entityData = $jRpcData['entity'] ?? [];
         $context = $jRpcData['context'] ?? [];
         $schemaName = $jRpcData['schema_name'] ?? '';
