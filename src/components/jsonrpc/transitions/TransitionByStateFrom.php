@@ -29,7 +29,7 @@ class TransitionByStateFrom extends OperationDispatcher
      */
     protected function dispatch(IRequest $request, IResponse &$response)
     {
-        $schema = $this->getSchema($request->getData());
+        $schema = $this->getSchema($request->getParams());
 
         if (!$schema) {
             $response->error('Unknown schema', 400);

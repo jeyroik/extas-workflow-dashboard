@@ -25,7 +25,7 @@ class SchemaTransitionRemove extends OperationDispatcher
      */
     protected function dispatch(IRequest $request, IResponse &$response)
     {
-        $jRpcData = $request->getData();
+        $jRpcData = $request->getParams();
         $transitionName = $jRpcData['transition_name'] ?? '';
         $schemaName = $jRpcData['schema_name'] ?? '';
 
