@@ -29,31 +29,37 @@ class TransitionByStateFrom extends OperationDispatcher
      */
     protected function dispatch(IRequest $request, IResponse &$response)
     {
-        $schema = $this->getSchema($request->getParams());
+        $jRpcData = $request->getParams();
+        $schema = $this->getSchema($jRpcData);
 
         if (!$schema) {
             $response->error('Unknown schema', 400);
         } else {
-            $entity = $schema->getEntityTemplate()->buildClassWithParameters($jRpcData['entity'] ?? []);
-            $transitions = $this->getTransitions($request->getData(), $schema);
+            $entityTemplate = $schema->getEntityTemplate();
+            if (!$entityTemplate) {
+                $response->error('Missed entity template', 400);
+            } else {
+                $entity = $entityTemplate->buildClassWithParameters($jRpcData['entity'] ?? []);
+                $transitions = $this->getTransitions($request->getData(), $schema);
 
-            $result = [];
-            $context = new WorkflowEntityContext($jRpcData['context'] ?? []);
-            $filter = $request->getFilter();
-            $filterNames = isset($filter['transition_name'], $filter['transition_name']['$in'])
-                ? array_flip($filter['transition_name']['$in'])
-                : [];
+                $result = [];
+                $context = new WorkflowEntityContext($jRpcData['context'] ?? []);
+                $filter = $request->getFilter();
+                $filterNames = isset($filter['transition_name'], $filter['transition_name']['$in'])
+                    ? array_flip($filter['transition_name']['$in'])
+                    : [];
 
-            foreach ($transitions as $transition) {
-                if ($this->isValid($transition, $entity, $schema, $context)) {
-                    if (!empty($filterNames) && !isset($filterNames[$transition->getName()])) {
-                        continue;
+                foreach ($transitions as $transition) {
+                    if ($this->isValid($transition, $entity, $schema, $context)) {
+                        if (!empty($filterNames) && !isset($filterNames[$transition->getName()])) {
+                            continue;
+                        }
+                        $result[] = $transition->__toArray();
                     }
-                    $result[] = $transition->__toArray();
                 }
-            }
 
-            $response->success($result);
+                $response->success($result);
+            }
         }
     }
 
