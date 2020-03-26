@@ -40,7 +40,7 @@ class TransitionByStateFrom extends OperationDispatcher
                 $response->error('Missed entity template', 400);
             } else {
                 $entity = $entityTemplate->buildClassWithParameters($jRpcData['entity'] ?? []);
-                $transitions = $this->getTransitions($request->getData(), $schema);
+                $transitions = $this->getTransitions($jRpcData, $schema);
 
                 $result = [];
                 $context = new WorkflowEntityContext($jRpcData['context'] ?? []);
