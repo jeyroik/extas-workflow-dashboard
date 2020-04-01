@@ -74,6 +74,7 @@ class TransitionByStateFrom extends OperationDispatcher
     {
         $workflow = new Workflow();
         $transitionResult = new TransitionResult();
+        $context[Workflow::CONTEXT__CONDITIONS] = true;
         $transitionResult = $workflow->isTransitionValid(
             $transition,
             $entity,
