@@ -241,7 +241,8 @@ class EntityTransitTest extends TestCase
 
         $this->schemaRepo->create(new WorkflowSchema([
             WorkflowSchema::FIELD__NAME => 'test',
-            WorkflowSchema::FIELD__ENTITY_TEMPLATE => 'test'
+            WorkflowSchema::FIELD__ENTITY_TEMPLATE => 'test',
+            WorkflowSchema::FIELD__TRANSITIONS => ['test']
         ]));
 
         $this->transitionRepo->create(new WorkflowTransition([
@@ -301,7 +302,8 @@ class EntityTransitTest extends TestCase
 
         $this->schemaRepo->create(new WorkflowSchema([
             WorkflowSchema::FIELD__NAME => 'test',
-            WorkflowSchema::FIELD__ENTITY_TEMPLATE => 'test'
+            WorkflowSchema::FIELD__ENTITY_TEMPLATE => 'test',
+            WorkflowSchema::FIELD__TRANSITIONS => ['test']
         ]));
 
         $this->transitionRepo->create(new WorkflowTransition([
@@ -338,6 +340,6 @@ class EntityTransitTest extends TestCase
          * @var $jsonRpcResponse IResponse
          */
         $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
+        $this->assertFalse($jsonRpcResponse->hasError());
     }
 }

@@ -1,4 +1,7 @@
-# extas-workflow-dashboard
+![PHP Composer](https://github.com/jeyroik/extas-workflow-dashboard/workflows/PHP%20Composer/badge.svg?branch=master&event=push)
+![codecov.io](https://codecov.io/gh/jeyroik/extas-workflow-dashboard/coverage.svg?branch=master)
+
+# Описание
 
 Простой (но функциональный) микросервис для построения Workflow (бизнес процесса) и прогона сущности по нему.
 
