@@ -34,20 +34,24 @@ class SchemaTransitionRemove extends OperationDispatcher
          * @var $schemaRepo IWorkflowSchemaRepository
          * @var $schema IWorkflowSchema
          */
-        $transitRepo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
-        $transition = $transitRepo->one([IWorkflowTransition::FIELD__NAME => $transitionName]);
         $schemaRepo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
         $schema = $schemaRepo->one([IWorkflowSchema::FIELD__NAME => $schemaName]);
 
         if (!$schema) {
             $response->error('Unknown schema', 400);
         } else {
-            if ($schema->hasTransition($transitionName)) {
-                $schema->removeTransition($transition);
-                $schemaRepo->update($schema);
-            }
+            $transitRepo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
+            $transition = $transitRepo->one([IWorkflowTransition::FIELD__NAME => $transitionName]);
+            if (!$transition) {
+                $response->error('Unknown transition', 400);
+            } else {
+                if ($schema->hasTransition($transitionName)) {
+                    $schema->removeTransition($transition);
+                    $schemaRepo->update($schema);
+                }
 
-            $response->success(['name' => $transitionName]);
+                $response->success(['name' => $transitionName]);
+            }
         }
     }
 }
