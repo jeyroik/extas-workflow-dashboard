@@ -112,7 +112,7 @@ class StateLoadTest extends TestCase
         $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
         $this->assertFalse($jsonRpcResponse->hasError());
 
-        $this->assertEqual(
+        $this->assertEquals(
             [
                 IResponse::RESPONSE__ID => $jsonRpcResponse->getData()[IRequest::FIELD__ID] ?? '',
                 IResponse::RESPONSE__VERSION => IResponse::VERSION_CURRENT,

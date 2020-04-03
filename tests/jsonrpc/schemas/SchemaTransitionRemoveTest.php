@@ -17,7 +17,7 @@ use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherTemp
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcherTemplateRepository;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcherTemplate as TDT;
 use extas\interfaces\parameters\IParameter;
-use extas\components\jsonrpc\schemas\SchemaTransitionAdd;
+use extas\components\jsonrpc\schemas\SchemaTransitionRemove;
 use extas\components\servers\requests\ServerRequest;
 use extas\components\servers\responses\ServerResponse;
 use extas\interfaces\jsonrpc\IRequest;
@@ -136,7 +136,7 @@ class SchemaTransitionRemoveTest extends TestCase
      */
     public function testUnknownSchema()
     {
-        $operation = new SchemaTransitionAdd();
+        $operation = new SchemaTransitionRemove();
         $serverRequest = $this->getServerRequest(['schema_name' => 'unknown']);
         $serverResponse = $this->getServerResponse();
 
@@ -157,7 +157,7 @@ class SchemaTransitionRemoveTest extends TestCase
      */
     public function testUnknownTransition()
     {
-        $operation = new SchemaTransitionAdd();
+        $operation = new SchemaTransitionRemove();
         $serverRequest = $this->getServerRequest([
             'schema_name' => 'test',
             'transition_name' => 'unknown'
@@ -186,7 +186,7 @@ class SchemaTransitionRemoveTest extends TestCase
      */
     public function testValid()
     {
-        $operation = new SchemaTransitionAdd();
+        $operation = new SchemaTransitionRemove();
         $serverRequest = $this->getServerRequest([
             'schema_name' => 'test',
             'transition_name' => 'test'
