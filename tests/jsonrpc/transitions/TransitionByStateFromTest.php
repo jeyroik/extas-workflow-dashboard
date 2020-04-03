@@ -189,10 +189,12 @@ class TransitionByStateFromTest extends TestCase
         $operation = new TransitionByStateFrom();
         $serverRequest = $this->getServerRequest([
             'schema_name' => 'test',
-            'state_name' => 'test',
+            'state_name' => 'from',
             'filter' => [
-                '$in' => [
-                    'test'
+                'transition_name' => [
+                    '$in' => [
+                        'test'
+                    ]
                 ]
             ]
         ]);
