@@ -28,7 +28,7 @@ use extas\components\jsonrpc\Request;
 use extas\components\jsonrpc\Response;
 use extas\components\workflows\schemas\WorkflowSchemaRepository;
 use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
-use Slim\Factory\Psr17\SlimPsr17Factory;
+use Slim\Http\Response as PsrResponse;
 
 /**
  * Class EntityTransitTest
@@ -120,7 +120,7 @@ class EntityTransitTest extends TestCase
         $serverResponse = new ServerResponse([
             ServerResponse::FIELD__PARAMETERS => [
                 IResponse::SUBJECT => new Response([
-                    Response::FIELD__RESPONSE => SlimPsr17Factory::getResponseFactory()->createResponse()
+                    Response::FIELD__RESPONSE => new PsrResponse()
                 ])
             ]
         ]);
@@ -152,7 +152,7 @@ class EntityTransitTest extends TestCase
         $serverResponse = new ServerResponse([
             ServerResponse::FIELD__PARAMETERS => [
                 IResponse::SUBJECT => new Response([
-                    Response::FIELD__RESPONSE => SlimPsr17Factory::getResponseFactory()->createResponse()
+                    Response::FIELD__RESPONSE => new PsrResponse()
                 ])
             ]
         ]);
@@ -198,7 +198,7 @@ class EntityTransitTest extends TestCase
         $serverResponse = new ServerResponse([
             ServerResponse::FIELD__PARAMETERS => [
                 IResponse::SUBJECT => new Response([
-                    Response::FIELD__RESPONSE => SlimPsr17Factory::getResponseFactory()->createResponse()
+                    Response::FIELD__RESPONSE => new PsrResponse()
                 ])
             ]
         ]);
@@ -250,7 +250,7 @@ class EntityTransitTest extends TestCase
         $serverResponse = new ServerResponse([
             ServerResponse::FIELD__PARAMETERS => [
                 IResponse::SUBJECT => new Response([
-                    Response::FIELD__RESPONSE => SlimPsr17Factory::getResponseFactory()->createResponse()
+                    Response::FIELD__RESPONSE => new PsrResponse()
                 ])
             ]
         ]);
@@ -322,7 +322,7 @@ class EntityTransitTest extends TestCase
         $serverResponse = new ServerResponse([
             ServerResponse::FIELD__PARAMETERS => [
                 IResponse::SUBJECT => new Response([
-                    Response::FIELD__RESPONSE => SlimPsr17Factory::getResponseFactory()->createResponse()
+                    Response::FIELD__RESPONSE => new PsrResponse()
                 ])
             ]
         ]);
