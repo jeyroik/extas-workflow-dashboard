@@ -1,0 +1,45 @@
+name: PHP Composer
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version:
+          - "7.4"
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: "Install PHP with extensions"
+      uses: "shivammathur/setup-php@v1"
+      with:
+       php-version: "${{ matrix.php-version }}"
+       coverage: "pcov"
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+    - name: Copy .env
+      run: cp tests/.env .env
+
+    - name: MongoDB in GitHub Actions
+      uses: supercharge/mongodb-github-action@1.1.0
+
+    - name: Install mongodb php-extension
+      run: sudo apt install php7.4-mongodb
+
+    - name: Run test suites
+      run: composer run-script test
+
+    - name: "Send code coverage report to Codecov.io"
+      env:
+        CODECOV_TOKEN: "${{ secrets.CODECOV_TOKEN }}"
+      run: "bash <(curl -s https://codecov.io/bash) || true"
