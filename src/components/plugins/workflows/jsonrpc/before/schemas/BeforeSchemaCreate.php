@@ -14,6 +14,7 @@ use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
 /**
  * Class BeforeSchemaCreate
  *
+ * @deprecated
  * @stage before.run.jsonrpc.schema.create
  * @package extas\components\plugins\workflows\jsonrpc\before
  * @author jeyroik@gmail.com

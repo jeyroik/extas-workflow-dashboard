@@ -42,29 +42,38 @@ class SchemaTransitionAdd extends OperationDispatcher
          * @var $templateRepo ITransitionDispatcherTemplateRepository
          * @var $schema IWorkflowSchema
          */
-        $transitRepo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
-        $transition = $transitRepo->one([IWorkflowTransition::FIELD__NAME => $transitionName]);
         $schemaRepo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
         $schema = $schemaRepo->one([IWorkflowSchema::FIELD__NAME => $schemaName]);
 
-        if (!$schema->hasTransition($transitionName)) {
-            $schema->addTransition($transition);
-            $schemaRepo->update($schema);
-        }
-        $dispatcherRepo = SystemContainer::getItem(ITransitionDispatcherRepository::class);
-        $unknownTemplates = $this->getUnknownTemplates($dispatchersData);
+        if (!$schema) {
+            $response->error('Unknown schema', 400);
+        } else {
+            $transitRepo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
+            $transition = $transitRepo->one([IWorkflowTransition::FIELD__NAME => $transitionName]);
 
-        foreach ($dispatchersData as $dispatchersDatum) {
-            $dispatchersDatum[ITransitionDispatcher::FIELD__SCHEMA_NAME] = $schemaName;
-            $dispatchersDatum[ITransitionDispatcher::FIELD__TRANSITION_NAME] = $transitionName;
-            $dispatcher = new TransitionDispatcher($dispatchersDatum);
-            if (isset($unknownTemplates[$dispatcher->getTemplateName()])) {
-                continue;
+            if (!$transition) {
+                $response->error('Unknown transition', 400);
+            } else {
+                if (!$schema->hasTransition($transitionName)) {
+                    $schema->addTransition($transition);
+                    $schemaRepo->update($schema);
+                }
+                $dispatcherRepo = SystemContainer::getItem(ITransitionDispatcherRepository::class);
+                $unknownTemplates = $this->getUnknownTemplates($dispatchersData);
+
+                foreach ($dispatchersData as $dispatchersDatum) {
+                    $dispatchersDatum[ITransitionDispatcher::FIELD__SCHEMA_NAME] = $schemaName;
+                    $dispatchersDatum[ITransitionDispatcher::FIELD__TRANSITION_NAME] = $transitionName;
+                    $dispatcher = new TransitionDispatcher($dispatchersDatum);
+                    if (isset($unknownTemplates[$dispatcher->getTemplateName()])) {
+                        continue;
+                    }
+                    $dispatcherRepo->create($dispatcher);
+                }
+
+                $response->success(['name' => $transitionName]);
             }
-            $dispatcherRepo->create($dispatcher);
         }
-
-        $response->success(['name' => $transitionName]);
     }
 
     /**
