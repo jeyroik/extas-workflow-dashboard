@@ -105,25 +105,40 @@ class EntityTransitTest extends TestCase
         $this->schemaRepo->delete([WorkflowSchema::FIELD__NAME => 'test']);
     }
 
+    protected function getServerRequest(array $params)
+    {
+        return new ServerRequest([
+            ServerRequest::FIELD__PARAMETERS => [
+                [
+                    IParameter::FIELD__NAME => IRequest::SUBJECT,
+                    IParameter::FIELD__VALUE => new Request([
+                        IRequest::FIELD__PARAMS => $params
+                    ])
+                ]
+            ]
+        ]);
+    }
+
+    protected function getServerResponse()
+    {
+        return new ServerResponse([
+            ServerResponse::FIELD__PARAMETERS => [
+                [
+                    IParameter::FIELD__NAME => IResponse::SUBJECT,
+                    IParameter::FIELD__VALUE => new Response([
+                        Response::FIELD__RESPONSE => new PsrResponse()
+                    ])
+                ]
+            ]
+        ]);
+    }
+
     public function testUnknownSchema()
     {
         $operation = new EntityTransit();
-        $serverRequest = new ServerRequest([
-            ServerRequest::FIELD__PARAMETERS => [
-                IRequest::SUBJECT => new Request([
-                    IRequest::FIELD__PARAMS => [
-                        'schema_name' => 'unknown'
-                    ]
-                ])
-            ]
-        ]);
-        $serverResponse = new ServerResponse([
-            ServerResponse::FIELD__PARAMETERS => [
-                IResponse::SUBJECT => new Response([
-                    Response::FIELD__RESPONSE => new PsrResponse()
-                ])
-            ]
-        ]);
+        $serverRequest = $this->getServerRequest(['schema_name' => 'unknown']);
+        $serverResponse = $this->getServerResponse();
+
         $operation(
             $serverRequest,
             $serverResponse
@@ -139,23 +154,11 @@ class EntityTransitTest extends TestCase
     public function testUnknownTransition()
     {
         $operation = new EntityTransit();
-        $serverRequest = new ServerRequest([
-            ServerRequest::FIELD__PARAMETERS => [
-                IRequest::SUBJECT => new Request([
-                    IRequest::FIELD__PARAMS => [
-                        'schema_name' => 'test',
-                        'transition_name' => 'unknown'
-                    ]
-                ])
-            ]
+        $serverRequest = $this->getServerRequest([
+            'schema_name' => 'test',
+            'transition_name' => 'unknown'
         ]);
-        $serverResponse = new ServerResponse([
-            ServerResponse::FIELD__PARAMETERS => [
-                IResponse::SUBJECT => new Response([
-                    Response::FIELD__RESPONSE => new PsrResponse()
-                ])
-            ]
-        ]);
+        $serverResponse = $this->getServerResponse();
 
         $this->entityTemplateRepo->create(new WorkflowEntityTemplate([
             WorkflowEntityTemplate::FIELD__NAME => 'test',
@@ -182,26 +185,14 @@ class EntityTransitTest extends TestCase
     public function testInvalidEntityState()
     {
         $operation = new EntityTransit();
-        $serverRequest = new ServerRequest([
-            ServerRequest::FIELD__PARAMETERS => [
-                IRequest::SUBJECT => new Request([
-                    IRequest::FIELD__PARAMS => [
-                        'schema_name' => 'test',
-                        'transition_name' => 'test',
-                        'entity' => [
-                            WorkflowEntity::FIELD__STATE => 'not from'
-                        ]
-                    ]
-                ])
+        $serverRequest = $this->getServerRequest([
+            'schema_name' => 'test',
+            'transition_name' => 'test',
+            'entity' => [
+                WorkflowEntity::FIELD__STATE => 'not from'
             ]
         ]);
-        $serverResponse = new ServerResponse([
-            ServerResponse::FIELD__PARAMETERS => [
-                IResponse::SUBJECT => new Response([
-                    Response::FIELD__RESPONSE => new PsrResponse()
-                ])
-            ]
-        ]);
+        $serverResponse = $this->getServerResponse();
 
         $this->entityTemplateRepo->create(new WorkflowEntityTemplate([
             WorkflowEntityTemplate::FIELD__NAME => 'test',
@@ -234,26 +225,14 @@ class EntityTransitTest extends TestCase
     public function testInvalidEntityContent()
     {
         $operation = new EntityTransit();
-        $serverRequest = new ServerRequest([
-            ServerRequest::FIELD__PARAMETERS => [
-                IRequest::SUBJECT => new Request([
-                    IRequest::FIELD__PARAMS => [
-                        'schema_name' => 'test',
-                        'transition_name' => 'test',
-                        'entity' => [
-                            WorkflowEntity::FIELD__STATE => 'from'
-                        ]
-                    ]
-                ])
+        $serverRequest = $this->getServerRequest([
+            'schema_name' => 'test',
+            'transition_name' => 'test',
+            'entity' => [
+                WorkflowEntity::FIELD__STATE => 'from'
             ]
         ]);
-        $serverResponse = new ServerResponse([
-            ServerResponse::FIELD__PARAMETERS => [
-                IResponse::SUBJECT => new Response([
-                    Response::FIELD__RESPONSE => new PsrResponse()
-                ])
-            ]
-        ]);
+        $serverResponse = $this->getServerResponse();
 
         $this->entityTemplateRepo->create(new WorkflowEntityTemplate([
             WorkflowEntityTemplate::FIELD__NAME => 'test',
@@ -305,27 +284,15 @@ class EntityTransitTest extends TestCase
     public function testValid()
     {
         $operation = new EntityTransit();
-        $serverRequest = new ServerRequest([
-            ServerRequest::FIELD__PARAMETERS => [
-                IRequest::SUBJECT => new Request([
-                    IRequest::FIELD__PARAMS => [
-                        'schema_name' => 'test',
-                        'transition_name' => 'test',
-                        'entity' => [
-                            WorkflowEntity::FIELD__STATE => 'from',
-                            'test' => true
-                        ]
-                    ]
-                ])
+        $serverRequest = $this->getServerRequest([
+            'schema_name' => 'test',
+            'transition_name' => 'test',
+            'entity' => [
+                WorkflowEntity::FIELD__STATE => 'from',
+                'test' => true
             ]
         ]);
-        $serverResponse = new ServerResponse([
-            ServerResponse::FIELD__PARAMETERS => [
-                IResponse::SUBJECT => new Response([
-                    Response::FIELD__RESPONSE => new PsrResponse()
-                ])
-            ]
-        ]);
+        $serverResponse = $this->getServerResponse();
 
         $this->entityTemplateRepo->create(new WorkflowEntityTemplate([
             WorkflowEntityTemplate::FIELD__NAME => 'test',
