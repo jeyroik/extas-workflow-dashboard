@@ -147,7 +147,7 @@ class EntityTransitTest extends TestCase
         /**
          * @var $jsonRpcResponse IResponse
          */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT);
+        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
         $this->assertTrue($jsonRpcResponse->hasError());
     }
 
@@ -178,7 +178,7 @@ class EntityTransitTest extends TestCase
         /**
          * @var $jsonRpcResponse IResponse
          */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT);
+        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
         $this->assertTrue($jsonRpcResponse->hasError());
     }
 
@@ -218,7 +218,7 @@ class EntityTransitTest extends TestCase
         /**
          * @var $jsonRpcResponse IResponse
          */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT);
+        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
         $this->assertTrue($jsonRpcResponse->hasError());
     }
 
@@ -277,7 +277,7 @@ class EntityTransitTest extends TestCase
         /**
          * @var $jsonRpcResponse IResponse
          */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT);
+        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
         $this->assertTrue($jsonRpcResponse->hasError());
     }
 
@@ -337,7 +337,7 @@ class EntityTransitTest extends TestCase
         /**
          * @var $jsonRpcResponse IResponse
          */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT);
+        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
         $this->assertTrue($jsonRpcResponse->hasError());
     }
 }
