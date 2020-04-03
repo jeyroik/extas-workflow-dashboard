@@ -33,7 +33,7 @@ class SchemaTransitionAdd extends OperationDispatcher
         $jRpcData = $request->getParams();
         $transitionName = $jRpcData['transition_name'] ?? '';
         $schemaName = $jRpcData['schema_name'] ?? '';
-        $dispatchersData = $jRpcData['dispatchers'];
+        $dispatchersData = $jRpcData['dispatchers'] ?? [];
 
         /**
          * @var $transitRepo IWorkflowTransitionRepository
