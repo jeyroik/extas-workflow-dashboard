@@ -162,7 +162,7 @@ class EntityTransitTest extends TestCase
 
         $this->entityTemplateRepo->create(new WorkflowEntityTemplate([
             WorkflowEntityTemplate::FIELD__NAME => 'test',
-            WorkflowEntityTemplate::FIELD__CLASS => WorkflowEntityContext::class
+            WorkflowEntityTemplate::FIELD__CLASS => WorkflowEntity::class
         ]));
 
         $this->schemaRepo->create(new WorkflowSchema([
@@ -196,7 +196,7 @@ class EntityTransitTest extends TestCase
 
         $this->entityTemplateRepo->create(new WorkflowEntityTemplate([
             WorkflowEntityTemplate::FIELD__NAME => 'test',
-            WorkflowEntityTemplate::FIELD__CLASS => WorkflowEntityContext::class
+            WorkflowEntityTemplate::FIELD__CLASS => WorkflowEntity::class
         ]));
 
         $this->schemaRepo->create(new WorkflowSchema([
@@ -236,7 +236,7 @@ class EntityTransitTest extends TestCase
 
         $this->entityTemplateRepo->create(new WorkflowEntityTemplate([
             WorkflowEntityTemplate::FIELD__NAME => 'test',
-            WorkflowEntityTemplate::FIELD__CLASS => WorkflowEntityContext::class
+            WorkflowEntityTemplate::FIELD__CLASS => WorkflowEntity::class
         ]));
 
         $this->schemaRepo->create(new WorkflowSchema([
@@ -296,7 +296,7 @@ class EntityTransitTest extends TestCase
 
         $this->entityTemplateRepo->create(new WorkflowEntityTemplate([
             WorkflowEntityTemplate::FIELD__NAME => 'test',
-            WorkflowEntityTemplate::FIELD__CLASS => WorkflowEntityContext::class
+            WorkflowEntityTemplate::FIELD__CLASS => WorkflowEntity::class
         ]));
 
         $this->schemaRepo->create(new WorkflowSchema([
