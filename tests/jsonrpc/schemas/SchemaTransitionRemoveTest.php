@@ -29,36 +29,36 @@ use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
 use Slim\Http\Response as PsrResponse;
 
 /**
- * Class SchemaTransitionAddTest
+ * Class SchemaTransitionRemoveTest
  *
  * @author jeyroik@gmail.com
  */
-class SchemaTransitionAddTest extends TestCase
+class SchemaTransitionRemoveTest extends TestCase
 {
     /**
      * @var IRepository|null
      */
-protected ?IRepository $entityTemplateRepo = null;
+    protected ?IRepository $entityTemplateRepo = null;
 
     /**
      * @var IRepository|null
      */
-protected ?IRepository $transitionDispatcherRepo = null;
+    protected ?IRepository $transitionDispatcherRepo = null;
 
     /**
      * @var IRepository|null
      */
-protected ?IRepository $transitionTemplateDispatcherRepo = null;
+    protected ?IRepository $transitionTemplateDispatcherRepo = null;
 
     /**
      * @var IRepository|null
      */
-protected ?IRepository $transitionRepo = null;
+    protected ?IRepository $transitionRepo = null;
 
     /**
      * @var IRepository|null
      */
-protected ?IRepository $schemaRepo = null;
+    protected ?IRepository $schemaRepo = null;
 
     protected function setUp(): void
     {
