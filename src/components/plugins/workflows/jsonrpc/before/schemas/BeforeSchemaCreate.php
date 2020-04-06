@@ -14,7 +14,6 @@ use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
 /**
  * Class BeforeSchemaCreate
  *
- * @deprecated
  * @stage before.run.jsonrpc.schema.create
  * @package extas\components\plugins\workflows\jsonrpc\before
  * @author jeyroik@gmail.com
@@ -49,8 +48,8 @@ class BeforeSchemaCreate extends OperationDispatcher
     {
         $transitions = $item->getTransitionsNames();
         /**
-         * @var $repo IWorkflowTransitionRepository
-         * @var $wTransitions IWorkflowTransition[]
+         * @var IWorkflowTransitionRepository $repo
+         * @var IWorkflowTransition[] $wTransitions
          */
         $repo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
         $wTransitions = $repo->all([IWorkflowTransition::FIELD__NAME => $transitions]);

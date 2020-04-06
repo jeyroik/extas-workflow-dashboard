@@ -15,10 +15,10 @@ class PluginBoardRoute extends Plugin
     /**
      * @param \extas\components\jsonrpc\App $app
      */
-    public function __invoke(\extas\components\jsonrpc\App &$app)
+    public function __invoke(\extas\components\jsonrpc\App &$app): void
     {
         $app->any('/[{section}[/{action}[/{name}]]]', function (Request $request, Response $response, array $args) {
-            $pluginStub = new \extas\components\plugins\Plugin();
+            $pluginStub = new Plugin();
             $section = $args['section'] ?? 'index';
             $action = $args['action'] ?? 'index';
             foreach ($pluginStub->getPluginsByStage('view.' . $section . '.' . $action) as $plugin) {
