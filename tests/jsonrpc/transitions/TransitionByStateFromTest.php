@@ -203,7 +203,7 @@ class TransitionByStateFromTest extends TestCase
         $this->schemaRepo->create(new WorkflowSchema([
             WorkflowSchema::FIELD__NAME => 'test',
             WorkflowSchema::FIELD__ENTITY_TEMPLATE => 'test',
-            WorkflowSchema::FIELD__TRANSITIONS => ['test']
+            WorkflowSchema::FIELD__TRANSITIONS => ['test', 'test2']
         ]));
 
         $this->entityTemplateRepo->create(new WorkflowEntityTemplate([
