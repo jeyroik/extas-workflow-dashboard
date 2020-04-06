@@ -132,4 +132,6 @@ class PluginBoardRouteTest extends TestCase
 
         $this->assertTrue(strpos($page, '<title>Схемы</title>') !== false);
     }
+
+
 }
