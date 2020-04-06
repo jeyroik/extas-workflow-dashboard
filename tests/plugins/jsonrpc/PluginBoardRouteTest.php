@@ -11,7 +11,7 @@ use extas\components\plugins\jsonrpc\PluginBoardRoute;
  */
 class PluginBoardRouteTest extends TestCase
 {
-    protected function testAddRoute()
+    public function testAddRoute()
     {
         $app = new App();
         $plugin = new PluginBoardRoute();
