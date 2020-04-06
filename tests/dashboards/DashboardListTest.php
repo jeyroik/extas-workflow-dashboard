@@ -32,16 +32,18 @@ class DashboardListTest extends TestCase
                     'name' => 'test',
                     'title' => 'Test item',
                     'description' => 'Test description'
-                ])
+                ]),
+                $this->buildItem([
+                    'name' => 'test_0',
+                    'title' => 'Test item',
+                    'description' => 'Test description'
+                ]),
             ]
         ]);
 
         $result = $list->render();
-        $mustBe = '<select name="test_list" title="Test title" class="form-control">
-    <option value="test" title="Test description" selected>Test item</option>
-</select>';
         $this->assertNotEmpty($result);
-        $this->assertEquals($mustBe, $result);
+        $this->assertEquals($this->getBlueprint(), $result);
     }
 
     /**
@@ -57,5 +59,10 @@ class DashboardListTest extends TestCase
                 return '';
             }
         };
+    }
+    
+    protected function getBlueprint()
+    {
+        return file_get_contents(getcwd() . '/tests/resources/list.html');
     }
 }
