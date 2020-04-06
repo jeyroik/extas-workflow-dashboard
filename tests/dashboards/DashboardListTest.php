@@ -10,6 +10,14 @@ use extas\components\dashboards\DashboardList;
  */
 class DashboardListTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
+        $env->load();
+        defined('APP__ROOT') || define('APP__ROOT', getcwd());
+    }
+
     public function testRender()
     {
         $list = new DashboardList([
