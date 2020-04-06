@@ -19,6 +19,11 @@ class PluginBoardRouteTest extends TestCase
         $container = $app->getContainer();
         $router = $container->get('router');
         $routes = $router->getRoutes();
-        $this->assertCount(1, $routes);
+        /**
+         * - /api/jsonrpc
+         * - /specs
+         * - /section/action/name
+         */
+        $this->assertCount(3, $routes);
     }
 }
