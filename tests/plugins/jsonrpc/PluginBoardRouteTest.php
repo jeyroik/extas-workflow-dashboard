@@ -8,6 +8,10 @@ use \extas\components\plugins\PluginRepository;
 use extas\components\plugins\workflows\views\ViewIndexIndex;
 use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
 use extas\components\workflows\schemas\WorkflowSchemaRepository;
+use extas\components\workflows\transitions\WorkflowTransitionRepository;
+use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
+use extas\components\workflows\transitions\WorkflowTransition;
+use extas\components\workflows\schemas\WorkflowSchema;
 use extas\components\SystemContainer;
 use extas\interfaces\repositories\IRepository;
 
@@ -23,6 +27,11 @@ class PluginBoardRouteTest extends TestCase
      */
     protected ?IRepository $pluginRepo = null;
 
+    /**
+     * @var IRepository|null
+     */
+    protected ?IRepository $schemaRepo = null;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -31,16 +40,24 @@ class PluginBoardRouteTest extends TestCase
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
         $this->pluginRepo = new PluginRepository();
+        $this->schemaRepo = new WorkflowSchemaRepository();
+        $this->transitionRepo = new WorkflowTransitionRepository();
 
         SystemContainer::addItem(
             IWorkflowSchemaRepository::class,
             WorkflowSchemaRepository::class
+        );
+        SystemContainer::addItem(
+            IWorkflowTransitionRepository::class,
+            WorkflowTransitionRepository::class
         );
     }
 
     public function tearDown(): void
     {
         $this->pluginRepo->delete([Plugin::FIELD__CLASS => ViewIndexIndex::class]);
+        $this->schemaRepo->delete([WorkflowSchema::FIELD__NAME => 'test']);
+        $this->transitionRepo->delete([WorkflowTransition::FIELD__NAME => 'test']);
     }
 
     public function testAddRoute()
@@ -87,6 +104,19 @@ class PluginBoardRouteTest extends TestCase
         $this->pluginRepo->create(new Plugin([
             Plugin::FIELD__CLASS => ViewIndexIndex::class,
             Plugin::FIELD__STAGE => 'view.index.index'
+        ]));
+        $this->schemaRepo->create(new WorkflowSchema([
+            WorkflowSchema::FIELD__NAME => 'test',
+            WorkflowSchema::FIELD__TITLE => 'Test',
+            WorkflowSchema::FIELD__DESCRIPTION => 'Test',
+            WorkflowSchema::FIELD__TRANSITIONS => ['test'],
+            WorkflowSchema::FIELD__ENTITY_TEMPLATE => 'test'
+        ]));
+        $this->transitionRepo->create(new WorkflowTransition([
+            WorkflowTransition::FIELD__NAME => 'test',
+            WorkflowTransition::FIELD__TITLE => 'Test',
+            WorkflowTransition::FIELD__STATE_FROM => 'from',
+            WorkflowTransition::FIELD__STATE_TO => 'to'
         ]));
 
         foreach ($routes as $route) {
