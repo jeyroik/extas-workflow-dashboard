@@ -38,7 +38,7 @@ class ViewSchemaEdit extends Plugin
         $schema = $repo->one([IWorkflowSchema::FIELD__NAME => $args['name'] ?? '']);
 
         if (!$schema) {
-            $response->withHeader('Location', '/');
+            $response = $response->withHeader('Location', '/');
         } else {
             $editTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'schemas/edit']);
             $schema['transitions'] = implode(', ', $schema->getTransitionsNames());

@@ -122,6 +122,6 @@ class ViewSchemaEditTest extends TestCase
         $_REQUEST['entity_template'] = 'new';
         $dispatcher = new ViewSchemaEdit();
         $dispatcher($request, $response, ['name' => 'unknown']);
-        $this->assertTrue($response->hasHeader('Location'));
+        $this->assertEquals(302, $response->getStatusCode());
     }
 }
