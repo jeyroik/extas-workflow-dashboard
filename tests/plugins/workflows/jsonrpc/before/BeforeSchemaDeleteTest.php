@@ -96,7 +96,9 @@ class BeforeSchemaDeleteTest extends TestCase
     {
         $operation = new BeforeSchemaCreate();
         $serverRequest = $this->getServerRequest([
-            WorkflowSchema::FIELD__NAME => 'test'
+            'data' => [
+                WorkflowSchema::FIELD__NAME => 'test'
+            ]
         ]);
         $serverResponse = $this->getServerResponse();
 
@@ -123,7 +125,9 @@ class BeforeSchemaDeleteTest extends TestCase
     {
         $operation = new BeforeSchemaCreate();
         $serverRequest = $this->getServerRequest([
-            WorkflowSchema::FIELD__NAME => 'test'
+            'data' => [
+                WorkflowSchema::FIELD__NAME => 'test'
+            ]
         ]);
         $serverResponse = $this->getServerResponse();
 

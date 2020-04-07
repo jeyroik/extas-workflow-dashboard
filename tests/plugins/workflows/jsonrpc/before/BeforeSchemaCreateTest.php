@@ -96,7 +96,9 @@ class BeforeSchemaCreateTest extends TestCase
     {
         $operation = new BeforeSchemaCreate();
         $serverRequest = $this->getServerRequest([
-            WorkflowSchema::FIELD__NAME => 'test'
+            'data' => [
+                WorkflowSchema::FIELD__NAME => 'test'
+            ]
         ]);
         $serverResponse = $this->getServerResponse();
 
@@ -123,8 +125,10 @@ class BeforeSchemaCreateTest extends TestCase
     {
         $operation = new BeforeSchemaCreate();
         $serverRequest = $this->getServerRequest([
-            WorkflowSchema::FIELD__NAME => 'test',
-            WorkflowSchema::FIELD__TRANSITIONS => ['unknown']
+            'data' => [
+                WorkflowSchema::FIELD__NAME => 'test',
+                WorkflowSchema::FIELD__TRANSITIONS => ['unknown']
+            ]
         ]);
         $serverResponse = $this->getServerResponse();
 
@@ -147,8 +151,10 @@ class BeforeSchemaCreateTest extends TestCase
     {
         $operation = new BeforeSchemaCreate();
         $serverRequest = $this->getServerRequest([
-            WorkflowSchema::FIELD__NAME => 'test',
-            WorkflowSchema::FIELD__TRANSITIONS => ['test']
+            'data' => [
+                WorkflowSchema::FIELD__NAME => 'test',
+                WorkflowSchema::FIELD__TRANSITIONS => ['test']
+            ]
         ]);
         $serverResponse = $this->getServerResponse();
 
