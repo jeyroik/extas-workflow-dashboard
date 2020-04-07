@@ -72,10 +72,10 @@ class ViewTransitionSaveTest extends TestCase
         $this->assertTrue(strpos($page, '<title>Переходы</title>') !== false);
 
         /**
-         * @var WorkflowState $state
+         * @var WorkflowTransition $transition
          */
-        $state = $this->stateRepo->one([WorkflowTransition::FIELD__NAME => 'test']);
-        $this->assertEquals('test', $state->getDescription());
+        $transition = $this->transitionRepo->one([WorkflowTransition::FIELD__NAME => 'test']);
+        $this->assertEquals('test', $transition->getDescription());
     }
 
     public function testTransitionCreateOnUpdateIfNotExists()
@@ -108,6 +108,6 @@ class ViewTransitionSaveTest extends TestCase
 
         $page = (string) $response->getBody();
         $this->assertTrue(strpos($page, '<title>Переходы</title>') !== false);
-        $this->assertNotEmpty($this->stateRepo->one([WorkflowTransition::FIELD__DESCRIPTION => 'test']));
+        $this->assertNotEmpty($this->transitionRepo->one([WorkflowTransition::FIELD__DESCRIPTION => 'test']));
     }
 }
