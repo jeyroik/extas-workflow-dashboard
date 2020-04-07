@@ -55,35 +55,23 @@ class ViewSchemaSaveTest extends TestCase
 
     public function tearDown(): void
     {
-        $this->pluginRepo->delete([Plugin::FIELD__CLASS => ViewIndexIndex::class]);
+        $this->pluginRepo->delete([Plugin::FIELD__CLASS => ViewSchemaSave::class]);
         $this->schemaRepo->delete([WorkflowSchema::FIELD__NAME => 'test']);
         $this->transitionRepo->delete([WorkflowTransition::FIELD__NAME => 'test']);
     }
 
-    public function testBoardIndex()
+    public function testUpdateSchema()
     {
         $request = new \Slim\Http\Request(
             'GET',
             new \Slim\Http\Uri('http', 'localhost', 80, '/'),
-            new \Slim\Http\Headers([
-                'Content-type' => 'text/html'
-            ]),
+            new \Slim\Http\Headers(['Content-type' => 'text/html']),
             [],
             [],
             new \Slim\Http\Stream(fopen('php://input', 'r'))
         );
 
         $response = new \Slim\Http\Response();
-
-        $app = new App();
-        $plugin = new PluginBoardRoute();
-        $plugin($app);
-        $container = $app->getContainer();
-        /**
-         * @var \Slim\Router $router
-         */
-        $router = $container->get('router');
-        $routes = $router->getRoutes();
 
         $this->pluginRepo->create(new Plugin([
             Plugin::FIELD__CLASS => ViewSchemaSave::class,
@@ -103,20 +91,20 @@ class ViewSchemaSaveTest extends TestCase
             WorkflowTransition::FIELD__STATE_TO => 'to'
         ]));
 
-        foreach ($routes as $route) {
-            if ($route->getPattern() == '/[{section}[/{action}[/{name}]]]') {
-                $dispatcher = $route->getCallable();
-                $response = $dispatcher($request, $response, [
-                    'section' => 'schema',
-                    'action' => 'save',
-                    'name' => 'test'
-                ]);
-            }
-        }
-
+        $_REQUEST['transitions'] = 'test';
+        $_REQUEST['entity_template'] = 'new';
+        $dispatcher = new ViewSchemaSave();
+        $dispatcher($request, $response, ['name' => 'test']);
         $this->assertEquals(200, $response->getStatusCode());
 
         $page = (string) $response->getBody();
         $this->assertTrue(strpos($page, '<title>Схемы</title>') !== false);
+
+        /**
+         * @var WorkflowSchema $schema
+         */
+        $schema = $this->schemaRepo->one([WorkflowSchema::FIELD__NAME => 'test']);
+        $this->assertNotEmpty($schema);
+        $this->assertEquals('new', $schema->getEntityTemplateName());
     }
 }
