@@ -59,7 +59,7 @@ class BeforeSchemaCreate extends OperationDispatcher
             foreach ($wTransitions as $transition) {
                 unset($transitions[$transition->getName()]);
             }
-            $response->error('Unknown transition', 400);
+            $response->error('Unknown transition', 400, array_keys($transitions));
         }
     }
 }
