@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use extas\components\plugins\workflows\views\states\ViewStateEdit;
+use extas\components\plugins\workflows\views\states\ViewStateSave;
 use extas\interfaces\workflows\states\IWorkflowStateRepository;
 use extas\components\workflows\states\WorkflowStateRepository;
 use extas\components\workflows\states\WorkflowState;
@@ -62,7 +62,7 @@ class ViewStateSaveTest extends TestCase
             WorkflowState::FIELD__TITLE => 'test'
         ]));
 
-        $dispatcher = new ViewStateEdit();
+        $dispatcher = new ViewStateSave();
         $_REQUEST['title'] = 'test';
         $_REQUEST['description'] = 'test';
         $dispatcher($request, $response, ['name' => 'test']);
@@ -91,16 +91,16 @@ class ViewStateSaveTest extends TestCase
 
         $response = new \Slim\Http\Response();
 
-        $this->schemaRepo->create(new WorkflowState([
+        $this->stateRepo->create(new WorkflowState([
             WorkflowState::FIELD__NAME => 'test',
             WorkflowState::FIELD__TITLE => 'test'
         ]));
-        $this->schemaRepo->create(new WorkflowState([
+        $this->stateRepo->create(new WorkflowState([
             WorkflowState::FIELD__NAME => 'test2',
             WorkflowState::FIELD__TITLE => 'test'
         ]));
 
-        $dispatcher = new ViewStateEdit();
+        $dispatcher = new ViewStateSave();
         $_REQUEST['title'] = 'test';
         $_REQUEST['description'] = 'test';
         $dispatcher($request, $response, ['name' => 'unknown']);

@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use extas\components\plugins\workflows\views\states\ViewStatesIndex;
+use extas\components\plugins\workflows\views\states\ViewStateCreate;
 use extas\interfaces\workflows\states\IWorkflowStateRepository;
 use extas\components\workflows\states\WorkflowStateRepository;
 use extas\components\workflows\states\WorkflowState;
@@ -40,7 +40,7 @@ class ViewStateCreateTest extends TestCase
         $this->stateRepo->delete([WorkflowState::FIELD__NAME => 'test']);
     }
 
-    public function testStatesIndex()
+    public function testStateCreateView()
     {
         $request = new \Slim\Http\Request(
             'GET',
@@ -57,7 +57,7 @@ class ViewStateCreateTest extends TestCase
             WorkflowState::FIELD__NAME => 'test'
         ]));
 
-        $dispatcher = new ViewStatesIndex();
+        $dispatcher = new ViewStateCreate();
         $dispatcher($request, $response, []);
         $this->assertEquals(200, $response->getStatusCode());
 
