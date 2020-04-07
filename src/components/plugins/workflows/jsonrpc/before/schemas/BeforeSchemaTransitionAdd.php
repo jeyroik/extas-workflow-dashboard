@@ -26,8 +26,8 @@ class BeforeSchemaTransitionAdd extends OperationDispatcher
     protected function dispatch(IRequest $request, IResponse &$response)
     {
         if (!$response->hasError()) {
-            $this->checkTransition($response, $request->getData());
-            $this->checkSchema($response, $request->getData());
+            $this->checkTransition($response, $request->getParams());
+            $this->checkSchema($response, $request->getParams());
         }
     }
 
