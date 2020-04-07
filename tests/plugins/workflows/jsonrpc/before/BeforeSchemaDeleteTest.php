@@ -8,7 +8,7 @@ use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcherRepository;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
 use extas\interfaces\parameters\IParameter;
-use extas\components\plugins\workflows\jsonrpc\before\schemas\BeforeSchemaCreate;
+use extas\components\plugins\workflows\jsonrpc\before\schemas\BeforeSchemaDelete;
 use extas\components\servers\requests\ServerRequest;
 use extas\components\servers\responses\ServerResponse;
 use extas\interfaces\jsonrpc\IRequest;
@@ -94,7 +94,7 @@ class BeforeSchemaDeleteTest extends TestCase
      */
     public function testSchemaHasNoDispatchers()
     {
-        $operation = new BeforeSchemaCreate();
+        $operation = new BeforeSchemaDelete();
         $serverRequest = $this->getServerRequest([
             'data' => [
                 WorkflowSchema::FIELD__NAME => 'test'
@@ -123,7 +123,7 @@ class BeforeSchemaDeleteTest extends TestCase
      */
     public function testSchemaHasDispatchers()
     {
-        $operation = new BeforeSchemaCreate();
+        $operation = new BeforeSchemaDelete();
         $serverRequest = $this->getServerRequest([
             'data' => [
                 WorkflowSchema::FIELD__NAME => 'test'
