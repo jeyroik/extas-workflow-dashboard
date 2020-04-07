@@ -60,7 +60,7 @@ class DashboardListTest extends TestCase
             }
         };
     }
-    
+
     protected function getBlueprint()
     {
         return file_get_contents(getcwd() . '/tests/resources/list.html');
