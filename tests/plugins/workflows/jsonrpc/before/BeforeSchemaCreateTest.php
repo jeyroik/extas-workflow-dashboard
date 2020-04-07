@@ -127,10 +127,16 @@ class BeforeSchemaCreateTest extends TestCase
         $serverRequest = $this->getServerRequest([
             'data' => [
                 WorkflowSchema::FIELD__NAME => 'test',
-                WorkflowSchema::FIELD__TRANSITIONS => ['unknown']
+                WorkflowSchema::FIELD__TRANSITIONS => ['unknown', 'test']
             ]
         ]);
         $serverResponse = $this->getServerResponse();
+
+        $this->transitionRepo->create(new WorkflowTransition([
+            WorkflowTransition::FIELD__NAME => 'test',
+            WorkflowTransition::FIELD__STATE_FROM => 'from',
+            WorkflowTransition::FIELD__STATE_TO => 'to'
+        ]));
 
         $operation(
             $serverRequest,
