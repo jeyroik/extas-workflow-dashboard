@@ -96,8 +96,7 @@ class BeforeSchemaCreateTest extends TestCase
     {
         $operation = new BeforeSchemaCreate();
         $serverRequest = $this->getServerRequest([
-            'schema_name' => 'test',
-            'transition_name' => 'unknown'
+            WorkflowSchema::FIELD__NAME => 'test'
         ]);
         $serverResponse = $this->getServerResponse();
 
@@ -124,16 +123,10 @@ class BeforeSchemaCreateTest extends TestCase
     {
         $operation = new BeforeSchemaCreate();
         $serverRequest = $this->getServerRequest([
-            'schema_name' => 'test',
-            'transition_name' => 'test'
+            WorkflowSchema::FIELD__NAME => 'test',
+            WorkflowSchema::FIELD__TRANSITIONS => ['unknown']
         ]);
         $serverResponse = $this->getServerResponse();
-
-        $this->schemaRepo->create(new WorkflowSchema([
-            WorkflowSchema::FIELD__NAME => 'test',
-            WorkflowSchema::FIELD__ENTITY_TEMPLATE => 'test',
-            WorkflowSchema::FIELD__TRANSITIONS => ['unknown']
-        ]));
 
         $operation(
             $serverRequest,
@@ -154,16 +147,10 @@ class BeforeSchemaCreateTest extends TestCase
     {
         $operation = new BeforeSchemaCreate();
         $serverRequest = $this->getServerRequest([
-            'schema_name' => 'test',
-            'transition_name' => 'test'
+            WorkflowSchema::FIELD__NAME => 'test',
+            WorkflowSchema::FIELD__TRANSITIONS => ['test']
         ]);
         $serverResponse = $this->getServerResponse();
-
-        $this->schemaRepo->create(new WorkflowSchema([
-            WorkflowSchema::FIELD__NAME => 'test',
-            WorkflowSchema::FIELD__ENTITY_TEMPLATE => 'test',
-            WorkflowSchema::FIELD__TRANSITIONS => ['test']
-        ]));
 
         $this->transitionRepo->create(new WorkflowTransition([
             WorkflowTransition::FIELD__NAME => 'test',
