@@ -172,6 +172,6 @@ class BeforeTransitionDeleteTest extends TestCase
          * @var $jsonRpcResponse IResponse
          */
         $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
+        $this->assertFalse($jsonRpcResponse->hasError());
     }
 }
