@@ -3,21 +3,15 @@
 use PHPUnit\Framework\TestCase;
 use extas\interfaces\repositories\IRepository;
 use extas\components\SystemContainer;
-use extas\components\workflows\transitions\WorkflowTransition;
-use extas\components\workflows\transitions\WorkflowTransitionRepository;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
+use extas\components\workflows\entities\WorkflowEntityTemplate;
+use extas\components\workflows\entities\WorkflowEntityTemplateRepository;
+use extas\interfaces\workflows\entities\IWorkflowEntityTemplateRepository;
 use extas\interfaces\parameters\IParameter;
-use extas\components\plugins\workflows\jsonrpc\before\transitions\BeforeTransitionCreate;
 use extas\components\servers\requests\ServerRequest;
 use extas\components\servers\responses\ServerResponse;
-use extas\interfaces\jsonrpc\IRequest;
-use extas\interfaces\jsonrpc\IResponse;
-use extas\components\jsonrpc\Request;
-use extas\components\jsonrpc\Response;
-use extas\interfaces\workflows\states\IWorkflowStateRepository;
-use extas\components\workflows\states\WorkflowStateRepository;
-use extas\components\workflows\states\WorkflowState;
-use Slim\Http\Response as PsrResponse;
+use extas\components\plugins\workflows\expands\schemas\SchemaExpandByEntityTemplate;
+use extas\components\workflows\schemas\WorkflowSchema;
+use extas\components\expands\ExpandingBox;
 
 /**
  * Class BeforeTransitionCreateTest
@@ -42,34 +36,26 @@ class BeforeTransitionCreateTest extends TestCase
         $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
-        $this->transitionRepo = new WorkflowTransitionRepository();
-        $this->stateRepo = new WorkflowStateRepository();
+        $this->templateRepo = new WorkflowEntityTemplateRepository();
 
         SystemContainer::addItem(
-            IWorkflowTransitionRepository::class,
-            WorkflowTransitionRepository::class
-        );
-        SystemContainer::addItem(
-            IWorkflowStateRepository::class,
-            WorkflowStateRepository::class
+            IWorkflowEntityTemplateRepository::class,
+            WorkflowEntityTemplateRepository::class
         );
     }
 
     public function tearDown(): void
     {
-        $this->transitionRepo->delete([WorkflowTransition::FIELD__NAME => 'test']);
-        $this->stateRepo->delete([WorkflowState::FIELD__TITLE => 'test']);
+        $this->templateRepo->delete([WorkflowEntityTemplate::FIELD__NAME => 'test']);
     }
 
-    protected function getServerRequest(array $params)
+    protected function getServerRequest()
     {
         return new ServerRequest([
             ServerRequest::FIELD__PARAMETERS => [
                 [
-                    IParameter::FIELD__NAME => IRequest::SUBJECT,
-                    IParameter::FIELD__VALUE => new Request([
-                        IRequest::FIELD__PARAMS => $params
-                    ])
+                    IParameter::FIELD__NAME => ServerRequest::PARAMETER__EXPAND,
+                    IParameter::FIELD__VALUE => 'entity'
                 ]
             ]
         ]);
@@ -77,139 +63,114 @@ class BeforeTransitionCreateTest extends TestCase
 
     protected function getServerResponse()
     {
-        return new ServerResponse([
-            ServerResponse::FIELD__PARAMETERS => [
-                [
-                    IParameter::FIELD__NAME => IResponse::SUBJECT,
-                    IParameter::FIELD__VALUE => new Response([
-                        Response::FIELD__RESPONSE => new PsrResponse()
-                    ])
+        return new ServerResponse();
+    }
+
+    /**
+     * @throws
+     */
+    public function testEmptyValue()
+    {
+        $operation = new SchemaExpandByEntityTemplate();
+        $serverRequest = $this->getServerRequest();
+        $serverResponse = $this->getServerResponse();
+        $parent = new ExpandingBox([
+            ExpandingBox::FIELD__NAME => 'test',
+            ExpandingBox::DATA__MARKER . 'test' => []
+        ]);
+
+        $operation(
+            $parent,
+            $serverRequest,
+            $serverResponse
+        );
+
+        $this->assertEquals(
+            ['schemas' => []],
+            $parent->getValue()
+        );
+    }
+
+    /**
+     * @throws
+     */
+    public function testUnknownTemplate()
+    {
+        $operation = new SchemaExpandByEntityTemplate();
+        $serverRequest = $this->getServerRequest();
+        $serverResponse = $this->getServerResponse();
+        $parent = new ExpandingBox([
+            ExpandingBox::FIELD__NAME => 'test',
+            ExpandingBox::DATA__MARKER . 'test' => [],
+            ExpandingBox::FIELD__VALUE => [
+                'schemas' => [
+                    [
+                        WorkflowSchema::FIELD__ENTITY_TEMPLATE => 'unknown'
+                    ]
                 ]
             ]
         ]);
+
+        $operation(
+            $parent,
+            $serverRequest,
+            $serverResponse
+        );
+
+        $this->assertEquals(
+            ['schemas' => [
+                [
+                    WorkflowSchema::FIELD__ENTITY_TEMPLATE => [
+                        WorkflowEntityTemplate::FIELD__NAME => 'unknown',
+                        WorkflowEntityTemplate::FIELD__TITLE => 'Ошибка: Неизвестный шаблон сущности [unknown]'
+                    ]
+                ]
+            ]],
+            $parent->getValue()
+        );
     }
 
     /**
      * @throws
      */
-    public function testTheSameFromToStates()
+    public function testValidTemplate()
     {
-        $operation = new BeforeTransitionCreate();
-        $serverRequest = $this->getServerRequest([
-            'data' => [
-                WorkflowTransition::FIELD__STATE_FROM => 'test',
-                WorkflowTransition::FIELD__STATE_TO => 'test'
+        $operation = new SchemaExpandByEntityTemplate();
+        $serverRequest = $this->getServerRequest();
+        $serverResponse = $this->getServerResponse();
+        $parent = new ExpandingBox([
+            ExpandingBox::FIELD__NAME => 'test',
+            ExpandingBox::DATA__MARKER . 'test' => [],
+            ExpandingBox::FIELD__VALUE => [
+                'schemas' => [
+                    [
+                        WorkflowSchema::FIELD__ENTITY_TEMPLATE => 'test'
+                    ]
+                ]
             ]
         ]);
-        $serverResponse = $this->getServerResponse();
+
+        $this->templateRepo->create([
+            WorkflowEntityTemplate::FIELD__NAME => 'test',
+            WorkflowEntityTemplate::FIELD__TITLE => 'test'
+        ]);
 
         $operation(
+            $parent,
             $serverRequest,
             $serverResponse
         );
 
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
-    }
-
-    /**
-     * @throws
-     */
-    public function testUnknownStateFrom()
-    {
-        $operation = new BeforeTransitionCreate();
-        $serverRequest = $this->getServerRequest([
-            'data' => [
-                WorkflowTransition::FIELD__STATE_FROM => 'unknown',
-                WorkflowTransition::FIELD__STATE_TO => 'test'
-            ]
-        ]);
-        $serverResponse = $this->getServerResponse();
-
-        $this->stateRepo->create(new WorkflowState([
-            WorkflowState::FIELD__NAME => 'test',
-            WorkflowState::FIELD__TITLE => 'test'
-        ]));
-
-        $operation(
-            $serverRequest,
-            $serverResponse
+        $this->assertEquals(
+            ['schemas' => [
+                [
+                    WorkflowSchema::FIELD__ENTITY_TEMPLATE => [
+                        WorkflowEntityTemplate::FIELD__NAME => 'test',
+                        WorkflowEntityTemplate::FIELD__TITLE => 'test'
+                    ]
+                ]
+            ]],
+            $parent->getValue()
         );
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
-    }
-
-    /**
-     * @throws
-     */
-    public function testUnknownStateTo()
-    {
-        $operation = new BeforeTransitionCreate();
-        $serverRequest = $this->getServerRequest([
-            'data' => [
-                WorkflowTransition::FIELD__STATE_FROM => 'test',
-                WorkflowTransition::FIELD__STATE_TO => 'unknown'
-            ]
-        ]);
-        $serverResponse = $this->getServerResponse();
-
-        $this->stateRepo->create(new WorkflowState([
-            WorkflowState::FIELD__NAME => 'test',
-            WorkflowState::FIELD__TITLE => 'test'
-        ]));
-
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
-    }
-
-    /**
-     * @throws
-     */
-    public function testValid()
-    {
-        $operation = new BeforeTransitionCreate();
-        $serverRequest = $this->getServerRequest([
-            'data' => [
-                WorkflowTransition::FIELD__STATE_FROM => 'from',
-                WorkflowTransition::FIELD__STATE_TO => 'to'
-            ]
-        ]);
-        $serverResponse = $this->getServerResponse();
-
-        $this->stateRepo->create(new WorkflowState([
-            WorkflowState::FIELD__NAME => 'from',
-            WorkflowState::FIELD__TITLE => 'test'
-        ]));
-
-        $this->stateRepo->create(new WorkflowState([
-            WorkflowState::FIELD__NAME => 'to',
-            WorkflowState::FIELD__TITLE => 'test'
-        ]));
-
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertFalse($jsonRpcResponse->hasError());
     }
 }
