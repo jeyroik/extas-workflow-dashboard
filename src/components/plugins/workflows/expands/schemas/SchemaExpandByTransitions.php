@@ -63,14 +63,6 @@ class SchemaExpandByTransitions extends PluginExpandAbstract
     }
 
     /**
-     * @return bool
-     */
-    protected function isAllowed()
-    {
-        return true;
-    }
-
-    /**
      * @return string
      */
     protected function getExpandName(): string
