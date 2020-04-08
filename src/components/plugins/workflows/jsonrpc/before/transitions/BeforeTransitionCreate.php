@@ -55,7 +55,7 @@ class BeforeTransitionCreate extends OperationDispatcher
             foreach ($wStates as $state) {
                 unset($states[$state->getName()]);
             }
-            $response->error('Unknown states', 400);
+            $response->error('Unknown states', 400, $states);
         }
     }
 }

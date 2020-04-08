@@ -30,10 +30,6 @@ class BeforeTransitionDispatcherTemplateDelete extends OperationDispatcher
     {
         if (!$response->hasError()) {
             $item = new TransitionDispatcherTemplate($request->getData());
-            /**
-             * @var $repo IRepository
-             */
-            $repo = SystemContainer::getItem(ITransitionDispatcherTemplateRepository::class);
             $this->checkTransitionDispatchers($response, $item);
         }
     }
@@ -48,12 +44,12 @@ class BeforeTransitionDispatcherTemplateDelete extends OperationDispatcher
          * @var $repo ITransitionDispatcherRepository
          * @var $dispatchers ITransitionDispatcher[]
          */
-        $repo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
+        $repo = SystemContainer::getItem(ITransitionDispatcherRepository::class);
         $dispatchers = $repo->all([
             ITransitionDispatcher::FIELD__TEMPLATE => $item->getName()
         ]);
         if (count($dispatchers)) {
-            $response->error('There are dispatchers for a template', 400);
+            $response->error('There are dispatchers with this template', 400);
         }
     }
 }
