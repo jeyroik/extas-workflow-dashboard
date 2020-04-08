@@ -45,7 +45,7 @@ class SchemaByEntityTemplateTest extends TestCase
             ServerRequest::FIELD__PARAMETERS => [
                 [
                     IParameter::FIELD__NAME => ServerRequest::PARAMETER__EXPAND,
-                    IParameter::FIELD__VALUE => 'entity'
+                    IParameter::FIELD__VALUE => 'schema.entity'
                 ]
             ]
         ]);
@@ -65,8 +65,8 @@ class SchemaByEntityTemplateTest extends TestCase
         $serverRequest = $this->getServerRequest();
         $serverResponse = $this->getServerResponse();
         $parent = new ExpandingBox([
-            ExpandingBox::FIELD__NAME => 'test',
-            ExpandingBox::DATA__MARKER . 'test' => []
+            ExpandingBox::FIELD__NAME => 'schema',
+            ExpandingBox::DATA__MARKER . 'schema' => []
         ]);
 
         $operation(
@@ -90,8 +90,8 @@ class SchemaByEntityTemplateTest extends TestCase
         $serverRequest = $this->getServerRequest();
         $serverResponse = $this->getServerResponse();
         $parent = new ExpandingBox([
-            ExpandingBox::FIELD__NAME => 'test',
-            ExpandingBox::DATA__MARKER . 'test' => [],
+            ExpandingBox::FIELD__NAME => 'schema',
+            ExpandingBox::DATA__MARKER . 'schema' => [],
             ExpandingBox::FIELD__VALUE => [
                 'schemas' => [
                     [
