@@ -3,9 +3,9 @@
 use PHPUnit\Framework\TestCase;
 use extas\interfaces\repositories\IRepository;
 use extas\components\SystemContainer;
-use extas\components\workflows\entities\WorkflowEntityTemplate;
-use extas\components\workflows\entities\WorkflowEntityTemplateRepository;
-use extas\interfaces\workflows\entities\IWorkflowEntityTemplateRepository;
+use extas\components\workflows\transitions\WorkflowTransition;
+use extas\components\workflows\transitions\WorkflowTransitionRepository;
+use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
 use extas\interfaces\parameters\IParameter;
 use extas\components\servers\requests\ServerRequest;
 use extas\components\servers\responses\ServerResponse;
@@ -13,12 +13,12 @@ use extas\components\plugins\workflows\expands\schemas\SchemaExpandByEntityTempl
 use extas\components\workflows\schemas\WorkflowSchema;
 use extas\components\expands\ExpandingBox;
 
-class SchemaByEntityTemplateTest extends TestCase
+class SchemaByTransitionsTest extends TestCase
 {
     /**
      * @var IRepository|null
      */
-    protected ?IRepository $templateRepo = null;
+    protected ?IRepository $transitionRepo = null;
 
     protected function setUp(): void
     {
@@ -26,17 +26,17 @@ class SchemaByEntityTemplateTest extends TestCase
         $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
-        $this->templateRepo = new WorkflowEntityTemplateRepository();
+        $this->transitionRepo = new WorkflowTransitionRepository();
 
         SystemContainer::addItem(
-            IWorkflowEntityTemplateRepository::class,
-            WorkflowEntityTemplateRepository::class
+            IWorkflowTransitionRepository::class,
+            WorkflowTransitionRepository::class
         );
     }
 
     public function tearDown(): void
     {
-        $this->templateRepo->delete([WorkflowEntityTemplate::FIELD__NAME => 'test']);
+        $this->transitionRepo->delete([WorkflowTransition::FIELD__NAME => 'test']);
     }
 
     protected function getServerRequest()
@@ -45,7 +45,7 @@ class SchemaByEntityTemplateTest extends TestCase
             ServerRequest::FIELD__PARAMETERS => [
                 [
                     IParameter::FIELD__NAME => ServerRequest::PARAMETER__EXPAND,
-                    IParameter::FIELD__VALUE => 'schema.entity'
+                    IParameter::FIELD__VALUE => 'schema.transitions'
                 ]
             ]
         ]);
@@ -95,7 +95,7 @@ class SchemaByEntityTemplateTest extends TestCase
             ExpandingBox::FIELD__VALUE => [
                 'schemas' => [
                     [
-                        WorkflowSchema::FIELD__ENTITY_TEMPLATE => 'unknown'
+                        WorkflowSchema::FIELD__TRANSITIONS => ['unknown']
                     ]
                 ]
             ]
@@ -110,9 +110,11 @@ class SchemaByEntityTemplateTest extends TestCase
         $this->assertEquals(
             ['schemas' => [
                 [
-                    WorkflowSchema::FIELD__ENTITY_TEMPLATE => [
-                        WorkflowEntityTemplate::FIELD__NAME => 'unknown',
-                        WorkflowEntityTemplate::FIELD__TITLE => 'Ошибка: Неизвестный шаблон сущности [unknown]'
+                    WorkflowSchema::FIELD__TRANSITIONS => [
+                        [
+                            WorkflowTransition::FIELD__NAME => 'unknown',
+                            WorkflowTransition::FIELD__TITLE => 'Ошибка: Неизвестный переход [unknown]'
+                        ]
                     ]
                 ]
             ]],
@@ -134,15 +136,15 @@ class SchemaByEntityTemplateTest extends TestCase
             ExpandingBox::FIELD__VALUE => [
                 'schemas' => [
                     [
-                        WorkflowSchema::FIELD__ENTITY_TEMPLATE => 'test'
+                        WorkflowSchema::FIELD__TRANSITIONS => ['test']
                     ]
                 ]
             ]
         ]);
 
-        $this->templateRepo->create(new WorkflowEntityTemplate([
-            WorkflowEntityTemplate::FIELD__NAME => 'test',
-            WorkflowEntityTemplate::FIELD__TITLE => 'test'
+        $this->transitionRepo->create(new WorkflowTransition([
+            WorkflowTransition::FIELD__NAME => 'test',
+            WorkflowTransition::FIELD__TITLE => 'test'
         ]));
 
         $operation(
@@ -154,9 +156,11 @@ class SchemaByEntityTemplateTest extends TestCase
         $this->assertEquals(
             ['schemas' => [
                 [
-                    WorkflowSchema::FIELD__ENTITY_TEMPLATE => [
-                        WorkflowEntityTemplate::FIELD__NAME => 'test',
-                        WorkflowEntityTemplate::FIELD__TITLE => 'test'
+                    WorkflowSchema::FIELD__TRANSITIONS => [
+                        [
+                            WorkflowTransition::FIELD__NAME => 'test',
+                            WorkflowTransition::FIELD__TITLE => 'test'
+                        ]
                     ]
                 ]
             ]],
