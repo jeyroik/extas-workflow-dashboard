@@ -48,7 +48,7 @@ class SchemaTransitionRemoveTest extends TestCase
     /**
      * @var IRepository|null
      */
-    protected ?IRepository $transitionTemplateDispatcherRepo = null;
+    protected ?IRepository $transitionDispatcherTemplateRepo = null;
 
     /**
      * @var IRepository|null
@@ -195,8 +195,8 @@ class SchemaTransitionRemoveTest extends TestCase
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
-            Schema::FIELD__ENTITY_TEMPLATE => 'test',
-            Schema::FIELD__TRANSITIONS => ['test']
+            Schema::FIELD__ENTITY_NAME => 'test',
+            Schema::FIELD__TRANSITIONS_NAMES => ['test']
         ]));
 
         $this->transitionRepo->create(new Transition([

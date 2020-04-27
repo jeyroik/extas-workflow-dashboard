@@ -105,7 +105,7 @@ class BeforeTransitionDeleteTest extends TestCase
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
-            Schema::FIELD__TRANSITIONS => ['test']
+            Schema::FIELD__TRANSITIONS_NAMES => ['test']
         ]));
 
         $operation(

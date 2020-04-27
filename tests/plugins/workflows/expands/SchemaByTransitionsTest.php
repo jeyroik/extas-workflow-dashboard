@@ -95,7 +95,7 @@ class SchemaByTransitionsTest extends TestCase
             ExpandingBox::FIELD__VALUE => [
                 'schemas' => [
                     [
-                        Schema::FIELD__TRANSITIONS => ['unknown']
+                        Schema::FIELD__TRANSITIONS_NAMES => ['unknown']
                     ]
                 ]
             ]
@@ -110,7 +110,7 @@ class SchemaByTransitionsTest extends TestCase
         $this->assertEquals(
             ['schemas' => [
                 [
-                    Schema::FIELD__TRANSITIONS => [
+                    Schema::FIELD__TRANSITIONS_NAMES => [
                         [
                             Transition::FIELD__NAME => 'unknown',
                             Transition::FIELD__TITLE => 'Ошибка: Неизвестный переход [unknown]'
@@ -136,7 +136,7 @@ class SchemaByTransitionsTest extends TestCase
             ExpandingBox::FIELD__VALUE => [
                 'schemas' => [
                     [
-                        Schema::FIELD__TRANSITIONS => ['test']
+                        Schema::FIELD__TRANSITIONS_NAMES => ['test']
                     ]
                 ]
             ]
@@ -156,7 +156,7 @@ class SchemaByTransitionsTest extends TestCase
         $this->assertEquals(
             ['schemas' => [
                 [
-                    Schema::FIELD__TRANSITIONS => [
+                    Schema::FIELD__TRANSITIONS_NAMES => [
                         [
                             Transition::FIELD__NAME => 'test',
                             Transition::FIELD__TITLE => 'test'

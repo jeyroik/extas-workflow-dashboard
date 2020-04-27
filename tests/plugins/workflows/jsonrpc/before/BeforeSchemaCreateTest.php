@@ -127,7 +127,7 @@ class BeforeSchemaCreateTest extends TestCase
         $serverRequest = $this->getServerRequest([
             'data' => [
                 Schema::FIELD__NAME => 'test',
-                Schema::FIELD__TRANSITIONS => ['unknown', 'test']
+                Schema::FIELD__TRANSITIONS_NAMES => ['unknown', 'test']
             ]
         ]);
         $serverResponse = $this->getServerResponse();
@@ -159,7 +159,7 @@ class BeforeSchemaCreateTest extends TestCase
         $serverRequest = $this->getServerRequest([
             'data' => [
                 Schema::FIELD__NAME => 'test',
-                Schema::FIELD__TRANSITIONS => ['test']
+                Schema::FIELD__TRANSITIONS_NAMES => ['test']
             ]
         ]);
         $serverResponse = $this->getServerResponse();

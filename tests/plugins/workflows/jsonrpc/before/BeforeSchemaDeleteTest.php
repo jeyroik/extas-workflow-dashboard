@@ -133,13 +133,12 @@ class BeforeSchemaDeleteTest extends TestCase
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
-            Schema::FIELD__ENTITY_TEMPLATE => 'test',
-            Schema::FIELD__TRANSITIONS => ['test']
+            Schema::FIELD__ENTITY_NAME => 'test',
+            Schema::FIELD__TRANSITIONS_NAMES => ['test']
         ]));
 
         $this->transitionRepo->create(new TransitionDispatcher([
-            TransitionDispatcher::FIELD__NAME => 'test',
-            TransitionDispatcher::FIELD__SCHEMA_NAME => 'test'
+            TransitionDispatcher::FIELD__NAME => 'test'
         ]));
 
         $operation(

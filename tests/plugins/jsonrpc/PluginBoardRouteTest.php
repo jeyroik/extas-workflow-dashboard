@@ -32,6 +32,8 @@ class PluginBoardRouteTest extends TestCase
      */
     protected ?IRepository $schemaRepo = null;
 
+    protected ?IRepository $transitionRepo = null;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -109,8 +111,8 @@ class PluginBoardRouteTest extends TestCase
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__TITLE => 'Test',
             Schema::FIELD__DESCRIPTION => 'Test',
-            Schema::FIELD__TRANSITIONS => ['test'],
-            Schema::FIELD__ENTITY_TEMPLATE => 'test'
+            Schema::FIELD__TRANSITIONS_NAMES => ['test'],
+            Schema::FIELD__ENTITY_NAME => 'test'
         ]));
         $this->transitionRepo->create(new Transition([
             Transition::FIELD__NAME => 'test',

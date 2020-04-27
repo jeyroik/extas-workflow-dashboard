@@ -63,7 +63,7 @@ class BeforeTransitionDispatcherCreate extends OperationDispatcher
          * @var $repo ITransitionDispatcherSampleRepository
          */
         $repo = SystemContainer::getItem(ITransitionDispatcherSampleRepository::class);
-        $need = $repo->one([ITransitionDispatcherSample::FIELD__NAME => $item->getTemplateName()]);
+        $need = $repo->one([ITransitionDispatcherSample::FIELD__NAME => $item->getSampleName()]);
 
         if (!$need) {
             $response->error('Unknown template', 400);

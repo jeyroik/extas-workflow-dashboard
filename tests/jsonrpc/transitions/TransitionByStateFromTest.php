@@ -202,8 +202,8 @@ class TransitionByStateFromTest extends TestCase
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
-            Schema::FIELD__ENTITY_TEMPLATE => 'test',
-            Schema::FIELD__TRANSITIONS => ['test', 'test2']
+            Schema::FIELD__ENTITY_NAME => 'test',
+            Schema::FIELD__TRANSITIONS_NAMES => ['test', 'test2']
         ]));
 
         $this->entityTemplateRepo->create(new EntitySample([

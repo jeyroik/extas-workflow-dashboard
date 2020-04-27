@@ -46,7 +46,7 @@ class BeforeTransitionDelete extends OperationDispatcher
          */
         $repo = SystemContainer::getItem(ISchemaRepository::class);
         $schemas = $repo->all([
-            ISchema::FIELD__TRANSITIONS => $item->getName()
+            ISchema::FIELD__TRANSITIONS_NAMES => $item->getName()
         ]);
         if (count($schemas)) {
             $response->error('There are schemas with a transition', 400);

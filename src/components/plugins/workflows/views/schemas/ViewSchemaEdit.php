@@ -45,7 +45,7 @@ class ViewSchemaEdit extends Plugin
 
             $templatesRepo = SystemContainer::getItem(IEntitySampleRepository::class);
             $entity = new DashboardList([
-                DashboardList::FIELD__SELECTED => $schema->getEntityTemplateName(),
+                DashboardList::FIELD__SELECTED => $schema->getEntityName(),
                 DashboardList::FIELD__TITLE => 'Шаблон сущности',
                 DashboardList::FIELD__NAME => 'entity_template',
                 DashboardList::FIELD__ITEMS => $templatesRepo->all([])
