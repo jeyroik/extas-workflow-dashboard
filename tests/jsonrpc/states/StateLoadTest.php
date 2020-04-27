@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 use extas\interfaces\repositories\IRepository;
 use extas\components\SystemContainer;
 use extas\interfaces\parameters\IParameter;
-use extas\components\workflows\states\WorkflowState;
+use extas\components\workflows\states\State;
 use extas\components\jsonrpc\states\StateLoad;
 use extas\components\servers\requests\ServerRequest;
 use extas\components\servers\responses\ServerResponse;
@@ -12,8 +12,8 @@ use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\components\jsonrpc\Request;
 use extas\components\jsonrpc\Response;
-use extas\interfaces\workflows\states\IWorkflowStateRepository;
-use extas\components\workflows\states\WorkflowStateRepository;
+use extas\interfaces\workflows\states\IStateRepository;
+use extas\components\workflows\states\StateRepository;
 use Slim\Http\Response as PsrResponse;
 
 /**
@@ -34,17 +34,17 @@ class StateLoadTest extends TestCase
         $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
-        $this->stateRepo = new WorkflowStateRepository();
+        $this->stateRepo = new StateRepository();
 
         SystemContainer::addItem(
-            IWorkflowStateRepository::class,
-            WorkflowStateRepository::class
+            IStateRepository::class,
+            StateRepository::class
         );
     }
 
     public function tearDown(): void
     {
-        $this->stateRepo->delete([WorkflowState::FIELD__TITLE => 'test']);
+        $this->stateRepo->delete([State::FIELD__TITLE => 'test']);
     }
 
     protected function getServerRequest(array $params)
@@ -84,19 +84,19 @@ class StateLoadTest extends TestCase
         $serverRequest = $this->getServerRequest([
             'data' => [
                 [
-                    WorkflowState::FIELD__NAME => 'test',
-                    WorkflowState::FIELD__TITLE => 'test'
+                    State::FIELD__NAME => 'test',
+                    State::FIELD__TITLE => 'test'
                 ],
                 [
-                    WorkflowState::FIELD__NAME => 'test2'
+                    State::FIELD__NAME => 'test2'
                 ]
             ]
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->stateRepo->create(new WorkflowState([
-            WorkflowState::FIELD__NAME => 'test2',
-            WorkflowState::FIELD__TITLE => 'test'
+        $this->stateRepo->create(new State([
+            State::FIELD__NAME => 'test2',
+            State::FIELD__TITLE => 'test'
         ]));
 
         $operation(

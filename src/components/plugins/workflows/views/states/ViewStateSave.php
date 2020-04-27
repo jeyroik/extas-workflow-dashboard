@@ -4,9 +4,9 @@ namespace extas\components\plugins\workflows\views\states;
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
 use extas\components\SystemContainer;
-use extas\components\workflows\states\WorkflowState;
-use extas\interfaces\workflows\states\IWorkflowState;
-use extas\interfaces\workflows\states\IWorkflowStateRepository;
+use extas\components\workflows\states\State;
+use extas\interfaces\workflows\states\IState;
+use extas\interfaces\workflows\states\IStateRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -28,10 +28,10 @@ class ViewStateSave extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array $args)
     {
         /**
-         * @var $stateRepo IWorkflowStateRepository
-         * @var $states IWorkflowState[]
+         * @var $stateRepo IStateRepository
+         * @var $states IState[]
          */
-        $stateRepo = SystemContainer::getItem(IWorkflowStateRepository::class);
+        $stateRepo = SystemContainer::getItem(IStateRepository::class);
         $states = $stateRepo->all([]);
         $itemsView = '';
         $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'states/item']);
@@ -75,15 +75,15 @@ class ViewStateSave extends Plugin
      * @param string $title
      * @param string $description
      * @param DashboardView $template
-     * @param IWorkflowStateRepository $repo
+     * @param IStateRepository $repo
      * @param string $view
      */
     protected function createState($title, $description, $template, $repo, &$view)
     {
-        $newState = new WorkflowState([
-            WorkflowState::FIELD__NAME => uniqid(),
-            WorkflowState::FIELD__TITLE => $title,
-            WorkflowState::FIELD__DESCRIPTION => $description
+        $newState = new State([
+            State::FIELD__NAME => uniqid(),
+            State::FIELD__TITLE => $title,
+            State::FIELD__DESCRIPTION => $description
         ]);
         $repo->create($newState);
         $view = $template->render(['state' => $newState]) . $view;

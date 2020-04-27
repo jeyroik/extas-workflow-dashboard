@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use extas\interfaces\repositories\IRepository;
-use extas\components\workflows\transitions\dispatchers\TransitionDispatcherTemplate;
+use extas\components\workflows\transitions\dispatchers\TransitionDispatcherSample;
 use extas\components\SystemContainer;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcherRepository;
@@ -84,7 +84,7 @@ class BeforeTransitionDispatcherTemplateDeleteTest extends TestCase
         $operation = new BeforeTransitionDispatcherTemplateDelete();
         $serverRequest = $this->getServerRequest([
             'data' => [
-                TransitionDispatcherTemplate::FIELD__NAME => 'test'
+                TransitionDispatcherSample::FIELD__NAME => 'test'
             ]
         ]);
         $serverResponse = $this->getServerResponse();
@@ -114,7 +114,7 @@ class BeforeTransitionDispatcherTemplateDeleteTest extends TestCase
         $operation = new BeforeTransitionDispatcherTemplateDelete();
         $serverRequest = $this->getServerRequest([
             'data' => [
-                TransitionDispatcherTemplate::FIELD__NAME => 'test'
+                TransitionDispatcherSample::FIELD__NAME => 'test'
             ]
         ]);
         $serverResponse = $this->getServerResponse();

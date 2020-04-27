@@ -4,16 +4,17 @@ namespace extas\components\jsonrpc\schemas;
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
+use extas\components\workflows\transitions\Transition;
 use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\workflows\schemas\IWorkflowSchema;
-use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
-use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherTemplate;
-use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherTemplateRepository;
-use extas\interfaces\workflows\transitions\IWorkflowTransition;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
+use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherSample;
+use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherSampleRepository;
+use extas\interfaces\workflows\transitions\ITransition;
+use extas\interfaces\workflows\transitions\ITransitionRepository;
+use extas\interfaces\workflows\transitions\ITransitionSample;
+use extas\interfaces\workflows\transitions\ITransitionSampleRepository;
 
 /**
  * Class SchemaTransitionAdd
@@ -24,6 +25,8 @@ use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
  */
 class SchemaTransitionAdd extends OperationDispatcher
 {
+    use TGetSchema;
+
     /**
      * @param IRequest $request
      * @param IResponse $response
@@ -32,48 +35,101 @@ class SchemaTransitionAdd extends OperationDispatcher
     {
         $jRpcData = $request->getParams();
         $transitionName = $jRpcData['transition_name'] ?? '';
+        $transitionSampleName = $jRpcData['transition_sample_name'] ?? '';
         $schemaName = $jRpcData['schema_name'] ?? '';
         $dispatchersData = $jRpcData['dispatchers'] ?? [];
 
-        /**
-         * @var $transitRepo IWorkflowTransitionRepository
-         * @var $schemaRepo IWorkflowSchemaRepository
-         * @var $dispatcherRepo ITransitionDispatcherRepository
-         * @var $templateRepo ITransitionDispatcherTemplateRepository
-         * @var $schema IWorkflowSchema
-         */
-        $schemaRepo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
-        $schema = $schemaRepo->one([IWorkflowSchema::FIELD__NAME => $schemaName]);
+        try {
+            $schema = $this->getSchema($schemaName);
+            $sample = $this->getTransitionSample($transitionSampleName);
 
-        if (!$schema) {
-            $response->error('Unknown schema', 400);
-        } else {
-            $transitRepo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
-            $transition = $transitRepo->one([IWorkflowTransition::FIELD__NAME => $transitionName]);
-
-            if (!$transition) {
-                $response->error('Unknown transition', 400);
-            } else {
-                if (!$schema->hasTransition($transitionName)) {
-                    $schema->addTransition($transition);
-                    $schemaRepo->update($schema);
-                }
-                $dispatcherRepo = SystemContainer::getItem(ITransitionDispatcherRepository::class);
-                $unknownTemplates = $this->getUnknownTemplates($dispatchersData);
-
-                foreach ($dispatchersData as $dispatchersDatum) {
-                    $dispatchersDatum[ITransitionDispatcher::FIELD__SCHEMA_NAME] = $schemaName;
-                    $dispatchersDatum[ITransitionDispatcher::FIELD__TRANSITION_NAME] = $transitionName;
-                    $dispatcher = new TransitionDispatcher($dispatchersDatum);
-                    if (isset($unknownTemplates[$dispatcher->getTemplateName()])) {
-                        continue;
-                    }
-                    $dispatcherRepo->create($dispatcher);
-                }
-
-                $response->success(['name' => $transitionName]);
+            if ($schema->hasTransitionName($transitionName)) {
+                throw new \Exception('Schema has already this transition');
             }
+
+            $transition = $this->createTransition($sample, $schemaName, $transitionName);
+            $schema->addTransitionName($transition->getName());
+            $this->updateSchema($schema);
+            $this->createDispatchers($dispatchersData, $transitionName);
+            $response->success(['name' => $transitionName]);
+        } catch (\Exception $e) {
+            $response->error($e->getMessage(), 400);
         }
+    }
+
+    /**
+     * @param array $dispatchersData
+     * @param string $transitionName
+     */
+    protected function createDispatchers(array $dispatchersData, string $transitionName): void
+    {
+        $dispatcherRepo = SystemContainer::getItem(ITransitionDispatcherRepository::class);
+        $unknownSamples = $this->getUnknownDispatcherSamples($dispatchersData);
+        $allDispatchers = array_column(
+            $dispatchersData,
+            ITransitionDispatcher::FIELD__SAMPLE_NAME,
+            ITransitionDispatcher::FIELD__NAME
+        );
+        $dispatchersWithExistingSamples = array_intersect($unknownSamples, $allDispatchers);
+        $dispatchersData = array_column($dispatchersData, null, ITransitionDispatcher::FIELD__NAME);
+        $applicableDispatchers = array_intersect_key($dispatchersData, array_flip($dispatchersWithExistingSamples));
+
+        foreach ($applicableDispatchers as $dispatchersDatum) {
+            $dispatchersDatum[ITransitionDispatcher::FIELD__TRANSITION_NAME] = $transitionName;
+            $dispatcher = new TransitionDispatcher($dispatchersDatum);
+            $dispatcherRepo->create($dispatcher);
+        }
+    }
+
+    /**
+     * @param ITransitionSample $sample
+     * @param string $schemaName
+     * @param string $transitionName
+     * @return ITransition
+     * @throws \Exception
+     */
+    protected function createTransition(
+        ITransitionSample $sample,
+        string $schemaName,
+        string $transitionName
+    ): ITransition
+    {
+        $transition = new Transition();
+        $transition->buildFromSample($sample)
+            ->setSchemaName($schemaName)
+            ->setName($transitionName);
+
+        /**
+         * @var ITransitionRepository $repo
+         */
+        $repo = SystemContainer::getItem(ITransitionRepository::class);
+        $exits = $repo->one([ITransition::FIELD__NAME => $transitionName]);
+
+        if ($exits) {
+            throw new \Exception('Transition already exists');
+        }
+
+        return $repo->create($transition);
+    }
+
+    /**
+     * @param string $name
+     * @return ITransitionSample
+     * @throws \Exception
+     */
+    protected function getTransitionSample(string $name): ITransitionSample
+    {
+        /**
+         * @var $transitionSampleRepo ITransitionSampleRepository
+         */
+        $transitionSampleRepo = SystemContainer::getItem(ITransitionSampleRepository::class);
+        $sample = $transitionSampleRepo->one([ITransitionSample::FIELD__NAME => $name]);
+
+        if (!$sample) {
+            throw new \Exception('Missed transition sample');
+        }
+
+        return $sample;
     }
 
     /**
@@ -81,23 +137,21 @@ class SchemaTransitionAdd extends OperationDispatcher
      *
      * @return array
      */
-    protected function getUnknownTemplates($dispatchers)
+    protected function getUnknownDispatcherSamples($dispatchers): array
     {
-        $templatesNames = array_column($dispatchers, ITransitionDispatcher::FIELD__TEMPLATE);
+        $samplesNames = array_column($dispatchers, ITransitionDispatcher::FIELD__SAMPLE_NAME);
 
         /**
-         * @var $repo ITransitionDispatcherTemplateRepository
-         * @var $templates ITransitionDispatcherTemplate[]
+         * @var $repo ITransitionDispatcherSampleRepository
+         * @var $samples ITransitionDispatcherSample[]
          */
-        $repo = SystemContainer::getItem(ITransitionDispatcherTemplateRepository::class);
-        $templates = $repo->all([ITransitionDispatcherTemplate::FIELD__NAME => $templatesNames]);
+        $repo = SystemContainer::getItem(ITransitionDispatcherSampleRepository::class);
+        $samples = $repo->all([ITransitionDispatcherSample::FIELD__NAME => $samplesNames]);
         $existedNames = [];
-        foreach ($templates as $template) {
-            $existedNames[] = $template->getName();
+        foreach ($samples as $sample) {
+            $existedNames[] = $sample->getName();
         }
 
-        $unknown = array_diff($templatesNames, $existedNames);
-
-        return array_flip($unknown);
+        return array_diff($samplesNames, $existedNames);
     }
 }

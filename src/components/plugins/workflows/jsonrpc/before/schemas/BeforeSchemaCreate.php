@@ -3,13 +3,13 @@ namespace extas\components\plugins\workflows\jsonrpc\before\schemas;
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
-use extas\components\workflows\schemas\WorkflowSchema;
+use extas\components\workflows\schemas\Schema;
 use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\workflows\schemas\IWorkflowSchema;
-use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
-use extas\interfaces\workflows\transitions\IWorkflowTransition;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
+use extas\interfaces\workflows\schemas\ISchema;
+use extas\interfaces\workflows\schemas\ISchemaRepository;
+use extas\interfaces\workflows\transitions\ITransition;
+use extas\interfaces\workflows\transitions\ITransitionRepository;
 
 /**
  * Class BeforeSchemaCreate
@@ -27,12 +27,12 @@ class BeforeSchemaCreate extends OperationDispatcher
     protected function dispatch(IRequest $request, IResponse &$response)
     {
         if (!$response->hasError()) {
-            $item = new WorkflowSchema($request->getData());
+            $item = new Schema($request->getData());
             /**
-             * @var $repo IWorkflowSchemaRepository
+             * @var $repo ISchemaRepository
              */
-            $repo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
-            if ($repo->one([IWorkflowSchema::FIELD__NAME => $item->getName()])) {
+            $repo = SystemContainer::getItem(ISchemaRepository::class);
+            if ($repo->one([ISchema::FIELD__NAME => $item->getName()])) {
                 $response->error('Schema already exist', 400);
             } else {
                 $this->checkTransitions($response, $item);
@@ -42,17 +42,17 @@ class BeforeSchemaCreate extends OperationDispatcher
 
     /**
      * @param IResponse $response
-     * @param IWorkflowSchema $item
+     * @param ISchema $item
      */
-    protected function checkTransitions(IResponse &$response, IWorkflowSchema $item)
+    protected function checkTransitions(IResponse &$response, ISchema $item)
     {
         $transitions = $item->getTransitionsNames();
         /**
-         * @var IWorkflowTransitionRepository $repo
-         * @var IWorkflowTransition[] $wTransitions
+         * @var ITransitionRepository $repo
+         * @var ITransition[] $wTransitions
          */
-        $repo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
-        $wTransitions = $repo->all([IWorkflowTransition::FIELD__NAME => $transitions]);
+        $repo = SystemContainer::getItem(ITransitionRepository::class);
+        $wTransitions = $repo->all([ITransition::FIELD__NAME => $transitions]);
 
         if (count($wTransitions) != count($transitions)) {
             $transitions = array_flip($transitions);

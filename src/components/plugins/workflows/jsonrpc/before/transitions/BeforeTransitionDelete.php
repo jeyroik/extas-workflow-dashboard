@@ -3,14 +3,14 @@ namespace extas\components\plugins\workflows\jsonrpc\before\transitions;
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
-use extas\components\workflows\transitions\WorkflowTransition;
+use extas\components\workflows\transitions\Transition;
 use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\workflows\schemas\IWorkflowSchema;
-use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
+use extas\interfaces\workflows\schemas\ISchema;
+use extas\interfaces\workflows\schemas\ISchemaRepository;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
-use extas\interfaces\workflows\transitions\IWorkflowTransition;
+use extas\interfaces\workflows\transitions\ITransition;
 
 /**
  * Class BeforeTransitionDelete
@@ -28,7 +28,7 @@ class BeforeTransitionDelete extends OperationDispatcher
     protected function dispatch(IRequest $request, IResponse &$response)
     {
         if (!$response->hasError()) {
-            $item = new WorkflowTransition($request->getData());
+            $item = new Transition($request->getData());
             $this->checkSchemas($response, $item);
             $this->checkTransitionDispatchers($response, $item);
         }
@@ -36,17 +36,17 @@ class BeforeTransitionDelete extends OperationDispatcher
 
     /**
      * @param IResponse $response
-     * @param IWorkflowTransition $item
+     * @param ITransition $item
      */
-    protected function checkSchemas(IResponse &$response, IWorkflowTransition $item)
+    protected function checkSchemas(IResponse &$response, ITransition $item)
     {
         /**
-         * @var $repo IWorkflowSchemaRepository
-         * @var $schemas IWorkflowSchema[]
+         * @var $repo ISchemaRepository
+         * @var $schemas ISchema[]
          */
-        $repo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
+        $repo = SystemContainer::getItem(ISchemaRepository::class);
         $schemas = $repo->all([
-            IWorkflowSchema::FIELD__TRANSITIONS => $item->getName()
+            ISchema::FIELD__TRANSITIONS => $item->getName()
         ]);
         if (count($schemas)) {
             $response->error('There are schemas with a transition', 400);
@@ -55,9 +55,9 @@ class BeforeTransitionDelete extends OperationDispatcher
 
     /**
      * @param IResponse $response
-     * @param IWorkflowTransition $item
+     * @param ITransition $item
      */
-    protected function checkTransitionDispatchers(IResponse &$response, IWorkflowTransition $item)
+    protected function checkTransitionDispatchers(IResponse &$response, ITransition $item)
     {
         /**
          * @var $repo ITransitionDispatcherRepository

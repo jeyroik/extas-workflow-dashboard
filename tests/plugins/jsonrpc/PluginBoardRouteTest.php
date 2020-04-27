@@ -6,12 +6,12 @@ use extas\components\plugins\jsonrpc\PluginBoardRoute;
 use \extas\components\plugins\Plugin;
 use \extas\components\plugins\PluginRepository;
 use extas\components\plugins\workflows\views\ViewIndexIndex;
-use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
-use extas\components\workflows\schemas\WorkflowSchemaRepository;
-use extas\components\workflows\transitions\WorkflowTransitionRepository;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
-use extas\components\workflows\transitions\WorkflowTransition;
-use extas\components\workflows\schemas\WorkflowSchema;
+use extas\interfaces\workflows\schemas\ISchemaRepository;
+use extas\components\workflows\schemas\SchemaRepository;
+use extas\components\workflows\transitions\TransitionRepository;
+use extas\interfaces\workflows\transitions\ITransitionRepository;
+use extas\components\workflows\transitions\Transition;
+use extas\components\workflows\schemas\Schema;
 use extas\components\SystemContainer;
 use extas\interfaces\repositories\IRepository;
 
@@ -40,24 +40,24 @@ class PluginBoardRouteTest extends TestCase
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
         $this->pluginRepo = new PluginRepository();
-        $this->schemaRepo = new WorkflowSchemaRepository();
-        $this->transitionRepo = new WorkflowTransitionRepository();
+        $this->schemaRepo = new SchemaRepository();
+        $this->transitionRepo = new TransitionRepository();
 
         SystemContainer::addItem(
-            IWorkflowSchemaRepository::class,
-            WorkflowSchemaRepository::class
+            ISchemaRepository::class,
+            SchemaRepository::class
         );
         SystemContainer::addItem(
-            IWorkflowTransitionRepository::class,
-            WorkflowTransitionRepository::class
+            ITransitionRepository::class,
+            TransitionRepository::class
         );
     }
 
     public function tearDown(): void
     {
         $this->pluginRepo->delete([Plugin::FIELD__CLASS => ViewIndexIndex::class]);
-        $this->schemaRepo->delete([WorkflowSchema::FIELD__NAME => 'test']);
-        $this->transitionRepo->delete([WorkflowTransition::FIELD__NAME => 'test']);
+        $this->schemaRepo->delete([Schema::FIELD__NAME => 'test']);
+        $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
     }
 
     public function testAddRoute()
@@ -105,18 +105,18 @@ class PluginBoardRouteTest extends TestCase
             Plugin::FIELD__CLASS => ViewIndexIndex::class,
             Plugin::FIELD__STAGE => 'view.index.index'
         ]));
-        $this->schemaRepo->create(new WorkflowSchema([
-            WorkflowSchema::FIELD__NAME => 'test',
-            WorkflowSchema::FIELD__TITLE => 'Test',
-            WorkflowSchema::FIELD__DESCRIPTION => 'Test',
-            WorkflowSchema::FIELD__TRANSITIONS => ['test'],
-            WorkflowSchema::FIELD__ENTITY_TEMPLATE => 'test'
+        $this->schemaRepo->create(new Schema([
+            Schema::FIELD__NAME => 'test',
+            Schema::FIELD__TITLE => 'Test',
+            Schema::FIELD__DESCRIPTION => 'Test',
+            Schema::FIELD__TRANSITIONS => ['test'],
+            Schema::FIELD__ENTITY_TEMPLATE => 'test'
         ]));
-        $this->transitionRepo->create(new WorkflowTransition([
-            WorkflowTransition::FIELD__NAME => 'test',
-            WorkflowTransition::FIELD__TITLE => 'Test',
-            WorkflowTransition::FIELD__STATE_FROM => 'from',
-            WorkflowTransition::FIELD__STATE_TO => 'to'
+        $this->transitionRepo->create(new Transition([
+            Transition::FIELD__NAME => 'test',
+            Transition::FIELD__TITLE => 'Test',
+            Transition::FIELD__STATE_FROM => 'from',
+            Transition::FIELD__STATE_TO => 'to'
         ]));
 
         foreach ($routes as $route) {

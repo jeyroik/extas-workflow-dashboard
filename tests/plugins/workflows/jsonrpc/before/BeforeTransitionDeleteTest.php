@@ -2,9 +2,9 @@
 
 use PHPUnit\Framework\TestCase;
 use extas\interfaces\repositories\IRepository;
-use extas\components\workflows\schemas\WorkflowSchema;
+use extas\components\workflows\schemas\Schema;
 use extas\components\SystemContainer;
-use extas\components\workflows\transitions\WorkflowTransition;
+use extas\components\workflows\transitions\Transition;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcherRepository;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
@@ -16,8 +16,8 @@ use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\components\jsonrpc\Request;
 use extas\components\jsonrpc\Response;
-use extas\components\workflows\schemas\WorkflowSchemaRepository;
-use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
+use extas\components\workflows\schemas\SchemaRepository;
+use extas\interfaces\workflows\schemas\ISchemaRepository;
 use Slim\Http\Response as PsrResponse;
 
 /**
@@ -44,22 +44,22 @@ class BeforeTransitionDeleteTest extends TestCase
         $env->load();
 
         $this->transitionRepo = new TransitionDispatcherRepository();
-        $this->schemaRepo = new WorkflowSchemaRepository();
+        $this->schemaRepo = new SchemaRepository();
 
         SystemContainer::addItem(
             ITransitionDispatcherRepository::class,
             TransitionDispatcherRepository::class
         );
         SystemContainer::addItem(
-            IWorkflowSchemaRepository::class,
-            WorkflowSchemaRepository::class
+            ISchemaRepository::class,
+            SchemaRepository::class
         );
     }
 
     public function tearDown(): void
     {
         $this->transitionRepo->delete([TransitionDispatcher::FIELD__NAME => 'test']);
-        $this->schemaRepo->delete([WorkflowSchema::FIELD__NAME => 'test']);
+        $this->schemaRepo->delete([Schema::FIELD__NAME => 'test']);
     }
 
     protected function getServerRequest(array $params)
@@ -98,14 +98,14 @@ class BeforeTransitionDeleteTest extends TestCase
         $operation = new BeforeTransitionDelete();
         $serverRequest = $this->getServerRequest([
             'data' => [
-                WorkflowTransition::FIELD__NAME => 'test'
+                Transition::FIELD__NAME => 'test'
             ]
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->schemaRepo->create(new WorkflowSchema([
-            WorkflowSchema::FIELD__NAME => 'test',
-            WorkflowSchema::FIELD__TRANSITIONS => ['test']
+        $this->schemaRepo->create(new Schema([
+            Schema::FIELD__NAME => 'test',
+            Schema::FIELD__TRANSITIONS => ['test']
         ]));
 
         $operation(
@@ -128,7 +128,7 @@ class BeforeTransitionDeleteTest extends TestCase
         $operation = new BeforeTransitionDelete();
         $serverRequest = $this->getServerRequest([
             'data' => [
-                WorkflowTransition::FIELD__NAME => 'test'
+                Transition::FIELD__NAME => 'test'
             ]
         ]);
         $serverResponse = $this->getServerResponse();
@@ -158,7 +158,7 @@ class BeforeTransitionDeleteTest extends TestCase
         $operation = new BeforeTransitionDelete();
         $serverRequest = $this->getServerRequest([
             'data' => [
-                WorkflowTransition::FIELD__NAME => 'test'
+                Transition::FIELD__NAME => 'test'
             ]
         ]);
         $serverResponse = $this->getServerResponse();

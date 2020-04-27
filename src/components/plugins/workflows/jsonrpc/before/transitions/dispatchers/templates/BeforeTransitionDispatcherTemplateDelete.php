@@ -3,15 +3,15 @@ namespace extas\components\plugins\workflows\jsonrpc\before\transitions\dispatch
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
-use extas\components\workflows\transitions\dispatchers\TransitionDispatcherTemplate;
+use extas\components\workflows\transitions\dispatchers\TransitionDispatcherSample;
 use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\repositories\IRepository;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
-use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherTemplate;
-use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherTemplateRepository;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
+use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherSample;
+use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherSampleRepository;
+use extas\interfaces\workflows\transitions\ITransitionRepository;
 
 /**
  * Class BeforeTransitionDispatcherTemplateDelete
@@ -29,16 +29,16 @@ class BeforeTransitionDispatcherTemplateDelete extends OperationDispatcher
     protected function dispatch(IRequest $request, IResponse &$response)
     {
         if (!$response->hasError()) {
-            $item = new TransitionDispatcherTemplate($request->getData());
+            $item = new TransitionDispatcherSample($request->getData());
             $this->checkTransitionDispatchers($response, $item);
         }
     }
 
     /**
      * @param IResponse $response
-     * @param ITransitionDispatcherTemplate $item
+     * @param ITransitionDispatcherSample $item
      */
-    protected function checkTransitionDispatchers(IResponse &$response, ITransitionDispatcherTemplate $item)
+    protected function checkTransitionDispatchers(IResponse &$response, ITransitionDispatcherSample $item)
     {
         /**
          * @var $repo ITransitionDispatcherRepository

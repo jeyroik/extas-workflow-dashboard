@@ -2,17 +2,18 @@
 namespace extas\components\jsonrpc\transitions;
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
+use extas\components\jsonrpc\schemas\TGetSchema;
 use extas\components\SystemContainer;
-use extas\components\workflows\entities\WorkflowEntityContext;
-use extas\components\workflows\transitions\results\TransitionResult;
-use extas\components\workflows\Workflow;
+use extas\components\workflows\entities\Entity;
+use extas\components\workflows\entities\EntityContext;
+use extas\components\workflows\transits\TransitResult;
+use extas\interfaces\IItem;
 use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\workflows\entities\IWorkflowEntity;
-use extas\interfaces\workflows\schemas\IWorkflowSchema;
-use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
-use extas\interfaces\workflows\transitions\IWorkflowTransition;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
+use extas\interfaces\workflows\entities\IEntity;
+use extas\interfaces\workflows\schemas\ISchema;
+use extas\interfaces\workflows\transitions\ITransition;
+use extas\interfaces\workflows\transitions\ITransitionRepository;
 
 /**
  * Class TransitionByStateFrom
@@ -23,6 +24,8 @@ use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
  */
 class TransitionByStateFrom extends OperationDispatcher
 {
+    use TGetSchema;
+
     /**
      * @param IRequest $request
      * @param IResponse $response
@@ -30,95 +33,59 @@ class TransitionByStateFrom extends OperationDispatcher
     protected function dispatch(IRequest $request, IResponse &$response)
     {
         $jRpcData = $request->getParams();
-        $schema = $this->getSchema($jRpcData);
 
-        if (!$schema) {
-            $response->error('Unknown schema', 400);
-        } else {
-            $entityTemplate = $schema->getEntityTemplate();
-            if (!$entityTemplate) {
-                $response->error('Missed entity template', 400);
-            } else {
-                $entity = $entityTemplate->buildClassWithParameters($jRpcData['entity'] ?? []);
-                $transitions = $this->getTransitions($jRpcData, $schema);
+        try {
+            $schema = $this->getSchema($jRpcData['schema_name'] ?? '');
+            $state = $jRpcData['state_name'];
+            $entity = new Entity($jRpcData['entity'] ?? []);
+            $transitions = $this->getTransitions($state, $schema);
+            $result = [];
+            $context = new EntityContext($jRpcData['context'] ?? []);
 
-                $result = [];
-                $context = new WorkflowEntityContext($jRpcData['context'] ?? []);
-                $filter = $request->getFilter();
-                $filterNames = isset($filter['transition_name'], $filter['transition_name']['$in'])
-                    ? array_flip($filter['transition_name']['$in'])
-                    : [];
+            foreach ($transitions as $transition) {
+                $this->addValid($transition, $entity, $context, $result);
+            }
 
-                foreach ($transitions as $transition) {
-                    if ($this->isValid($transition, $entity, $schema, $context)) {
-                        if (!empty($filterNames) && !isset($filterNames[$transition->getName()])) {
-                            continue;
-                        }
-                        $result[] = $transition->__toArray();
-                    }
-                }
+            $response->success(array_values($result));
+        } catch (\Exception $e) {
+            $response->error($e->getMessage(), 400);
+        }
+    }
 
-                $response->success($result);
+    /**
+     * @param ITransition $transition
+     * @param IEntity $entity
+     * @param IItem $context
+     * @param array $result
+     */
+    protected function addValid($transition, $entity, $context, array &$result): void
+    {
+        $transitResult = new TransitResult();
+        $conditions = $transition->getConditions();
+        foreach ($conditions as $condition) {
+            if ($condition->dispatch($context, $transitResult, $entity)) {
+                $result[$transition->getName()] = $transition->__toArray();
             }
         }
     }
 
     /**
-     * @param IWorkflowTransition $transition
-     * @param IWorkflowEntity $entity
-     * @param IWorkflowSchema $schema
-     * @param $context
-     * @return bool
-     */
-    protected function isValid($transition, $entity, $schema, $context): bool
-    {
-        $workflow = new Workflow();
-        $transitionResult = new TransitionResult();
-        $context[Workflow::CONTEXT__CONDITIONS] = true;
-        $transitionResult = $workflow->isTransitionValid(
-            $transition,
-            $entity,
-            $schema,
-            $context,
-            $transitionResult
-        );
-
-        return $transitionResult->isSuccess();
-    }
-
-    /**
-     * @param array $jRpcData
+     * @param string $stateName
+     * @param ISchema $schema
      *
-     * @return IWorkflowSchema|null
+     * @return array|ITransition[]
      */
-    protected function getSchema($jRpcData): ?IWorkflowSchema
+    protected function getTransitions(string $stateName, ISchema $schema): array
     {
         /**
-         * @var $schemaRepo IWorkflowSchemaRepository
-         * @var $schema IWorkflowSchema
+         * @var $repo ITransitionRepository
+         * @var $transitions ITransition[]
          */
-        $schemaRepo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
-        return $schemaRepo->one([IWorkflowSchema::FIELD__NAME => $jRpcData['schema_name'] ?? '']);
-    }
-
-    /**
-     * @param array $jRpcData
-     * @param IWorkflowSchema $schema
-     *
-     * @return array|IWorkflowTransition[]
-     */
-    protected function getTransitions(array $jRpcData, IWorkflowSchema $schema): array
-    {
-        /**
-         * @var $repo IWorkflowTransitionRepository
-         * @var $transitions IWorkflowTransition[]
-         */
-        $repo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
-        $stateName = $jRpcData['state_name'] ?? '';
+        $repo = SystemContainer::getItem(ITransitionRepository::class);
 
         return $repo->all([
-            IWorkflowTransition::FIELD__NAME => $schema->getTransitionsNames(),
-            IWorkflowTransition::FIELD__STATE_FROM => $stateName
+            ITransition::FIELD__NAME => $schema->getTransitionsNames(),
+            ITransition::FIELD__STATE_FROM => $stateName
         ]);
     }
 }

@@ -5,8 +5,8 @@ use extas\components\dashboards\DashboardView;
 use extas\components\dashboards\TDashboardChart;
 use extas\components\plugins\Plugin;
 use extas\components\SystemContainer;
-use extas\interfaces\workflows\schemas\IWorkflowSchema;
-use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
+use extas\interfaces\workflows\schemas\ISchema;
+use extas\interfaces\workflows\schemas\ISchemaRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -29,10 +29,10 @@ class ViewSchemaSave extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array $args)
     {
         /**
-         * @var $schemaRepo IWorkflowSchemaRepository
-         * @var $schemas IWorkflowSchema[]
+         * @var $schemaRepo ISchemaRepository
+         * @var $schemas ISchema[]
          */
-        $schemaRepo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
+        $schemaRepo = SystemContainer::getItem(ISchemaRepository::class);
         $schemas = $schemaRepo->all([]);
         $itemsView = '';
         $itemView = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'schemas/item']);

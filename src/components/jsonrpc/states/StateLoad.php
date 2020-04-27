@@ -3,11 +3,11 @@ namespace extas\components\jsonrpc\states;
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
-use extas\components\workflows\states\WorkflowState;
+use extas\components\workflows\states\State;
 use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\workflows\states\IWorkflowState;
-use extas\interfaces\workflows\states\IWorkflowStateRepository;
+use extas\interfaces\workflows\states\IState;
+use extas\interfaces\workflows\states\IStateRepository;
 
 /**
  * Class StateLoad
@@ -25,26 +25,25 @@ class StateLoad extends OperationDispatcher
     protected function dispatch(IRequest $request, IResponse &$response)
     {
         $states = $request->getData();
-        $statesNames = array_column($states, IWorkflowState::FIELD__NAME);
-        $statesByName = array_column($states, null, IWorkflowState::FIELD__NAME);
+        $statesNames = array_column($states, IState::FIELD__NAME);
+        $statesByName = array_column($states, null, IState::FIELD__NAME);
 
         /**
-         * @var $stateRepo IWorkflowStateRepository
-         * @var $existed IWorkflowState[]
+         * @var $stateRepo IStateRepository
+         * @var $existed IState[]
          */
-        $stateRepo = SystemContainer::getItem(IWorkflowStateRepository::class);
-        $existed = $stateRepo->all([IWorkflowState::FIELD__NAME => $statesNames]);
-
-        foreach ($existed as $existingState) {
-            if (isset($statesByName[$existingState->getName()])) {
-                unset($statesByName[$existingState->getName()]);
-            }
+        $stateRepo = SystemContainer::getItem(IStateRepository::class);
+        $existed = $stateRepo->all([IState::FIELD__NAME => $statesNames]);
+        $existedNames = [];
+        foreach ($existed as $item) {
+            $existedNames[$item->getName()] = true;
         }
 
+        $statesForCreate = array_intersect_key($statesByName, $existedNames);
         $created = 0;
 
-        foreach ($statesByName as $stateData) {
-            $state = new WorkflowState($stateData);
+        foreach ($statesForCreate as $stateData) {
+            $state = new State($stateData);
             $stateRepo->create($state);
             $created++;
         }

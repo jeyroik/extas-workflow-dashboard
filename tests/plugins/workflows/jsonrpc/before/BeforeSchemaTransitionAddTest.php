@@ -3,9 +3,9 @@
 use PHPUnit\Framework\TestCase;
 use extas\interfaces\repositories\IRepository;
 use extas\components\SystemContainer;
-use extas\components\workflows\transitions\WorkflowTransition;
-use extas\components\workflows\transitions\WorkflowTransitionRepository;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
+use extas\components\workflows\transitions\Transition;
+use extas\components\workflows\transitions\TransitionRepository;
+use extas\interfaces\workflows\transitions\ITransitionRepository;
 use extas\interfaces\parameters\IParameter;
 use extas\components\plugins\workflows\jsonrpc\before\schemas\BeforeSchemaTransitionAdd;
 use extas\components\servers\requests\ServerRequest;
@@ -14,8 +14,8 @@ use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\components\jsonrpc\Request;
 use extas\components\jsonrpc\Response;
-use extas\components\workflows\schemas\WorkflowSchemaRepository;
-use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
+use extas\components\workflows\schemas\SchemaRepository;
+use extas\interfaces\workflows\schemas\ISchemaRepository;
 use Slim\Http\Response as PsrResponse;
 
 /**
@@ -41,21 +41,21 @@ class BeforeSchemaTransitionAddTest extends TestCase
         $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
-        $this->transitionRepo = new WorkflowTransitionRepository();
+        $this->transitionRepo = new TransitionRepository();
 
         SystemContainer::addItem(
-            IWorkflowTransitionRepository::class,
-            WorkflowTransitionRepository::class
+            ITransitionRepository::class,
+            TransitionRepository::class
         );
         SystemContainer::addItem(
-            IWorkflowSchemaRepository::class,
-            WorkflowSchemaRepository::class
+            ISchemaRepository::class,
+            SchemaRepository::class
         );
     }
 
     public function tearDown(): void
     {
-        $this->transitionRepo->delete([WorkflowTransition::FIELD__NAME => 'test']);
+        $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
     }
 
     protected function getServerRequest(array $params)
@@ -121,10 +121,10 @@ class BeforeSchemaTransitionAddTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->transitionRepo->create(new WorkflowTransition([
-            WorkflowTransition::FIELD__NAME => 'test',
-            WorkflowTransition::FIELD__STATE_FROM => 'from',
-            WorkflowTransition::FIELD__STATE_TO => 'to'
+        $this->transitionRepo->create(new Transition([
+            Transition::FIELD__NAME => 'test',
+            Transition::FIELD__STATE_FROM => 'from',
+            Transition::FIELD__STATE_TO => 'to'
         ]));
 
         $operation(

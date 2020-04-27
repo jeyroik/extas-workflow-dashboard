@@ -3,13 +3,11 @@ namespace extas\components\jsonrpc\transitions;
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
-use extas\components\workflows\transitions\WorkflowTransition;
+use extas\components\workflows\transitions\Transition;
 use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\workflows\states\IWorkflowState;
-use extas\interfaces\workflows\states\IWorkflowStateRepository;
-use extas\interfaces\workflows\transitions\IWorkflowTransition;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
+use extas\interfaces\workflows\transitions\ITransition;
+use extas\interfaces\workflows\transitions\ITransitionRepository;
 
 /**
  * Class TransitionLoad
@@ -27,51 +25,27 @@ class TransitionLoad extends OperationDispatcher
     protected function dispatch(IRequest $request, IResponse &$response)
     {
         $transitions = $request->getData();
-        $transitionsNames = array_column($transitions, IWorkflowTransition::FIELD__NAME);
-        $transitionsByName = array_column($transitions, null, IWorkflowTransition::FIELD__NAME);
+        $transitionsNames = array_column($transitions, ITransition::FIELD__NAME);
+        $transitionsByName = array_column($transitions, null, ITransition::FIELD__NAME);
 
         /**
-         * @var $repo IWorkflowTransitionRepository
-         * @var $existed IWorkflowTransition[]
+         * @var $repo ITransitionRepository
+         * @var $existed ITransition[]
          */
-        $repo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
-        $existed = $repo->all([IWorkflowTransition::FIELD__NAME => $transitionsNames]);
-
-        foreach ($existed as $existing) {
-            if (isset($transitionsByName[$existing->getName()])) {
-                unset($transitionsByName[$existing->getName()]);
-            }
+        $repo = SystemContainer::getItem(ITransitionRepository::class);
+        $existed = $repo->all([ITransition::FIELD__NAME => $transitionsNames]);
+        $existedNames = [];
+        foreach ($existed as $item) {
+            $existedNames[$item->getName()] = true;
         }
 
-        $fromStates = array_column($transitions, IWorkflowTransition::FIELD__STATE_FROM);
-        $toStates = array_column($transitions, IWorkflowTransition::FIELD__STATE_TO);
-        $statesNames = array_merge($fromStates, $toStates);
-
-        /**
-         * @var $stateRepo IWorkflowStateRepository
-         * @var $existed IWorkflowState[]
-         */
-        $stateRepo = SystemContainer::getItem(IWorkflowStateRepository::class);
-        $existed = $stateRepo->all([IWorkflowState::FIELD__NAME => $statesNames]);
-        $missedNames = [];
-
-        if (count($existed) != count($statesNames)) {
-            $existedNames = [];
-            foreach ($existed as $existing) {
-                $existedNames[] = $existing->getName();
-            }
-            $missedNames = array_diff($statesNames, $existedNames);
-            $missedNames = array_flip($missedNames);
-        }
-
+        $transitionsForCreating = array_intersect_key($transitionsByName, $existedNames);
         $created = 0;
 
-        foreach ($transitionsByName as $data) {
-            $item = new WorkflowTransition($data);
-            if (!isset($missedNames[$item->getStateFromName()]) && !isset($missedNames[$item->getStateToName()])) {
-                $repo->create($item);
-                $created++;
-            }
+        foreach ($transitionsForCreating as $data) {
+            $item = new Transition($data);
+            $repo->create($item);
+            $created++;
         }
 
         $response->success([

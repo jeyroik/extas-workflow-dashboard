@@ -3,10 +3,10 @@ namespace extas\components\plugins\workflows\jsonrpc\before\schemas;
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
-use extas\components\workflows\schemas\WorkflowSchema;
+use extas\components\workflows\schemas\Schema;
 use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\workflows\schemas\IWorkflowSchema;
+use extas\interfaces\workflows\schemas\ISchema;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
 
@@ -26,15 +26,15 @@ class BeforeSchemaDelete extends OperationDispatcher
     protected function dispatch(IRequest $request, IResponse &$response)
     {
         if (!$response->hasError()) {
-            $item = new WorkflowSchema($request->getData());
+            $item = new Schema($request->getData());
             $this->checkTransitionDispatchers($item);
         }
     }
 
     /**
-     * @param IWorkflowSchema $item
+     * @param ISchema $item
      */
-    protected function checkTransitionDispatchers(IWorkflowSchema $item)
+    protected function checkTransitionDispatchers(ISchema $item)
     {
         /**
          * @var $repo ITransitionDispatcherRepository

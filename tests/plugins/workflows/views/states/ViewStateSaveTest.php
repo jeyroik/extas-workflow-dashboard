@@ -2,9 +2,9 @@
 
 use PHPUnit\Framework\TestCase;
 use extas\components\plugins\workflows\views\states\ViewStateSave;
-use extas\interfaces\workflows\states\IWorkflowStateRepository;
-use extas\components\workflows\states\WorkflowStateRepository;
-use extas\components\workflows\states\WorkflowState;
+use extas\interfaces\workflows\states\IStateRepository;
+use extas\components\workflows\states\StateRepository;
+use extas\components\workflows\states\State;
 use extas\components\SystemContainer;
 use extas\interfaces\repositories\IRepository;
 
@@ -27,17 +27,17 @@ class ViewStateSaveTest extends TestCase
         $env->load();
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
-        $this->stateRepo = new WorkflowStateRepository();
+        $this->stateRepo = new StateRepository();
 
         SystemContainer::addItem(
-            IWorkflowStateRepository::class,
-            WorkflowStateRepository::class
+            IStateRepository::class,
+            StateRepository::class
         );
     }
 
     public function tearDown(): void
     {
-        $this->stateRepo->delete([WorkflowState::FIELD__TITLE => 'test']);
+        $this->stateRepo->delete([State::FIELD__TITLE => 'test']);
     }
 
     public function testStateUpdate()
@@ -53,13 +53,13 @@ class ViewStateSaveTest extends TestCase
 
         $response = new \Slim\Http\Response();
 
-        $this->stateRepo->create(new WorkflowState([
-            WorkflowState::FIELD__NAME => 'test',
-            WorkflowState::FIELD__TITLE => 'test'
+        $this->stateRepo->create(new State([
+            State::FIELD__NAME => 'test',
+            State::FIELD__TITLE => 'test'
         ]));
-        $this->stateRepo->create(new WorkflowState([
-            WorkflowState::FIELD__NAME => 'test2',
-            WorkflowState::FIELD__TITLE => 'test'
+        $this->stateRepo->create(new State([
+            State::FIELD__NAME => 'test2',
+            State::FIELD__TITLE => 'test'
         ]));
 
         $dispatcher = new ViewStateSave();
@@ -72,9 +72,9 @@ class ViewStateSaveTest extends TestCase
         $this->assertTrue(strpos($page, '<title>Состояния</title>') !== false);
 
         /**
-         * @var WorkflowState $state
+         * @var State $state
          */
-        $state = $this->stateRepo->one([WorkflowState::FIELD__NAME => 'test']);
+        $state = $this->stateRepo->one([State::FIELD__NAME => 'test']);
         $this->assertEquals('test', $state->getDescription());
     }
 
@@ -91,13 +91,13 @@ class ViewStateSaveTest extends TestCase
 
         $response = new \Slim\Http\Response();
 
-        $this->stateRepo->create(new WorkflowState([
-            WorkflowState::FIELD__NAME => 'test',
-            WorkflowState::FIELD__TITLE => 'test'
+        $this->stateRepo->create(new State([
+            State::FIELD__NAME => 'test',
+            State::FIELD__TITLE => 'test'
         ]));
-        $this->stateRepo->create(new WorkflowState([
-            WorkflowState::FIELD__NAME => 'test2',
-            WorkflowState::FIELD__TITLE => 'test'
+        $this->stateRepo->create(new State([
+            State::FIELD__NAME => 'test2',
+            State::FIELD__TITLE => 'test'
         ]));
 
         $dispatcher = new ViewStateSave();
@@ -108,6 +108,6 @@ class ViewStateSaveTest extends TestCase
 
         $page = (string) $response->getBody();
         $this->assertTrue(strpos($page, '<title>Состояния</title>') !== false);
-        $this->assertNotEmpty($this->stateRepo->one([WorkflowState::FIELD__DESCRIPTION => 'test']));
+        $this->assertNotEmpty($this->stateRepo->one([State::FIELD__DESCRIPTION => 'test']));
     }
 }

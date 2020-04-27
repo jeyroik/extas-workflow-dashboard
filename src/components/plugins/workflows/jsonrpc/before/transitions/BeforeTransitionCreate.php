@@ -3,12 +3,12 @@ namespace extas\components\plugins\workflows\jsonrpc\before\transitions;
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
-use extas\components\workflows\transitions\WorkflowTransition;
+use extas\components\workflows\transitions\Transition;
 use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\workflows\states\IWorkflowState;
-use extas\interfaces\workflows\states\IWorkflowStateRepository;
-use extas\interfaces\workflows\transitions\IWorkflowTransition;
+use extas\interfaces\workflows\states\IState;
+use extas\interfaces\workflows\states\IStateRepository;
+use extas\interfaces\workflows\transitions\ITransition;
 
 /**
  * Class BeforeTransitionCreate
@@ -26,27 +26,27 @@ class BeforeTransitionCreate extends OperationDispatcher
     protected function dispatch(IRequest $request, IResponse &$response)
     {
         if (!$response->hasError()) {
-            $item = new WorkflowTransition($request->getData());
+            $item = new Transition($request->getData());
             $this->checkStates($response, $item);
         }
     }
 
     /**
      * @param IResponse $response
-     * @param IWorkflowTransition $item
+     * @param ITransition $item
      */
-    protected function checkStates(IResponse &$response, IWorkflowTransition $item)
+    protected function checkStates(IResponse &$response, ITransition $item)
     {
         $states = [
             $item->getStateFromName(),
             $item->getStateToName()
         ];
         /**
-         * @var $repo IWorkflowStateRepository
-         * @var $wStates IWorkflowState[]
+         * @var $repo IStateRepository
+         * @var $wStates IState[]
          */
-        $repo = SystemContainer::getItem(IWorkflowStateRepository::class);
-        $wStates = $repo->all([IWorkflowState::FIELD__NAME => $states]);
+        $repo = SystemContainer::getItem(IStateRepository::class);
+        $wStates = $repo->all([IState::FIELD__NAME => $states]);
 
         if ($item->getStateFromName() == $item->getStateToName()) {
             $response->error('The same state', 400);

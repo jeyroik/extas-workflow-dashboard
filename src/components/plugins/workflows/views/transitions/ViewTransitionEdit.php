@@ -5,10 +5,10 @@ use extas\components\dashboards\DashboardList;
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
 use extas\components\SystemContainer;
-use extas\interfaces\workflows\states\IWorkflowState;
-use extas\interfaces\workflows\states\IWorkflowStateRepository;
-use extas\interfaces\workflows\transitions\IWorkflowTransition;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
+use extas\interfaces\workflows\states\IState;
+use extas\interfaces\workflows\states\IStateRepository;
+use extas\interfaces\workflows\transitions\ITransition;
+use extas\interfaces\workflows\transitions\ITransitionRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -29,10 +29,10 @@ class ViewTransitionEdit extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array $args)
     {
         /**
-         * @var $repo IWorkflowTransitionRepository
-         * @var $transitions IWorkflowTransition[]
+         * @var $repo ITransitionRepository
+         * @var $transitions ITransition[]
          */
-        $repo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
+        $repo = SystemContainer::getItem(ITransitionRepository::class);
         $transitions = $repo->all([]);
         $itemsView = '';
         $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'transitions/item']);
@@ -66,15 +66,15 @@ class ViewTransitionEdit extends Plugin
     }
 
     /**
-     * @param IWorkflowTransition $transition
+     * @param ITransition $transition
      */
-    protected function renderStates(IWorkflowTransition &$transition)
+    protected function renderStates(ITransition &$transition)
     {
         /**
-         * @var $statesRepo IWorkflowStateRepository
-         * @var $states IWorkflowState[]
+         * @var $statesRepo IStateRepository
+         * @var $states IState[]
          */
-        $statesRepo = SystemContainer::getItem(IWorkflowStateRepository::class);
+        $statesRepo = SystemContainer::getItem(IStateRepository::class);
         $states = $statesRepo->all([]);
 
         $list = new DashboardList([

@@ -3,14 +3,14 @@
 use PHPUnit\Framework\TestCase;
 use extas\interfaces\repositories\IRepository;
 use extas\components\SystemContainer;
-use extas\components\workflows\entities\WorkflowEntityTemplate;
-use extas\components\workflows\entities\WorkflowEntityTemplateRepository;
-use extas\interfaces\workflows\entities\IWorkflowEntityTemplateRepository;
+use extas\components\workflows\entities\EntitySample;
+use extas\components\workflows\entities\EntitySampleRepository;
+use extas\interfaces\workflows\entities\IEntitySampleRepository;
 use extas\interfaces\parameters\IParameter;
 use extas\components\servers\requests\ServerRequest;
 use extas\components\servers\responses\ServerResponse;
 use extas\components\plugins\workflows\expands\schemas\SchemaExpandByEntityTemplate;
-use extas\components\workflows\schemas\WorkflowSchema;
+use extas\components\workflows\schemas\Schema;
 use extas\components\expands\ExpandingBox;
 
 class SchemaByEntityTemplateTest extends TestCase
@@ -26,17 +26,17 @@ class SchemaByEntityTemplateTest extends TestCase
         $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
-        $this->templateRepo = new WorkflowEntityTemplateRepository();
+        $this->templateRepo = new EntitySampleRepository();
 
         SystemContainer::addItem(
-            IWorkflowEntityTemplateRepository::class,
-            WorkflowEntityTemplateRepository::class
+            IEntitySampleRepository::class,
+            EntitySampleRepository::class
         );
     }
 
     public function tearDown(): void
     {
-        $this->templateRepo->delete([WorkflowEntityTemplate::FIELD__NAME => 'test']);
+        $this->templateRepo->delete([EntitySample::FIELD__NAME => 'test']);
     }
 
     protected function getServerRequest()
@@ -95,7 +95,7 @@ class SchemaByEntityTemplateTest extends TestCase
             ExpandingBox::FIELD__VALUE => [
                 'schemas' => [
                     [
-                        WorkflowSchema::FIELD__ENTITY_TEMPLATE => 'unknown'
+                        Schema::FIELD__ENTITY_TEMPLATE => 'unknown'
                     ]
                 ]
             ]
@@ -110,9 +110,9 @@ class SchemaByEntityTemplateTest extends TestCase
         $this->assertEquals(
             ['schemas' => [
                 [
-                    WorkflowSchema::FIELD__ENTITY_TEMPLATE => [
-                        WorkflowEntityTemplate::FIELD__NAME => 'unknown',
-                        WorkflowEntityTemplate::FIELD__TITLE => 'Ошибка: Неизвестный шаблон сущности [unknown]'
+                    Schema::FIELD__ENTITY_TEMPLATE => [
+                        EntitySample::FIELD__NAME => 'unknown',
+                        EntitySample::FIELD__TITLE => 'Ошибка: Неизвестный шаблон сущности [unknown]'
                     ]
                 ]
             ]],
@@ -134,15 +134,15 @@ class SchemaByEntityTemplateTest extends TestCase
             ExpandingBox::FIELD__VALUE => [
                 'schemas' => [
                     [
-                        WorkflowSchema::FIELD__ENTITY_TEMPLATE => 'test'
+                        Schema::FIELD__ENTITY_TEMPLATE => 'test'
                     ]
                 ]
             ]
         ]);
 
-        $this->templateRepo->create(new WorkflowEntityTemplate([
-            WorkflowEntityTemplate::FIELD__NAME => 'test',
-            WorkflowEntityTemplate::FIELD__TITLE => 'test'
+        $this->templateRepo->create(new EntitySample([
+            EntitySample::FIELD__NAME => 'test',
+            EntitySample::FIELD__TITLE => 'test'
         ]));
 
         $operation(
@@ -154,9 +154,9 @@ class SchemaByEntityTemplateTest extends TestCase
         $this->assertEquals(
             ['schemas' => [
                 [
-                    WorkflowSchema::FIELD__ENTITY_TEMPLATE => [
-                        WorkflowEntityTemplate::FIELD__NAME => 'test',
-                        WorkflowEntityTemplate::FIELD__TITLE => 'test'
+                    Schema::FIELD__ENTITY_TEMPLATE => [
+                        EntitySample::FIELD__NAME => 'test',
+                        EntitySample::FIELD__TITLE => 'test'
                     ]
                 ]
             ]],

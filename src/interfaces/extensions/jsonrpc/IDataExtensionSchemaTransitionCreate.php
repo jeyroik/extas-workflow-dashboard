@@ -2,7 +2,7 @@
 namespace extas\interfaces\extensions\jsonrpc;
 
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
-use extas\interfaces\workflows\transitions\IWorkflowTransition;
+use extas\interfaces\workflows\transitions\ITransition;
 
 /**
  * Interface IDataExtensionSchemaTransitionCreate
@@ -16,9 +16,9 @@ interface IDataExtensionSchemaTransitionCreate extends IDataExtension
     const FIELD__DISPATCHER = 'dispatcher';
 
     /**
-     * @return IWorkflowTransition|null
+     * @return ITransition|null
      */
-    public function getTransition(): ?IWorkflowTransition;
+    public function getTransition(): ?ITransition;
 
     /**
      * @return ITransitionDispatcher|null

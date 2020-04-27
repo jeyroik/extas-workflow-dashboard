@@ -5,10 +5,10 @@ use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
 use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\workflows\schemas\IWorkflowSchema;
-use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
-use extas\interfaces\workflows\transitions\IWorkflowTransition;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
+use extas\interfaces\workflows\schemas\ISchema;
+use extas\interfaces\workflows\schemas\ISchemaRepository;
+use extas\interfaces\workflows\transitions\ITransition;
+use extas\interfaces\workflows\transitions\ITransitionRepository;
 
 /**
  * Class BeforeSchemaTransitionAdd
@@ -39,10 +39,10 @@ class BeforeSchemaTransitionAdd extends OperationDispatcher
     {
         $transitionName = $jRpcData['transition_name'] ?? '';
         /**
-         * @var $transitRepo IWorkflowTransitionRepository
+         * @var $transitRepo ITransitionRepository
          */
-        $transitRepo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
-        $transition = $transitRepo->one([IWorkflowTransition::FIELD__NAME => $transitionName]);
+        $transitRepo = SystemContainer::getItem(ITransitionRepository::class);
+        $transition = $transitRepo->one([ITransition::FIELD__NAME => $transitionName]);
 
         if (!$transition) {
             $response->error('Unknown transition', 400);
@@ -58,11 +58,11 @@ class BeforeSchemaTransitionAdd extends OperationDispatcher
     {
         $schemaName = $jRpcData['schema_name'] ?? '';
         /**
-         * @var $schemaRepo IWorkflowSchemaRepository
-         * @var $schema IWorkflowSchema
+         * @var $schemaRepo ISchemaRepository
+         * @var $schema ISchema
          */
-        $schemaRepo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
-        $schema = $schemaRepo->one([IWorkflowSchema::FIELD__NAME => $schemaName]);
+        $schemaRepo = SystemContainer::getItem(ISchemaRepository::class);
+        $schema = $schemaRepo->one([ISchema::FIELD__NAME => $schemaName]);
         if (!$schema) {
             $response->error('Unknown schema', 400);
         }

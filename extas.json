@@ -163,6 +163,9 @@
             "transition_name": {
               "type": "string"
             },
+            "transition_sample_name": {
+              "type": "string"
+            },
             "schema_name": {
               "type": "string"
             },
@@ -177,7 +180,10 @@
                   "type": {
                     "type": "string"
                   },
-                  "template": {
+                  "priority": {
+                    "type": "int"
+                  },
+                  "sample_name": {
                     "type": "string"
                   },
                   "parameters": {
@@ -242,6 +248,54 @@
       }
     },
     {
+      "name": "workflow.transit",
+      "title": "Transit entity",
+      "description": "Transit entity from one state to another",
+      "method": "create",
+      "item_name": "",
+      "item_class": "",
+      "item_repo": "",
+      "class": "extas\\components\\jsonrpc\\workflows\\WorkflowTransit",
+      "filter": "",
+      "spec": {
+        "request": {
+          "type": "object",
+          "properties": {
+            "transition_name": {
+              "type": "string"
+            },
+            "entity": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                }
+              }
+            },
+            "context": {
+              "type": "object"
+            }
+          }
+        },
+        "response": {
+          "type": "object",
+          "properties": {
+            "entity": {
+              "type": "object",
+              "properties": {
+                "state": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
       "name": "entity.transit",
       "title": "Transit entity",
       "description": "Transit entity from one state to another",
@@ -264,6 +318,9 @@
             "entity": {
               "type": "object",
               "properties": {
+                "name": {
+                  "type": "string"
+                },
                 "state": {
                   "type": "string"
                 }

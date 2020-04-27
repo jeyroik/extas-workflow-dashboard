@@ -6,9 +6,9 @@ use extas\components\SystemContainer;
 use extas\interfaces\expands\IExpandingBox;
 use extas\interfaces\servers\requests\IServerRequest;
 use extas\interfaces\servers\responses\IServerResponse;
-use extas\interfaces\workflows\schemas\IWorkflowSchema;
-use extas\interfaces\workflows\transitions\IWorkflowTransition;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
+use extas\interfaces\workflows\schemas\ISchema;
+use extas\interfaces\workflows\transitions\ITransition;
+use extas\interfaces\workflows\transitions\ITransitionRepository;
 
 /**
  * Class SchemaExpandByTransitions
@@ -28,8 +28,8 @@ class SchemaExpandByTransitions extends PluginExpandAbstract
     {
         /**
          * @var $schemas
-         * @var $transitRepo IWorkflowTransitionRepository
-         * @var $transitions IWorkflowTransition[]
+         * @var $transitRepo ITransitionRepository
+         * @var $transitions ITransition[]
          */
         $value = $parent->getValue([]);
         if (empty($value)) {
@@ -40,21 +40,21 @@ class SchemaExpandByTransitions extends PluginExpandAbstract
         }
         $transitionsNames = [];
         foreach ($schemas as $schema) {
-            $transitionsNames = array_merge($transitionsNames, $schema[IWorkflowSchema::FIELD__TRANSITIONS]);
+            $transitionsNames = array_merge($transitionsNames, $schema[ISchema::FIELD__TRANSITIONS]);
         }
 
-        $transitRepo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
-        $transitions = $transitRepo->all([IWorkflowTransition::FIELD__NAME => $transitionsNames]);
+        $transitRepo = SystemContainer::getItem(ITransitionRepository::class);
+        $transitions = $transitRepo->all([ITransition::FIELD__NAME => $transitionsNames]);
         $transitionsByName = [];
         foreach ($transitions as $transition) {
             $transitionsByName[$transition->getName()] = $transition->__toArray();
         }
 
         foreach ($schemas as &$schema) {
-            foreach ($schema[IWorkflowSchema::FIELD__TRANSITIONS] as $index => $transition) {
-                $schema[IWorkflowSchema::FIELD__TRANSITIONS][$index] = $transitionsByName[$transition] ?? [
-                    IWorkflowTransition::FIELD__NAME => $transition,
-                    IWorkflowTransition::FIELD__TITLE => 'Ошибка: Неизвестный переход [' . $transition . ']'
+            foreach ($schema[ISchema::FIELD__TRANSITIONS] as $index => $transition) {
+                $schema[ISchema::FIELD__TRANSITIONS][$index] = $transitionsByName[$transition] ?? [
+                    ITransition::FIELD__NAME => $transition,
+                    ITransition::FIELD__TITLE => 'Ошибка: Неизвестный переход [' . $transition . ']'
                 ];
             }
         }

@@ -1,29 +1,25 @@
 <?php
-namespace extas\components\jsonrpc\entities;
+namespace extas\components\jsonrpc\workflows;
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
-use extas\components\jsonrpc\workflows\TGetTransition;
-use extas\components\jsonrpc\workflows\TTransit;
 use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\workflows\transitions\ITransition;
 
 /**
- * Class EntityTransit
+ * Class WorkflowTransit
  *
- * @deprecated
  * @stage run.jsonrpc.entity.run
- * @package extas\components\jsonrpc\states
+ * @package extas\components\jsonrpc\workflows
  * @author jeyroik@gmail.com
  */
-class EntityTransit extends OperationDispatcher
+class WorkflowTransit extends OperationDispatcher
 {
     use TTransit;
     use TGetTransition;
 
     public const FIELD__ENTITY = 'entity';
     public const FIELD__CONTEXT = 'context';
-    public const FIELD__SCHEMA_NAME = 'schema_name';
     public const FIELD__TRANSITION_NAME = 'transition_name';
 
     /**
@@ -32,16 +28,10 @@ class EntityTransit extends OperationDispatcher
      */
     protected function dispatch(IRequest $request, IResponse &$response)
     {
-        list($entityData, $contextData, $schemaName, $transitionName) = $this->listData($request->getParams());
+        list($entityData, $contextData, $transitionName) = $this->listData($request->getParams());
 
         try {
-            $transition = $this->getTransition(
-                [
-                    ITransition::FIELD__SAMPLE_NAME => $transitionName,
-                    ITransition::FIELD__SCHEMA_NAME => $schemaName
-                ],
-                $transitionName
-            );
+            $transition = $this->getTransition([ITransition::FIELD__NAME => $transitionName], $transitionName);
             $this->transit($contextData, $entityData, $transition, $response);
         } catch (\Exception $e) {
             $response->error($e->getMessage(), 400);
@@ -57,7 +47,6 @@ class EntityTransit extends OperationDispatcher
         return [
             $jRpcData[static::FIELD__ENTITY] ?? [],
             $jRpcData[static::FIELD__CONTEXT] ?? [],
-            $jRpcData[static::FIELD__SCHEMA_NAME] ?? '',
             $jRpcData[static::FIELD__TRANSITION_NAME] ?? ''
         ];
     }

@@ -2,14 +2,14 @@
 
 use PHPUnit\Framework\TestCase;
 use extas\interfaces\repositories\IRepository;
-use extas\components\workflows\schemas\WorkflowSchema;
+use extas\components\workflows\schemas\Schema;
 use extas\components\SystemContainer;
-use extas\components\workflows\transitions\WorkflowTransition;
-use extas\components\workflows\transitions\WorkflowTransitionRepository;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
-use extas\components\workflows\transitions\dispatchers\TransitionDispatcherTemplate;
-use extas\components\workflows\transitions\dispatchers\TransitionDispatcherTemplateRepository;
-use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherTemplateRepository;
+use extas\components\workflows\transitions\Transition;
+use extas\components\workflows\transitions\TransitionRepository;
+use extas\interfaces\workflows\transitions\ITransitionRepository;
+use extas\components\workflows\transitions\dispatchers\TransitionDispatcherSample;
+use extas\components\workflows\transitions\dispatchers\TransitionDispatcherSampleRepository;
+use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherSampleRepository;
 use extas\interfaces\parameters\IParameter;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
 use extas\components\plugins\workflows\jsonrpc\before\transitions\dispatchers\BeforeTransitionDispatcherCreate;
@@ -19,8 +19,8 @@ use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\components\jsonrpc\Request;
 use extas\components\jsonrpc\Response;
-use extas\components\workflows\schemas\WorkflowSchemaRepository;
-use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
+use extas\components\workflows\schemas\SchemaRepository;
+use extas\interfaces\workflows\schemas\ISchemaRepository;
 use Slim\Http\Response as PsrResponse;
 
 /**
@@ -51,29 +51,29 @@ class BeforeTransitionDispatcherCreateTest extends TestCase
         $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
-        $this->transitionRepo = new WorkflowTransitionRepository();
-        $this->transitionTemplateRepo = new TransitionDispatcherTemplateRepository();
-        $this->schemaRepo = new WorkflowSchemaRepository();
+        $this->transitionRepo = new TransitionRepository();
+        $this->transitionTemplateRepo = new TransitionDispatcherSampleRepository();
+        $this->schemaRepo = new SchemaRepository();
 
         SystemContainer::addItem(
-            IWorkflowTransitionRepository::class,
-            WorkflowTransitionRepository::class
+            ITransitionRepository::class,
+            TransitionRepository::class
         );
         SystemContainer::addItem(
-            ITransitionDispatcherTemplateRepository::class,
-            TransitionDispatcherTemplateRepository::class
+            ITransitionDispatcherSampleRepository::class,
+            TransitionDispatcherSampleRepository::class
         );
         SystemContainer::addItem(
-            IWorkflowSchemaRepository::class,
-            WorkflowSchemaRepository::class
+            ISchemaRepository::class,
+            SchemaRepository::class
         );
     }
 
     public function tearDown(): void
     {
-        $this->transitionRepo->delete([WorkflowTransition::FIELD__NAME => 'test']);
-        $this->transitionTemplateRepo->delete([TransitionDispatcherTemplate::FIELD__NAME => 'test']);
-        $this->schemaRepo->delete([WorkflowSchema::FIELD__NAME => 'test']);
+        $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
+        $this->transitionTemplateRepo->delete([TransitionDispatcherSample::FIELD__NAME => 'test']);
+        $this->schemaRepo->delete([Schema::FIELD__NAME => 'test']);
     }
 
     protected function getServerRequest(array $params)
@@ -120,12 +120,12 @@ class BeforeTransitionDispatcherCreateTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->transitionRepo->create(new WorkflowTransition([
-            WorkflowTransition::FIELD__NAME => 'test'
+        $this->transitionRepo->create(new Transition([
+            Transition::FIELD__NAME => 'test'
         ]));
 
-        $this->transitionTemplateRepo->create(new TransitionDispatcherTemplate([
-            TransitionDispatcherTemplate::FIELD__NAME => 'test'
+        $this->transitionTemplateRepo->create(new TransitionDispatcherSample([
+            TransitionDispatcherSample::FIELD__NAME => 'test'
         ]));
 
         $operation(
@@ -156,12 +156,12 @@ class BeforeTransitionDispatcherCreateTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->schemaRepo->create(new WorkflowSchema([
-            WorkflowSchema::FIELD__NAME => 'test'
+        $this->schemaRepo->create(new Schema([
+            Schema::FIELD__NAME => 'test'
         ]));
 
-        $this->transitionTemplateRepo->create(new TransitionDispatcherTemplate([
-            TransitionDispatcherTemplate::FIELD__NAME => 'test'
+        $this->transitionTemplateRepo->create(new TransitionDispatcherSample([
+            TransitionDispatcherSample::FIELD__NAME => 'test'
         ]));
 
         $operation(
@@ -192,12 +192,12 @@ class BeforeTransitionDispatcherCreateTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->schemaRepo->create(new WorkflowSchema([
-            WorkflowSchema::FIELD__NAME => 'test'
+        $this->schemaRepo->create(new Schema([
+            Schema::FIELD__NAME => 'test'
         ]));
 
-        $this->transitionRepo->create(new WorkflowTransition([
-            WorkflowTransition::FIELD__NAME => 'test'
+        $this->transitionRepo->create(new Transition([
+            Transition::FIELD__NAME => 'test'
         ]));
 
         $operation(
@@ -228,16 +228,16 @@ class BeforeTransitionDispatcherCreateTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->schemaRepo->create(new WorkflowSchema([
-            WorkflowSchema::FIELD__NAME => 'test'
+        $this->schemaRepo->create(new Schema([
+            Schema::FIELD__NAME => 'test'
         ]));
 
-        $this->transitionRepo->create(new WorkflowTransition([
-            WorkflowTransition::FIELD__NAME => 'test'
+        $this->transitionRepo->create(new Transition([
+            Transition::FIELD__NAME => 'test'
         ]));
 
-        $this->transitionTemplateRepo->create(new TransitionDispatcherTemplate([
-            TransitionDispatcherTemplate::FIELD__NAME => 'test'
+        $this->transitionTemplateRepo->create(new TransitionDispatcherSample([
+            TransitionDispatcherSample::FIELD__NAME => 'test'
         ]));
 
         $operation(

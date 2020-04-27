@@ -5,10 +5,10 @@ use extas\components\dashboards\DashboardList;
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
 use extas\components\SystemContainer;
-use extas\interfaces\workflows\entities\IWorkflowEntityTemplate;
-use extas\interfaces\workflows\entities\IWorkflowEntityTemplateRepository;
-use extas\interfaces\workflows\schemas\IWorkflowSchema;
-use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
+use extas\interfaces\workflows\entities\IEntitySample;
+use extas\interfaces\workflows\entities\IEntitySampleRepository;
+use extas\interfaces\workflows\schemas\ISchema;
+use extas\interfaces\workflows\schemas\ISchemaRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -29,13 +29,13 @@ class ViewSchemaEdit extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array $args)
     {
         /**
-         * @var $repo IWorkflowSchemaRepository
-         * @var $schema IWorkflowSchema
-         * @var $templatesRepo IWorkflowEntityTemplateRepository
-         * @var $templates IWorkflowEntityTemplate[]
+         * @var $repo ISchemaRepository
+         * @var $schema ISchema
+         * @var $templatesRepo IEntitySampleRepository
+         * @var $templates IEntitySample[]
          */
-        $repo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
-        $schema = $repo->one([IWorkflowSchema::FIELD__NAME => $args['name'] ?? '']);
+        $repo = SystemContainer::getItem(ISchemaRepository::class);
+        $schema = $repo->one([ISchema::FIELD__NAME => $args['name'] ?? '']);
 
         if (!$schema) {
             $response = $response->withHeader('Location', '/');
@@ -43,7 +43,7 @@ class ViewSchemaEdit extends Plugin
             $editTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'schemas/edit']);
             $schema['transitions'] = implode(', ', $schema->getTransitionsNames());
 
-            $templatesRepo = SystemContainer::getItem(IWorkflowEntityTemplateRepository::class);
+            $templatesRepo = SystemContainer::getItem(IEntitySampleRepository::class);
             $entity = new DashboardList([
                 DashboardList::FIELD__SELECTED => $schema->getEntityTemplateName(),
                 DashboardList::FIELD__TITLE => 'Шаблон сущности',

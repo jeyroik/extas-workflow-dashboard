@@ -3,14 +3,14 @@
 use PHPUnit\Framework\TestCase;
 use extas\interfaces\repositories\IRepository;
 use extas\components\SystemContainer;
-use extas\components\workflows\transitions\WorkflowTransition;
-use extas\components\workflows\transitions\WorkflowTransitionRepository;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
+use extas\components\workflows\transitions\Transition;
+use extas\components\workflows\transitions\TransitionRepository;
+use extas\interfaces\workflows\transitions\ITransitionRepository;
 use extas\interfaces\parameters\IParameter;
 use extas\components\servers\requests\ServerRequest;
 use extas\components\servers\responses\ServerResponse;
 use extas\components\plugins\workflows\expands\schemas\SchemaExpandByTransitions;
-use extas\components\workflows\schemas\WorkflowSchema;
+use extas\components\workflows\schemas\Schema;
 use extas\components\expands\ExpandingBox;
 
 class SchemaByTransitionsTest extends TestCase
@@ -26,17 +26,17 @@ class SchemaByTransitionsTest extends TestCase
         $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
-        $this->transitionRepo = new WorkflowTransitionRepository();
+        $this->transitionRepo = new TransitionRepository();
 
         SystemContainer::addItem(
-            IWorkflowTransitionRepository::class,
-            WorkflowTransitionRepository::class
+            ITransitionRepository::class,
+            TransitionRepository::class
         );
     }
 
     public function tearDown(): void
     {
-        $this->transitionRepo->delete([WorkflowTransition::FIELD__NAME => 'test']);
+        $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
     }
 
     protected function getServerRequest()
@@ -95,7 +95,7 @@ class SchemaByTransitionsTest extends TestCase
             ExpandingBox::FIELD__VALUE => [
                 'schemas' => [
                     [
-                        WorkflowSchema::FIELD__TRANSITIONS => ['unknown']
+                        Schema::FIELD__TRANSITIONS => ['unknown']
                     ]
                 ]
             ]
@@ -110,10 +110,10 @@ class SchemaByTransitionsTest extends TestCase
         $this->assertEquals(
             ['schemas' => [
                 [
-                    WorkflowSchema::FIELD__TRANSITIONS => [
+                    Schema::FIELD__TRANSITIONS => [
                         [
-                            WorkflowTransition::FIELD__NAME => 'unknown',
-                            WorkflowTransition::FIELD__TITLE => 'Ошибка: Неизвестный переход [unknown]'
+                            Transition::FIELD__NAME => 'unknown',
+                            Transition::FIELD__TITLE => 'Ошибка: Неизвестный переход [unknown]'
                         ]
                     ]
                 ]
@@ -136,15 +136,15 @@ class SchemaByTransitionsTest extends TestCase
             ExpandingBox::FIELD__VALUE => [
                 'schemas' => [
                     [
-                        WorkflowSchema::FIELD__TRANSITIONS => ['test']
+                        Schema::FIELD__TRANSITIONS => ['test']
                     ]
                 ]
             ]
         ]);
 
-        $this->transitionRepo->create(new WorkflowTransition([
-            WorkflowTransition::FIELD__NAME => 'test',
-            WorkflowTransition::FIELD__TITLE => 'test'
+        $this->transitionRepo->create(new Transition([
+            Transition::FIELD__NAME => 'test',
+            Transition::FIELD__TITLE => 'test'
         ]));
 
         $operation(
@@ -156,10 +156,10 @@ class SchemaByTransitionsTest extends TestCase
         $this->assertEquals(
             ['schemas' => [
                 [
-                    WorkflowSchema::FIELD__TRANSITIONS => [
+                    Schema::FIELD__TRANSITIONS => [
                         [
-                            WorkflowTransition::FIELD__NAME => 'test',
-                            WorkflowTransition::FIELD__TITLE => 'test'
+                            Transition::FIELD__NAME => 'test',
+                            Transition::FIELD__TITLE => 'test'
                         ]
                     ]
                 ]

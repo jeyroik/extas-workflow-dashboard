@@ -4,9 +4,9 @@ namespace extas\components\plugins\workflows\views\states;
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
 use extas\components\SystemContainer;
-use extas\components\workflows\states\WorkflowState;
-use extas\interfaces\workflows\states\IWorkflowState;
-use extas\interfaces\workflows\states\IWorkflowStateRepository;
+use extas\components\workflows\states\State;
+use extas\interfaces\workflows\states\IState;
+use extas\interfaces\workflows\states\IStateRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -27,19 +27,19 @@ class ViewStateCreate extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array $args)
     {
         /**
-         * @var $stateRepo IWorkflowStateRepository
-         * @var $states IWorkflowState[]
+         * @var $stateRepo IStateRepository
+         * @var $states IState[]
          */
-        $stateRepo = SystemContainer::getItem(IWorkflowStateRepository::class);
+        $stateRepo = SystemContainer::getItem(IStateRepository::class);
         $states = $stateRepo->all([]);
         $itemsView = '';
         $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'states/item']);
         $editTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'states/edit']);
 
-        array_unshift($states, new WorkflowState([
-            WorkflowState::FIELD__TITLE => '',
-            WorkflowState::FIELD__DESCRIPTION => '',
-            WorkflowState::FIELD__NAME => '__created__'
+        array_unshift($states, new State([
+            State::FIELD__TITLE => '',
+            State::FIELD__DESCRIPTION => '',
+            State::FIELD__NAME => '__created__'
         ]));
 
         foreach ($states as $index => $state) {

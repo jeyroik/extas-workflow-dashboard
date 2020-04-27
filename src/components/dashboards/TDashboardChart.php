@@ -1,8 +1,8 @@
 <?php
 namespace extas\components\dashboards;
 
-use extas\interfaces\workflows\schemas\IWorkflowSchema;
-use extas\interfaces\workflows\transitions\IWorkflowTransition;
+use extas\interfaces\workflows\schemas\ISchema;
+use extas\interfaces\workflows\transitions\ITransition;
 
 /**
  * Trait TDashboardChart
@@ -13,11 +13,11 @@ use extas\interfaces\workflows\transitions\IWorkflowTransition;
 trait TDashboardChart
 {
     /**
-     * @param IWorkflowSchema $schema
-     * @param IWorkflowTransition[] $transitions
+     * @param ISchema $schema
+     * @param ITransition[] $transitions
      * @return string
      */
-    protected function makeChart(IWorkflowSchema $schema, array $transitions)
+    protected function makeChart(ISchema $schema, array $transitions)
     {
         $chartTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'schemas/chart']);
         $chartData = [];

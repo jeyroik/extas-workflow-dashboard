@@ -4,8 +4,8 @@ namespace extas\components\plugins\workflows\views\transitions;
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
 use extas\components\SystemContainer;
-use extas\interfaces\workflows\transitions\IWorkflowTransition;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
+use extas\interfaces\workflows\transitions\ITransition;
+use extas\interfaces\workflows\transitions\ITransitionRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -26,10 +26,10 @@ class ViewTransitionsIndex extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array $args)
     {
         /**
-         * @var $repo IWorkflowTransitionRepository
-         * @var $transitions IWorkflowTransition[]
+         * @var $repo ITransitionRepository
+         * @var $transitions ITransition[]
          */
-        $repo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
+        $repo = SystemContainer::getItem(ITransitionRepository::class);
         $transitions = $repo->all([]);
         $itemsView = '';
         $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'transitions/item']);

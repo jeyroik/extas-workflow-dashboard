@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 use extas\interfaces\repositories\IRepository;
 use extas\components\SystemContainer;
 use extas\interfaces\parameters\IParameter;
-use extas\components\workflows\transitions\WorkflowTransition;
+use extas\components\workflows\transitions\Transition;
 use extas\components\jsonrpc\transitions\TransitionLoad;
 use extas\components\servers\requests\ServerRequest;
 use extas\components\servers\responses\ServerResponse;
@@ -12,11 +12,11 @@ use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\components\jsonrpc\Request;
 use extas\components\jsonrpc\Response;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
-use extas\components\workflows\transitions\WorkflowTransitionRepository;
-use extas\interfaces\workflows\states\IWorkflowStateRepository;
-use extas\components\workflows\states\WorkflowStateRepository;
-use extas\components\workflows\states\WorkflowState;
+use extas\interfaces\workflows\transitions\ITransitionRepository;
+use extas\components\workflows\transitions\TransitionRepository;
+use extas\interfaces\workflows\states\IStateRepository;
+use extas\components\workflows\states\StateRepository;
+use extas\components\workflows\states\State;
 use Slim\Http\Response as PsrResponse;
 
 /**
@@ -42,24 +42,24 @@ class TransitionLoadTest extends TestCase
         $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
-        $this->repo = new WorkflowTransitionRepository();
-        $this->stateRepo = new WorkflowStateRepository();
+        $this->repo = new TransitionRepository();
+        $this->stateRepo = new StateRepository();
 
         SystemContainer::addItem(
-            IWorkflowTransitionRepository::class,
-            WorkflowTransitionRepository::class
+            ITransitionRepository::class,
+            TransitionRepository::class
         );
 
         SystemContainer::addItem(
-            IWorkflowStateRepository::class,
-            WorkflowStateRepository::class
+            IStateRepository::class,
+            StateRepository::class
         );
     }
 
     public function tearDown(): void
     {
-        $this->repo->delete([WorkflowTransition::FIELD__TITLE => 'test']);
-        $this->stateRepo->delete([WorkflowState::FIELD__TITLE => 'test']);
+        $this->repo->delete([Transition::FIELD__TITLE => 'test']);
+        $this->stateRepo->delete([State::FIELD__TITLE => 'test']);
     }
 
     protected function getServerRequest(array $params)
@@ -99,45 +99,45 @@ class TransitionLoadTest extends TestCase
         $serverRequest = $this->getServerRequest([
             'data' => [
                 [
-                    WorkflowTransition::FIELD__NAME => 'test',
-                    WorkflowTransition::FIELD__TITLE => 'test',
-                    WorkflowTransition::FIELD__STATE_FROM => 'from',
-                    WorkflowTransition::FIELD__STATE_FROM => 'to'
+                    Transition::FIELD__NAME => 'test',
+                    Transition::FIELD__TITLE => 'test',
+                    Transition::FIELD__STATE_FROM => 'from',
+                    Transition::FIELD__STATE_FROM => 'to'
                 ],
                 [
-                    WorkflowTransition::FIELD__NAME => 'already-exists',
-                    WorkflowTransition::FIELD__TITLE => 'test',
-                    WorkflowTransition::FIELD__STATE_FROM => 'from',
-                    WorkflowTransition::FIELD__STATE_FROM => 'to'
+                    Transition::FIELD__NAME => 'already-exists',
+                    Transition::FIELD__TITLE => 'test',
+                    Transition::FIELD__STATE_FROM => 'from',
+                    Transition::FIELD__STATE_FROM => 'to'
                 ],
                 [
-                    WorkflowTransition::FIELD__NAME => 'test2',
-                    WorkflowTransition::FIELD__TITLE => 'test',
-                    WorkflowTransition::FIELD__STATE_FROM => 'unknown-state-from',
-                    WorkflowTransition::FIELD__STATE_FROM => 'to'
+                    Transition::FIELD__NAME => 'test2',
+                    Transition::FIELD__TITLE => 'test',
+                    Transition::FIELD__STATE_FROM => 'unknown-state-from',
+                    Transition::FIELD__STATE_FROM => 'to'
                 ],
                 [
-                    WorkflowTransition::FIELD__NAME => 'test2',
-                    WorkflowTransition::FIELD__TITLE => 'test',
-                    WorkflowTransition::FIELD__STATE_FROM => 'from',
-                    WorkflowTransition::FIELD__STATE_FROM => 'unknown-state-to'
+                    Transition::FIELD__NAME => 'test2',
+                    Transition::FIELD__TITLE => 'test',
+                    Transition::FIELD__STATE_FROM => 'from',
+                    Transition::FIELD__STATE_FROM => 'unknown-state-to'
                 ]
             ]
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->repo->create(new WorkflowTransition([
-            WorkflowTransition::FIELD__NAME => 'already-exists',
-            WorkflowTransition::FIELD__TITLE => 'test'
+        $this->repo->create(new Transition([
+            Transition::FIELD__NAME => 'already-exists',
+            Transition::FIELD__TITLE => 'test'
         ]));
 
-        $this->stateRepo->create(new WorkflowState([
-            WorkflowState::FIELD__NAME => 'from',
-            WorkflowState::FIELD__TITLE => 'test'
+        $this->stateRepo->create(new State([
+            State::FIELD__NAME => 'from',
+            State::FIELD__TITLE => 'test'
         ]));
-        $this->stateRepo->create(new WorkflowState([
-            WorkflowState::FIELD__NAME => 'to',
-            WorkflowState::FIELD__TITLE => 'test'
+        $this->stateRepo->create(new State([
+            State::FIELD__NAME => 'to',
+            State::FIELD__TITLE => 'test'
         ]));
 
         $operation(

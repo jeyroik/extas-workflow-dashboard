@@ -6,9 +6,9 @@ use extas\components\SystemContainer;
 use extas\interfaces\expands\IExpandingBox;
 use extas\interfaces\servers\requests\IServerRequest;
 use extas\interfaces\servers\responses\IServerResponse;
-use extas\interfaces\workflows\entities\IWorkflowEntityTemplate;
-use extas\interfaces\workflows\entities\IWorkflowEntityTemplateRepository;
-use extas\interfaces\workflows\schemas\IWorkflowSchema;
+use extas\interfaces\workflows\entities\IEntitySample;
+use extas\interfaces\workflows\entities\IEntitySampleRepository;
+use extas\interfaces\workflows\schemas\ISchema;
 
 /**
  * Class SchemaExpandByEntityTemplate
@@ -28,8 +28,8 @@ class SchemaExpandByEntityTemplate extends PluginExpandAbstract
     {
         /**
          * @var $schemas
-         * @var $repo IWorkflowEntityTemplateRepository
-         * @var $items IWorkflowEntityTemplate[]
+         * @var $repo IEntitySampleRepository
+         * @var $items IEntitySample[]
          */
         $value = $parent->getValue([]);
         if (empty($value)) {
@@ -40,21 +40,21 @@ class SchemaExpandByEntityTemplate extends PluginExpandAbstract
         }
         $names = [];
         foreach ($schemas as $schema) {
-            $names[] = $schema[IWorkflowSchema::FIELD__ENTITY_TEMPLATE];
+            $names[] = $schema[ISchema::FIELD__ENTITY_TEMPLATE];
         }
 
-        $repo = SystemContainer::getItem(IWorkflowEntityTemplateRepository::class);
-        $items = $repo->all([IWorkflowEntityTemplate::FIELD__NAME => $names]);
+        $repo = SystemContainer::getItem(IEntitySampleRepository::class);
+        $items = $repo->all([IEntitySample::FIELD__NAME => $names]);
         $byName = [];
         foreach ($items as $entityTemplate) {
             $byName[$entityTemplate->getName()] = $entityTemplate->__toArray();
         }
 
         foreach ($schemas as &$schema) {
-            $template = $schema[IWorkflowSchema::FIELD__ENTITY_TEMPLATE];
-            $schema[IWorkflowSchema::FIELD__ENTITY_TEMPLATE] = $byName[$template] ?? [
-                IWorkflowEntityTemplate::FIELD__NAME => $template,
-                IWorkflowEntityTemplate::FIELD__TITLE => 'Ошибка: Неизвестный шаблон сущности [' . $template . ']'
+            $template = $schema[ISchema::FIELD__ENTITY_TEMPLATE];
+            $schema[ISchema::FIELD__ENTITY_TEMPLATE] = $byName[$template] ?? [
+                IEntitySample::FIELD__NAME => $template,
+                IEntitySample::FIELD__TITLE => 'Ошибка: Неизвестный шаблон сущности [' . $template . ']'
             ];
         }
 

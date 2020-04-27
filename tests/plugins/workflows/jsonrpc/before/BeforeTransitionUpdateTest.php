@@ -3,9 +3,9 @@
 use PHPUnit\Framework\TestCase;
 use extas\interfaces\repositories\IRepository;
 use extas\components\SystemContainer;
-use extas\components\workflows\transitions\WorkflowTransition;
-use extas\components\workflows\transitions\WorkflowTransitionRepository;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
+use extas\components\workflows\transitions\Transition;
+use extas\components\workflows\transitions\TransitionRepository;
+use extas\interfaces\workflows\transitions\ITransitionRepository;
 use extas\interfaces\parameters\IParameter;
 use extas\components\plugins\workflows\jsonrpc\before\transitions\BeforeTransitionUpdate;
 use extas\components\servers\requests\ServerRequest;
@@ -14,9 +14,9 @@ use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\components\jsonrpc\Request;
 use extas\components\jsonrpc\Response;
-use extas\interfaces\workflows\states\IWorkflowStateRepository;
-use extas\components\workflows\states\WorkflowStateRepository;
-use extas\components\workflows\states\WorkflowState;
+use extas\interfaces\workflows\states\IStateRepository;
+use extas\components\workflows\states\StateRepository;
+use extas\components\workflows\states\State;
 use Slim\Http\Response as PsrResponse;
 
 /**
@@ -42,23 +42,23 @@ class BeforeTransitionUpdateTest extends TestCase
         $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
-        $this->transitionRepo = new WorkflowTransitionRepository();
-        $this->stateRepo = new WorkflowStateRepository();
+        $this->transitionRepo = new TransitionRepository();
+        $this->stateRepo = new StateRepository();
 
         SystemContainer::addItem(
-            IWorkflowTransitionRepository::class,
-            WorkflowTransitionRepository::class
+            ITransitionRepository::class,
+            TransitionRepository::class
         );
         SystemContainer::addItem(
-            IWorkflowStateRepository::class,
-            WorkflowStateRepository::class
+            IStateRepository::class,
+            StateRepository::class
         );
     }
 
     public function tearDown(): void
     {
-        $this->transitionRepo->delete([WorkflowTransition::FIELD__NAME => 'test']);
-        $this->stateRepo->delete([WorkflowState::FIELD__TITLE => 'test']);
+        $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
+        $this->stateRepo->delete([State::FIELD__TITLE => 'test']);
     }
 
     protected function getServerRequest(array $params)
@@ -97,8 +97,8 @@ class BeforeTransitionUpdateTest extends TestCase
         $operation = new BeforeTransitionUpdate();
         $serverRequest = $this->getServerRequest([
             'data' => [
-                WorkflowTransition::FIELD__STATE_FROM => 'test',
-                WorkflowTransition::FIELD__STATE_TO => 'test'
+                Transition::FIELD__STATE_FROM => 'test',
+                Transition::FIELD__STATE_TO => 'test'
             ]
         ]);
         $serverResponse = $this->getServerResponse();
@@ -123,15 +123,15 @@ class BeforeTransitionUpdateTest extends TestCase
         $operation = new BeforeTransitionUpdate();
         $serverRequest = $this->getServerRequest([
             'data' => [
-                WorkflowTransition::FIELD__STATE_FROM => 'unknown',
-                WorkflowTransition::FIELD__STATE_TO => 'test'
+                Transition::FIELD__STATE_FROM => 'unknown',
+                Transition::FIELD__STATE_TO => 'test'
             ]
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->stateRepo->create(new WorkflowState([
-            WorkflowState::FIELD__NAME => 'test',
-            WorkflowState::FIELD__TITLE => 'test'
+        $this->stateRepo->create(new State([
+            State::FIELD__NAME => 'test',
+            State::FIELD__TITLE => 'test'
         ]));
 
         $operation(
@@ -154,15 +154,15 @@ class BeforeTransitionUpdateTest extends TestCase
         $operation = new BeforeTransitionUpdate();
         $serverRequest = $this->getServerRequest([
             'data' => [
-                WorkflowTransition::FIELD__STATE_FROM => 'test',
-                WorkflowTransition::FIELD__STATE_TO => 'unknown'
+                Transition::FIELD__STATE_FROM => 'test',
+                Transition::FIELD__STATE_TO => 'unknown'
             ]
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->stateRepo->create(new WorkflowState([
-            WorkflowState::FIELD__NAME => 'test',
-            WorkflowState::FIELD__TITLE => 'test'
+        $this->stateRepo->create(new State([
+            State::FIELD__NAME => 'test',
+            State::FIELD__TITLE => 'test'
         ]));
 
         $operation(
@@ -185,20 +185,20 @@ class BeforeTransitionUpdateTest extends TestCase
         $operation = new BeforeTransitionUpdate();
         $serverRequest = $this->getServerRequest([
             'data' => [
-                WorkflowTransition::FIELD__STATE_FROM => 'from',
-                WorkflowTransition::FIELD__STATE_TO => 'to'
+                Transition::FIELD__STATE_FROM => 'from',
+                Transition::FIELD__STATE_TO => 'to'
             ]
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->stateRepo->create(new WorkflowState([
-            WorkflowState::FIELD__NAME => 'from',
-            WorkflowState::FIELD__TITLE => 'test'
+        $this->stateRepo->create(new State([
+            State::FIELD__NAME => 'from',
+            State::FIELD__TITLE => 'test'
         ]));
 
-        $this->stateRepo->create(new WorkflowState([
-            WorkflowState::FIELD__NAME => 'to',
-            WorkflowState::FIELD__TITLE => 'test'
+        $this->stateRepo->create(new State([
+            State::FIELD__NAME => 'to',
+            State::FIELD__TITLE => 'test'
         ]));
 
         $operation(

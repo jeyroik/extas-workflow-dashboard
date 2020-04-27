@@ -3,12 +3,13 @@ namespace extas\components\jsonrpc\schemas;
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
+use extas\components\workflows\exceptions\transitions\ExceptionTransitionMissed;
 use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\workflows\schemas\IWorkflowSchema;
-use extas\interfaces\workflows\schemas\IWorkflowSchemaRepository;
-use extas\interfaces\workflows\transitions\IWorkflowTransition;
-use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
+use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
+use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
+use extas\interfaces\workflows\transitions\ITransition;
+use extas\interfaces\workflows\transitions\ITransitionRepository;
 
 /**
  * Class SchemaTransitionRemove
@@ -19,39 +20,64 @@ use extas\interfaces\workflows\transitions\IWorkflowTransitionRepository;
  */
 class SchemaTransitionRemove extends OperationDispatcher
 {
+    use TGetSchema;
+
+    protected ?ITransitionRepository $transitionRepo = null;
+
     /**
      * @param IRequest $request
      * @param IResponse $response
      */
-    protected function dispatch(IRequest $request, IResponse &$response)
+    protected function dispatch(IRequest $request, IResponse &$response): void
     {
         $jRpcData = $request->getParams();
         $transitionName = $jRpcData['transition_name'] ?? '';
         $schemaName = $jRpcData['schema_name'] ?? '';
 
-        /**
-         * @var $transitRepo IWorkflowTransitionRepository
-         * @var $schemaRepo IWorkflowSchemaRepository
-         * @var $schema IWorkflowSchema
-         */
-        $schemaRepo = SystemContainer::getItem(IWorkflowSchemaRepository::class);
-        $schema = $schemaRepo->one([IWorkflowSchema::FIELD__NAME => $schemaName]);
+        try {
+            $schema = $this->getSchema($schemaName);
+            $this->checkTransition($transitionName);
 
-        if (!$schema) {
-            $response->error('Unknown schema', 400);
-        } else {
-            $transitRepo = SystemContainer::getItem(IWorkflowTransitionRepository::class);
-            $transition = $transitRepo->one([IWorkflowTransition::FIELD__NAME => $transitionName]);
-            if (!$transition) {
-                $response->error('Unknown transition', 400);
-            } else {
-                if ($schema->hasTransition($transitionName)) {
-                    $schema->removeTransition($transition);
-                    $schemaRepo->update($schema);
-                }
-
-                $response->success(['name' => $transitionName]);
+            if ($schema->hasTransitionName($transitionName)) {
+                $schema->removeTransitionName($transitionName);
+                $this->updateSchema($schema);
+                $this->removeTransitionAndDispatchers($transitionName);
             }
+
+            $response->success(['name' => $transitionName]);
+        } catch (\Exception $e) {
+            $response->error($e->getMessage(), 400);
         }
+    }
+
+    /**
+     * @param string $transitionName
+     */
+    protected function removeTransitionAndDispatchers(string $transitionName): void
+    {
+        $this->transitionRepo->delete([ITransition::FIELD__NAME => $transitionName]);
+
+        /**
+         * @var ITransitionDispatcherRepository $dispatchersRepo
+         */
+        $dispatchersRepo = SystemContainer::getItem(ITransitionDispatcherRepository::class);
+        $dispatchersRepo->delete([ITransitionDispatcher::FIELD__TRANSITION_NAME => $transitionName]);
+    }
+
+    /**
+     * @param string $transitionName
+     * @return mixed
+     * @throws ExceptionTransitionMissed
+     */
+    protected function checkTransition(string $transitionName)
+    {
+        $this->transitionRepo = SystemContainer::getItem(ITransitionRepository::class);
+        $transition = $this->transitionRepo->one([ITransition::FIELD__NAME => $transitionName]);
+
+        if (!$transition) {
+            throw new ExceptionTransitionMissed($transitionName);
+        }
+
+        return $transition;
     }
 }
