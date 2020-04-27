@@ -31,26 +31,8 @@ class BeforeTransitionDispatcherCreate extends OperationDispatcher
     {
         if (!$response->hasError()) {
             $item = new TransitionDispatcher($request->getData());
-            $this->checkSchema($response, $item);
             $this->checkTransition($response, $item);
             $this->checkTemplate($response, $item);
-        }
-    }
-
-    /**
-     * @param IResponse $response
-     * @param ITransitionDispatcher $item
-     */
-    protected function checkSchema(IResponse &$response, ITransitionDispatcher $item)
-    {
-        /**
-         * @var $repo ISchemaRepository
-         */
-        $repo = SystemContainer::getItem(ISchemaRepository::class);
-        $need = $repo->one([ISchema::FIELD__NAME => $item->getSchemaName()]);
-
-        if (!$need) {
-            $response->error('Unknown schema', 400);
         }
     }
 
