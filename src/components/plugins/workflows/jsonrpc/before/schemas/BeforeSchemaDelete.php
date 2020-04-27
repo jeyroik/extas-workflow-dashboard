@@ -27,25 +27,6 @@ class BeforeSchemaDelete extends OperationDispatcher
     {
         if (!$response->hasError()) {
             $item = new Schema($request->getData());
-            $this->checkTransitionDispatchers($item);
-        }
-    }
-
-    /**
-     * @param ISchema $item
-     */
-    protected function checkTransitionDispatchers(ISchema $item)
-    {
-        /**
-         * @var $repo ITransitionDispatcherRepository
-         * @var $dispatchers ITransitionDispatcher[]
-         */
-        $repo = SystemContainer::getItem(ITransitionDispatcherRepository::class);
-        $dispatchers = $repo->all([
-            ITransitionDispatcher::FIELD__SCHEMA_NAME => $item->getName()
-        ]);
-        if (count($dispatchers)) {
-            $repo->delete([ITransitionDispatcher::FIELD__SCHEMA_NAME => $item->getName()]);
         }
     }
 }

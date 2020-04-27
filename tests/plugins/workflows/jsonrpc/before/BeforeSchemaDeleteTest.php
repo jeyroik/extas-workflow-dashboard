@@ -151,9 +151,5 @@ class BeforeSchemaDeleteTest extends TestCase
          */
         $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
         $this->assertFalse($jsonRpcResponse->hasError());
-
-        $this->assertEmpty(
-            $this->transitionRepo->all([TransitionDispatcher::FIELD__SCHEMA_NAME => 'test'])
-        );
     }
 }
