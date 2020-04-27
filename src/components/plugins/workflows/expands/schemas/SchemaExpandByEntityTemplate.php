@@ -40,7 +40,7 @@ class SchemaExpandByEntityTemplate extends PluginExpandAbstract
         }
         $names = [];
         foreach ($schemas as $schema) {
-            $names[] = $schema[ISchema::FIELD__ENTITY_TEMPLATE];
+            $names[] = $schema[ISchema::FIELD__ENTITY_NAME];
         }
 
         $repo = SystemContainer::getItem(IEntitySampleRepository::class);
@@ -51,8 +51,8 @@ class SchemaExpandByEntityTemplate extends PluginExpandAbstract
         }
 
         foreach ($schemas as &$schema) {
-            $template = $schema[ISchema::FIELD__ENTITY_TEMPLATE];
-            $schema[ISchema::FIELD__ENTITY_TEMPLATE] = $byName[$template] ?? [
+            $template = $schema[ISchema::FIELD__ENTITY_NAME];
+            $schema[ISchema::FIELD__ENTITY_NAME] = $byName[$template] ?? [
                 IEntitySample::FIELD__NAME => $template,
                 IEntitySample::FIELD__TITLE => 'Ошибка: Неизвестный шаблон сущности [' . $template . ']'
             ];

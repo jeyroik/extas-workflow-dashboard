@@ -95,7 +95,7 @@ class SchemaByEntityTemplateTest extends TestCase
             ExpandingBox::FIELD__VALUE => [
                 'schemas' => [
                     [
-                        Schema::FIELD__ENTITY_TEMPLATE => 'unknown'
+                        Schema::FIELD__ENTITY_NAME => 'unknown'
                     ]
                 ]
             ]
@@ -110,7 +110,7 @@ class SchemaByEntityTemplateTest extends TestCase
         $this->assertEquals(
             ['schemas' => [
                 [
-                    Schema::FIELD__ENTITY_TEMPLATE => [
+                    Schema::FIELD__ENTITY_NAME => [
                         EntitySample::FIELD__NAME => 'unknown',
                         EntitySample::FIELD__TITLE => 'Ошибка: Неизвестный шаблон сущности [unknown]'
                     ]
@@ -134,7 +134,7 @@ class SchemaByEntityTemplateTest extends TestCase
             ExpandingBox::FIELD__VALUE => [
                 'schemas' => [
                     [
-                        Schema::FIELD__ENTITY_TEMPLATE => 'test'
+                        Schema::FIELD__ENTITY_NAME => 'test'
                     ]
                 ]
             ]
@@ -154,7 +154,7 @@ class SchemaByEntityTemplateTest extends TestCase
         $this->assertEquals(
             ['schemas' => [
                 [
-                    Schema::FIELD__ENTITY_TEMPLATE => [
+                    Schema::FIELD__ENTITY_NAME => [
                         EntitySample::FIELD__NAME => 'test',
                         EntitySample::FIELD__TITLE => 'test'
                     ]
