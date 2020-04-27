@@ -1,11 +1,9 @@
 <?php
 namespace tests;
 
-use extas\components\packages\entities\EntityRepository;
-use extas\interfaces\packages\entities\IEntityRepository;
+use extas\components\workflows\entities\EntityRepository;
+use extas\interfaces\workflows\entities\IEntityRepository;
 use PHPUnit\Framework\TestCase;
-use extas\components\workflows\entities\EntitySampleRepository;
-use extas\interfaces\workflows\entities\IEntitySampleRepository;
 use extas\interfaces\repositories\IRepository;
 use extas\components\workflows\schemas\Schema;
 use extas\components\workflows\entities\EntitySample;
@@ -21,7 +19,6 @@ use extas\components\workflows\transitions\dispatchers\TransitionDispatcherSampl
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcherSample as TDT;
 use extas\interfaces\parameters\IParameter;
 use extas\components\workflows\entities\Entity;
-use extas\components\workflows\entities\EntityContext;
 use extas\components\jsonrpc\entities\EntityTransit;
 use extas\components\servers\requests\ServerRequest;
 use extas\components\servers\responses\ServerResponse;
