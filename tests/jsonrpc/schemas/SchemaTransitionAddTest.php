@@ -239,7 +239,7 @@ class SchemaTransitionAddTest extends TestCase
         $operation = new SchemaTransitionAdd();
         $serverRequest = $this->getServerRequest([
             'schema_name' => 'test',
-            'transition_name' => 'test',,
+            'transition_name' => 'test',
             'transition_sample_name' => 'test',
             'dispatchers' => [
                 [
@@ -289,7 +289,7 @@ class SchemaTransitionAddTest extends TestCase
         $operation = new SchemaTransitionAdd();
         $serverRequest = $this->getServerRequest([
             'schema_name' => 'test',
-            'transition_name' => 'test',,
+            'transition_name' => 'test',
             'transition_sample_name' => 'test',
             'dispatchers' => [
                 [
