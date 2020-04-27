@@ -200,16 +200,7 @@ class SchemaTransitionAddTest extends TestCase
             Schema::FIELD__TRANSITIONS_NAMES => []
         ]));
 
-        $this->transitionRepo->create(new Transition([
-            Transition::FIELD__NAME => 'test',
-            Transition::FIELD__STATE_FROM => 'from',
-            Transition::FIELD__STATE_TO => 'to'
-        ]));
-
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($serverRequest, $serverResponse);
 
         /**
          * @var $jsonRpcResponse IResponse
@@ -249,24 +240,7 @@ class SchemaTransitionAddTest extends TestCase
             Schema::FIELD__TRANSITIONS_NAMES => []
         ]));
 
-        $this->transitionRepo->create(new Transition([
-            Transition::FIELD__NAME => 'test',
-            Transition::FIELD__STATE_FROM => 'from',
-            Transition::FIELD__STATE_TO => 'to'
-        ]));
-
-        $this->transitionDispatcherTemplateRepo->create(new TDT([
-            TDT::FIELD__NAME => 'test',
-            TDT::FIELD__TITLE => '',
-            TDT::FIELD__DESCRIPTION => '',
-            TDT::FIELD__CLASS => 'extas\\components\\workflows\\transitions\\dispatchers\\EntityHasAllParams',
-            TDT::FIELD__PARAMETERS => []
-        ]));
-
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($serverRequest, $serverResponse);
 
         /**
          * @var $jsonRpcResponse IResponse
@@ -309,24 +283,7 @@ class SchemaTransitionAddTest extends TestCase
             Schema::FIELD__TRANSITIONS_NAMES => []
         ]));
 
-        $this->transitionRepo->create(new Transition([
-            Transition::FIELD__NAME => 'test',
-            Transition::FIELD__STATE_FROM => 'from',
-            Transition::FIELD__STATE_TO => 'to'
-        ]));
-
-        $this->transitionDispatcherTemplateRepo->create(new TDT([
-            TDT::FIELD__NAME => 'test',
-            TDT::FIELD__TITLE => '',
-            TDT::FIELD__DESCRIPTION => '',
-            TDT::FIELD__CLASS => 'extas\\components\\workflows\\transitions\\dispatchers\\EntityHasAllParams',
-            TDT::FIELD__PARAMETERS => []
-        ]));
-
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($serverRequest, $serverResponse);
 
         /**
          * @var $jsonRpcResponse IResponse
