@@ -1,5 +1,7 @@
 <?php
+namespace tests;
 
+use extas\components\packages\entities\EntityRepository;
 use PHPUnit\Framework\TestCase;
 use extas\components\workflows\entities\EntitySampleRepository;
 use extas\interfaces\workflows\entities\IEntitySampleRepository;
@@ -40,7 +42,7 @@ class EntityTransitTest extends TestCase
     /**
      * @var IRepository|null
      */
-    protected ?IRepository $entityTemplateRepo = null;
+    protected ?IRepository $entityRepo = null;
 
     /**
      * @var IRepository|null
@@ -68,7 +70,7 @@ class EntityTransitTest extends TestCase
         $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
-        $this->entityTemplateRepo = new EntitySampleRepository();
+        $this->entityRepo = new EntityRepository();
         $this->transitionDispatcherRepo = new TransitionDispatcherRepository();
         $this->transitionDispatcherTemplateRepo = new TransitionDispatcherSampleRepository();
         $this->transitionRepo = new TransitionRepository();
@@ -98,7 +100,7 @@ class EntityTransitTest extends TestCase
 
     public function tearDown(): void
     {
-        $this->entityTemplateRepo->delete([EntitySample::FIELD__NAME => 'test']);
+        $this->entityRepo->delete([Entity::FIELD__NAME => 'test']);
         $this->transitionDispatcherRepo->delete([TransitionDispatcher::FIELD__NAME => 'test']);
         $this->transitionDispatcherTemplateRepo->delete([TDT::FIELD__NAME => 'test']);
         $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
@@ -160,7 +162,7 @@ class EntityTransitTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->entityTemplateRepo->create(new EntitySample([
+        $this->entityRepo->create(new EntitySample([
             EntitySample::FIELD__NAME => 'test',
             EntitySample::FIELD__CLASS => Entity::class
         ]));
@@ -194,7 +196,7 @@ class EntityTransitTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->entityTemplateRepo->create(new EntitySample([
+        $this->entityRepo->create(new EntitySample([
             EntitySample::FIELD__NAME => 'test',
             EntitySample::FIELD__CLASS => Entity::class
         ]));
@@ -234,7 +236,7 @@ class EntityTransitTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->entityTemplateRepo->create(new EntitySample([
+        $this->entityRepo->create(new EntitySample([
             EntitySample::FIELD__NAME => 'test',
             EntitySample::FIELD__CLASS => Entity::class
         ]));
@@ -294,7 +296,7 @@ class EntityTransitTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->entityTemplateRepo->create(new EntitySample([
+        $this->entityRepo->create(new Entity([
             EntitySample::FIELD__NAME => 'test',
             EntitySample::FIELD__CLASS => Entity::class
         ]));
@@ -308,25 +310,9 @@ class EntityTransitTest extends TestCase
         $this->transitionRepo->create(new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__STATE_FROM => 'from',
-            Transition::FIELD__STATE_TO => 'to'
-        ]));
-
-        $this->transitionDispatcherRepo->create(new TransitionDispatcher([
-            TransitionDispatcher::FIELD__NAME => 'test',
-            TransitionDispatcher::FIELD__TYPE => TransitionDispatcher::TYPE__CONDITION,
-            TransitionDispatcher::FIELD__TRANSITION_NAME => 'test',
-            TransitionDispatcher::FIELD__SAMPLE_NAME => 'test',
-            TransitionDispatcher::FIELD__PARAMETERS => [
-                [IParameter::FIELD__NAME => 'test']
-            ]
-        ]));
-
-        $this->transitionDispatcherTemplateRepo->create(new TDT([
-            TDT::FIELD__NAME => 'test',
-            TDT::FIELD__TITLE => '',
-            TDT::FIELD__DESCRIPTION => '',
-            TDT::FIELD__CLASS => 'extas\\components\\workflows\\transitions\\dispatchers\\EntityHasAllParams',
-            TDT::FIELD__PARAMETERS => []
+            Transition::FIELD__STATE_TO => 'to',
+            Transition::FIELD__SCHEMA_NAME => 'test',
+            Transition::FIELD__SAMPLE_NAME => 'test'
         ]));
 
         $operation(
