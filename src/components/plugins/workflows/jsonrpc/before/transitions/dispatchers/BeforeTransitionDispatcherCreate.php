@@ -6,11 +6,7 @@ use extas\components\SystemContainer;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
 use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\workflows\schemas\ISchema;
-use extas\interfaces\workflows\schemas\ISchemaRepository;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
-use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherSample;
-use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherSampleRepository;
 use extas\interfaces\workflows\transitions\ITransition;
 use extas\interfaces\workflows\transitions\ITransitionRepository;
 
@@ -32,7 +28,6 @@ class BeforeTransitionDispatcherCreate extends OperationDispatcher
         if (!$response->hasError()) {
             $item = new TransitionDispatcher($request->getData());
             $this->checkTransition($response, $item);
-            $this->checkTemplate($response, $item);
         }
     }
 
@@ -50,23 +45,6 @@ class BeforeTransitionDispatcherCreate extends OperationDispatcher
 
         if (!$need) {
             $response->error('Unknown transition', 400);
-        }
-    }
-
-    /**
-     * @param IResponse $response
-     * @param ITransitionDispatcher $item
-     */
-    protected function checkTemplate(IResponse &$response, ITransitionDispatcher $item)
-    {
-        /**
-         * @var $repo ITransitionDispatcherSampleRepository
-         */
-        $repo = SystemContainer::getItem(ITransitionDispatcherSampleRepository::class);
-        $need = $repo->one([ITransitionDispatcherSample::FIELD__NAME => $item->getSampleName()]);
-
-        if (!$need) {
-            $response->error('Unknown template', 400);
         }
     }
 }

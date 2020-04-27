@@ -123,14 +123,7 @@ class BeforeTransitionDispatcherCreateTest extends TestCase
             Transition::FIELD__NAME => 'test'
         ]));
 
-        $this->transitionTemplateRepo->create(new TransitionDispatcherSample([
-            TransitionDispatcherSample::FIELD__NAME => 'test'
-        ]));
-
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($serverRequest, $serverResponse);
 
         /**
          * @var $jsonRpcResponse IResponse
@@ -158,49 +151,7 @@ class BeforeTransitionDispatcherCreateTest extends TestCase
             Schema::FIELD__NAME => 'test'
         ]));
 
-        $this->transitionTemplateRepo->create(new TransitionDispatcherSample([
-            TransitionDispatcherSample::FIELD__NAME => 'test'
-        ]));
-
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
-    }
-
-    /**
-     * @throws
-     */
-    public function testUnknownTemplate()
-    {
-        $operation = new BeforeTransitionDispatcherCreate();
-        $serverRequest = $this->getServerRequest([
-            'data' => [
-                TransitionDispatcher::FIELD__NAME => 'test',
-                TransitionDispatcher::FIELD__TRANSITION_NAME => 'test',
-                TransitionDispatcher::FIELD__SAMPLE_NAME => 'unknown'
-            ]
-        ]);
-        $serverResponse = $this->getServerResponse();
-
-        $this->schemaRepo->create(new Schema([
-            Schema::FIELD__NAME => 'test'
-        ]));
-
-        $this->transitionRepo->create(new Transition([
-            Transition::FIELD__NAME => 'test'
-        ]));
-
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($serverRequest, $serverResponse);
 
         /**
          * @var $jsonRpcResponse IResponse
@@ -236,10 +187,7 @@ class BeforeTransitionDispatcherCreateTest extends TestCase
             TransitionDispatcherSample::FIELD__NAME => 'test'
         ]));
 
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($serverRequest, $serverResponse);
 
         /**
          * @var $jsonRpcResponse IResponse
