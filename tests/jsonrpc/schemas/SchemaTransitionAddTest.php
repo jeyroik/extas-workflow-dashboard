@@ -1,5 +1,8 @@
 <?php
+namespace tests;
 
+use extas\components\workflows\transitions\TransitionSampleRepository;
+use extas\interfaces\workflows\transitions\ITransitionSampleRepository;
 use PHPUnit\Framework\TestCase;
 use extas\components\workflows\entities\EntitySampleRepository;
 use extas\interfaces\workflows\entities\IEntitySampleRepository;
@@ -88,6 +91,10 @@ class SchemaTransitionAddTest extends TestCase
         SystemContainer::addItem(
             ITransitionRepository::class,
             TransitionRepository::class
+        );
+        SystemContainer::addItem(
+            ITransitionSampleRepository::class,
+            TransitionSampleRepository::class
         );
         SystemContainer::addItem(
             ISchemaRepository::class,
