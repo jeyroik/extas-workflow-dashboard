@@ -68,11 +68,15 @@ class TransitionByStateFrom extends OperationDispatcher
     {
         $transitResult = new TransitResult();
         $conditions = $transition->getConditions();
+
+        $valid = true;
         foreach ($conditions as $condition) {
-            if ($condition->dispatch($context, $transitResult, $entity)) {
-                $result[$transition->getName()] = $transition->__toArray();
+            if (!$condition->dispatch($context, $transitResult, $entity)) {
+                $valid = false;
             }
         }
+
+        $valid && ($result[$transition->getName()] = $transition->__toArray());
     }
 
     /**
