@@ -28,9 +28,7 @@ trait TTransit
      */
     protected function transit(array $contextData, array $entityData, ITransition $transition, IResponse &$response)
     {
-        $workflow = new Workflow([
-            Workflow::FIELD__CONTEXT => new EntityContext($contextData)
-        ]);
+        $workflow = new Workflow([Workflow::FIELD__CONTEXT => new EntityContext($contextData)]);
         $result = $workflow->transit($this->buildEntity($entityData), $transition);
         if ($result->hasErrors()) {
             $this->setError($result, $response);
@@ -74,11 +72,11 @@ trait TTransit
         $entityFormal = $repo->one([IEntity::FIELD__NAME => $entity->getName()]);
 
         if (!$entityFormal) {
-            throw new \Exception('');
+            throw new \Exception('Missed entity');
         }
 
         if (!$entity->has(...$entityFormal->getParametersNames())) {
-            throw new \Exception('');
+            throw new \Exception('Missed entity parameters');
         }
 
         return $entity;

@@ -291,6 +291,7 @@ class EntityTransitTest extends TestCase
             'schema_name' => 'test',
             'transition_name' => 'test',
             'entity' => [
+                Entity::FIELD__NAME => 'test',
                 Entity::FIELD__STATE_NAME => 'from',
                 'test' => true
             ],
