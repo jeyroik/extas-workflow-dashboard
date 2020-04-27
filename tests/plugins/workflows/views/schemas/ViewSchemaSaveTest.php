@@ -1,5 +1,7 @@
 <?php
+namespace tests;
 
+use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
 use extas\components\plugins\workflows\views\schemas\ViewSchemaSave;
 use extas\interfaces\workflows\schemas\ISchemaRepository;
@@ -10,6 +12,11 @@ use extas\components\workflows\transitions\Transition;
 use extas\components\workflows\schemas\Schema;
 use extas\components\SystemContainer;
 use extas\interfaces\repositories\IRepository;
+use Slim\Http\Headers;
+use Slim\Http\Request;
+use Slim\Http\Response;
+use Slim\Http\Stream;
+use Slim\Http\Uri;
 
 /**
  * Class ViewSchemaSaveTest
@@ -31,7 +38,7 @@ class ViewSchemaSaveTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
+        $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
@@ -56,23 +63,23 @@ class ViewSchemaSaveTest extends TestCase
 
     public function testUpdateSchema()
     {
-        $request = new \Slim\Http\Request(
+        $request = new Request(
             'GET',
-            new \Slim\Http\Uri('http', 'localhost', 80, '/'),
-            new \Slim\Http\Headers(['Content-type' => 'text/html']),
+            new Uri('http', 'localhost', 80, '/'),
+            new Headers(['Content-type' => 'text/html']),
             [],
             [],
-            new \Slim\Http\Stream(fopen('php://input', 'r'))
+            new Stream(fopen('php://input', 'r'))
         );
 
-        $response = new \Slim\Http\Response();
+        $response = new Response();
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__TITLE => 'Test',
             Schema::FIELD__DESCRIPTION => 'Test',
-            Schema::FIELD__TRANSITIONS => ['test'],
-            Schema::FIELD__ENTITY_TEMPLATE => 'test'
+            Schema::FIELD__TRANSITIONS_NAMES => ['test'],
+            Schema::FIELD__ENTITY_NAME => 'test'
         ]));
         $this->transitionRepo->create(new Transition([
             Transition::FIELD__NAME => 'test',
@@ -82,7 +89,7 @@ class ViewSchemaSaveTest extends TestCase
         ]));
 
         $_REQUEST['transitions'] = 'test';
-        $_REQUEST['entity_template'] = 'new';
+        $_REQUEST['entity_name'] = 'new';
         $dispatcher = new ViewSchemaSave();
         $dispatcher($request, $response, ['name' => 'test']);
         $this->assertEquals(200, $response->getStatusCode());
@@ -95,6 +102,6 @@ class ViewSchemaSaveTest extends TestCase
          */
         $schema = $this->schemaRepo->one([Schema::FIELD__NAME => 'test']);
         $this->assertNotEmpty($schema);
-        $this->assertEquals('new', $schema->getEntityTemplateName());
+        $this->assertEquals('new', $schema->getEntityName());
     }
 }

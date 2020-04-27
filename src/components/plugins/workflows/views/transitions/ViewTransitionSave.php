@@ -48,8 +48,8 @@ class ViewTransitionSave extends Plugin
                 $transition
                     ->setTitle($transitionTitle)
                     ->setDescription($transitionDesc)
-                    ->setStateFrom($transitionStateFrom)
-                    ->setStateTo($transitionStateTo);
+                    ->setStateFromName($transitionStateFrom)
+                    ->setStateToName($transitionStateTo);
                 $repo->update($transition);
                 $updated = true;
             }

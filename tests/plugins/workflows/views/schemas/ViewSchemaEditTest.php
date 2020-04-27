@@ -1,5 +1,7 @@
 <?php
+namespace tests;
 
+use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
 use extas\components\plugins\workflows\views\schemas\ViewSchemaEdit;
 use extas\interfaces\workflows\schemas\ISchemaRepository;
@@ -10,6 +12,11 @@ use extas\components\workflows\transitions\Transition;
 use extas\components\workflows\schemas\Schema;
 use extas\components\SystemContainer;
 use extas\interfaces\repositories\IRepository;
+use Slim\Http\Headers;
+use Slim\Http\Request;
+use Slim\Http\Response;
+use Slim\Http\Stream;
+use Slim\Http\Uri;
 
 /**
  * Class ViewSchemaEditTest
@@ -31,7 +38,7 @@ class ViewSchemaEditTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
+        $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
@@ -56,23 +63,23 @@ class ViewSchemaEditTest extends TestCase
 
     public function testEditingSchema()
     {
-        $request = new \Slim\Http\Request(
+        $request = new Request(
             'GET',
-            new \Slim\Http\Uri('http', 'localhost', 80, '/'),
-            new \Slim\Http\Headers(['Content-type' => 'text/html']),
+            new Uri('http', 'localhost', 80, '/'),
+            new Headers(['Content-type' => 'text/html']),
             [],
             [],
-            new \Slim\Http\Stream(fopen('php://input', 'r'))
+            new Stream(fopen('php://input', 'r'))
         );
 
-        $response = new \Slim\Http\Response();
+        $response = new Response();
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__TITLE => 'Test',
             Schema::FIELD__DESCRIPTION => 'Test',
-            Schema::FIELD__TRANSITIONS => ['test'],
-            Schema::FIELD__ENTITY_TEMPLATE => 'test'
+            Schema::FIELD__TRANSITIONS_NAMES => ['test'],
+            Schema::FIELD__ENTITY_NAME => 'test'
         ]));
         $this->transitionRepo->create(new Transition([
             Transition::FIELD__NAME => 'test',
@@ -93,23 +100,23 @@ class ViewSchemaEditTest extends TestCase
 
     public function testRedirectOnEmptySchema()
     {
-        $request = new \Slim\Http\Request(
+        $request = new Request(
             'GET',
-            new \Slim\Http\Uri('http', 'localhost', 80, '/'),
-            new \Slim\Http\Headers(['Content-type' => 'text/html']),
+            new Uri('http', 'localhost', 80, '/'),
+            new Headers(['Content-type' => 'text/html']),
             [],
             [],
-            new \Slim\Http\Stream(fopen('php://input', 'r'))
+            new Stream(fopen('php://input', 'r'))
         );
 
-        $response = new \Slim\Http\Response();
+        $response = new Response();
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__TITLE => 'Test',
             Schema::FIELD__DESCRIPTION => 'Test',
-            Schema::FIELD__TRANSITIONS => ['test'],
-            Schema::FIELD__ENTITY_TEMPLATE => 'test'
+            Schema::FIELD__TRANSITIONS_NAMES => ['test'],
+            Schema::FIELD__ENTITY_NAME => 'test'
         ]));
         $this->transitionRepo->create(new Transition([
             Transition::FIELD__NAME => 'test',
@@ -119,7 +126,7 @@ class ViewSchemaEditTest extends TestCase
         ]));
 
         $_REQUEST['transitions'] = 'test';
-        $_REQUEST['entity_template'] = 'new';
+        $_REQUEST['entity_name'] = 'new';
         $dispatcher = new ViewSchemaEdit();
         $dispatcher($request, $response, ['name' => 'unknown']);
         $this->assertEquals(302, $response->getStatusCode());
