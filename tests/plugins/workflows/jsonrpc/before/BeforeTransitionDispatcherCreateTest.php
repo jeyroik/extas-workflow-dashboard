@@ -107,34 +107,6 @@ class BeforeTransitionDispatcherCreateTest extends TestCase
     /**
      * @throws
      */
-    public function testUnknownSchema()
-    {
-        $operation = new BeforeTransitionDispatcherCreate();
-        $serverRequest = $this->getServerRequest([
-            'data' => [
-                TransitionDispatcher::FIELD__NAME => 'test',
-                TransitionDispatcher::FIELD__TRANSITION_NAME => 'test',
-                TransitionDispatcher::FIELD__SAMPLE_NAME => 'test'
-            ]
-        ]);
-        $serverResponse = $this->getServerResponse();
-
-        $this->transitionRepo->create(new Transition([
-            Transition::FIELD__NAME => 'test'
-        ]));
-
-        $operation($serverRequest, $serverResponse);
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
-    }
-
-    /**
-     * @throws
-     */
     public function testUnknownTransition()
     {
         $operation = new BeforeTransitionDispatcherCreate();

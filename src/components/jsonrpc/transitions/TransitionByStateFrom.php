@@ -46,6 +46,12 @@ class TransitionByStateFrom extends OperationDispatcher
                 $this->addValid($transition, $entity, $context, $result);
             }
 
+            $filter = $request->getFilter();
+            $filterNames = isset($filter['transition_name'], $filter['transition_name']['$in'])
+                ? array_flip($filter['transition_name']['$in'])
+                : [];
+
+            $result = array_intersect_key($result, $filterNames);
             $response->success(array_values($result));
         } catch (\Exception $e) {
             $response->error($e->getMessage(), 400);
