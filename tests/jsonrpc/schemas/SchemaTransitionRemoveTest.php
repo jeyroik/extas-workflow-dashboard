@@ -226,6 +226,6 @@ class SchemaTransitionRemoveTest extends TestCase
         $this->assertFalse($jsonRpcResponse->hasError());
 
         $schema = $this->schemaRepo->one([Schema::FIELD__NAME => 'test']);
-        $this->assertFalse($schema->hasTransition('test'));
+        $this->assertFalse($schema->hasTransitionName('test'));
     }
 }
