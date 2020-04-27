@@ -6,8 +6,8 @@ use extas\components\workflows\entities\Entity;
 use extas\components\workflows\entities\EntityContext;
 use extas\components\workflows\Workflow;
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\packages\entities\IEntityRepository;
 use extas\interfaces\workflows\entities\IEntity;
+use extas\interfaces\workflows\entities\IEntityRepository;
 use extas\interfaces\workflows\transitions\ITransition;
 use extas\interfaces\workflows\transits\ITransitResult;
 
