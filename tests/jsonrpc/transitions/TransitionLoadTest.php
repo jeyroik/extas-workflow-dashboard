@@ -102,25 +102,13 @@ class TransitionLoadTest extends TestCase
                     Transition::FIELD__NAME => 'test',
                     Transition::FIELD__TITLE => 'test',
                     Transition::FIELD__STATE_FROM => 'from',
-                    Transition::FIELD__STATE_FROM => 'to'
+                    Transition::FIELD__STATE_TO => 'to'
                 ],
                 [
                     Transition::FIELD__NAME => 'already-exists',
                     Transition::FIELD__TITLE => 'test',
                     Transition::FIELD__STATE_FROM => 'from',
-                    Transition::FIELD__STATE_FROM => 'to'
-                ],
-                [
-                    Transition::FIELD__NAME => 'test2',
-                    Transition::FIELD__TITLE => 'test',
-                    Transition::FIELD__STATE_FROM => 'unknown-state-from',
-                    Transition::FIELD__STATE_FROM => 'to'
-                ],
-                [
-                    Transition::FIELD__NAME => 'test2',
-                    Transition::FIELD__TITLE => 'test',
-                    Transition::FIELD__STATE_FROM => 'from',
-                    Transition::FIELD__STATE_FROM => 'unknown-state-to'
+                    Transition::FIELD__STATE_TO => 'to'
                 ]
             ]
         ]);
@@ -140,10 +128,7 @@ class TransitionLoadTest extends TestCase
             State::FIELD__TITLE => 'test'
         ]));
 
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($serverRequest, $serverResponse);
 
         /**
          * @var $jsonRpcResponse IResponse
@@ -156,7 +141,7 @@ class TransitionLoadTest extends TestCase
                 IResponse::RESPONSE__VERSION => IResponse::VERSION_CURRENT,
                 IResponse::RESPONSE__RESULT => [
                     'created_count' => 1,
-                    'got_count' => 4
+                    'got_count' => 2
                 ]
             ],
             json_decode($jsonRpcResponse->getPsrResponse()->getBody(), true)
