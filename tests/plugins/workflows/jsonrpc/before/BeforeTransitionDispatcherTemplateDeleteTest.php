@@ -91,7 +91,7 @@ class BeforeTransitionDispatcherTemplateDeleteTest extends TestCase
 
         $this->transitionRepo->create(new TransitionDispatcher([
             TransitionDispatcher::FIELD__NAME => 'test',
-            TransitionDispatcher::FIELD__TEMPLATE => 'test'
+            TransitionDispatcher::FIELD__SAMPLE_NAME => 'test'
         ]));
 
         $operation(

@@ -49,7 +49,7 @@ class SchemaTransitionAddTest extends TestCase
     /**
      * @var IRepository|null
      */
-    protected ?IRepository $transitionTemplateDispatcherRepo = null;
+    protected ?IRepository $transitionDispatcherTemplateRepo = null;
 
     /**
      * @var IRepository|null
@@ -167,7 +167,7 @@ class SchemaTransitionAddTest extends TestCase
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
-            Schema::FIELD__ENTITY_TEMPLATE => 'test'
+            Schema::FIELD__ENTITY_NAME => 'test'
         ]));
 
         $operation(
@@ -196,8 +196,8 @@ class SchemaTransitionAddTest extends TestCase
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
-            Schema::FIELD__ENTITY_TEMPLATE => 'test',
-            Schema::FIELD__TRANSITIONS => []
+            Schema::FIELD__ENTITY_NAME => 'test',
+            Schema::FIELD__TRANSITIONS_NAMES => []
         ]));
 
         $this->transitionRepo->create(new Transition([
@@ -231,7 +231,7 @@ class SchemaTransitionAddTest extends TestCase
                 [
                     ITransitionDispatcher::FIELD__NAME => 'test',
                     ITransitionDispatcher::FIELD__TYPE => ITransitionDispatcher::TYPE__CONDITION,
-                    ITransitionDispatcher::FIELD__TEMPLATE => 'test',
+                    ITransitionDispatcher::FIELD__SAMPLE_NAME => 'test',
                     ITransitionDispatcher::FIELD__PARAMETERS => [
                         [
                             IParameter::FIELD__NAME => 'field_name',
@@ -245,8 +245,8 @@ class SchemaTransitionAddTest extends TestCase
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
-            Schema::FIELD__ENTITY_TEMPLATE => 'test',
-            Schema::FIELD__TRANSITIONS => []
+            Schema::FIELD__ENTITY_NAME => 'test',
+            Schema::FIELD__TRANSITIONS_NAMES => []
         ]));
 
         $this->transitionRepo->create(new Transition([
@@ -291,7 +291,7 @@ class SchemaTransitionAddTest extends TestCase
                 [
                     ITransitionDispatcher::FIELD__NAME => 'test',
                     ITransitionDispatcher::FIELD__TYPE => ITransitionDispatcher::TYPE__CONDITION,
-                    ITransitionDispatcher::FIELD__TEMPLATE => 'unknown',
+                    ITransitionDispatcher::FIELD__SAMPLE_NAME => 'unknown',
                     ITransitionDispatcher::FIELD__PARAMETERS => [
                         [
                             IParameter::FIELD__NAME => 'field_name',
@@ -305,8 +305,8 @@ class SchemaTransitionAddTest extends TestCase
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
-            Schema::FIELD__ENTITY_TEMPLATE => 'test',
-            Schema::FIELD__TRANSITIONS => []
+            Schema::FIELD__ENTITY_NAME => 'test',
+            Schema::FIELD__TRANSITIONS_NAMES => []
         ]));
 
         $this->transitionRepo->create(new Transition([

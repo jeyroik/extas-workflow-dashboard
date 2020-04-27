@@ -46,7 +46,7 @@ class BeforeTransitionDispatcherTemplateDelete extends OperationDispatcher
          */
         $repo = SystemContainer::getItem(ITransitionDispatcherRepository::class);
         $dispatchers = $repo->all([
-            ITransitionDispatcher::FIELD__TEMPLATE => $item->getName()
+            ITransitionDispatcher::FIELD__SAMPLE_NAME => $item->getName()
         ]);
         if (count($dispatchers)) {
             $response->error('There are dispatchers with this template', 400);

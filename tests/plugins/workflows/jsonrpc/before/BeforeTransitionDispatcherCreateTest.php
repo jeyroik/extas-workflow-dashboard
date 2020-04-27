@@ -113,9 +113,8 @@ class BeforeTransitionDispatcherCreateTest extends TestCase
         $serverRequest = $this->getServerRequest([
             'data' => [
                 TransitionDispatcher::FIELD__NAME => 'test',
-                TransitionDispatcher::FIELD__SCHEMA_NAME => 'unknown',
                 TransitionDispatcher::FIELD__TRANSITION_NAME => 'test',
-                TransitionDispatcher::FIELD__TEMPLATE => 'test'
+                TransitionDispatcher::FIELD__SAMPLE_NAME => 'test'
             ]
         ]);
         $serverResponse = $this->getServerResponse();
@@ -149,9 +148,8 @@ class BeforeTransitionDispatcherCreateTest extends TestCase
         $serverRequest = $this->getServerRequest([
             'data' => [
                 TransitionDispatcher::FIELD__NAME => 'test',
-                TransitionDispatcher::FIELD__SCHEMA_NAME => 'test',
                 TransitionDispatcher::FIELD__TRANSITION_NAME => 'unknown',
-                TransitionDispatcher::FIELD__TEMPLATE => 'test'
+                TransitionDispatcher::FIELD__SAMPLE_NAME => 'test'
             ]
         ]);
         $serverResponse = $this->getServerResponse();
@@ -185,9 +183,8 @@ class BeforeTransitionDispatcherCreateTest extends TestCase
         $serverRequest = $this->getServerRequest([
             'data' => [
                 TransitionDispatcher::FIELD__NAME => 'test',
-                TransitionDispatcher::FIELD__SCHEMA_NAME => 'test',
                 TransitionDispatcher::FIELD__TRANSITION_NAME => 'test',
-                TransitionDispatcher::FIELD__TEMPLATE => 'unknown'
+                TransitionDispatcher::FIELD__SAMPLE_NAME => 'unknown'
             ]
         ]);
         $serverResponse = $this->getServerResponse();
@@ -221,9 +218,8 @@ class BeforeTransitionDispatcherCreateTest extends TestCase
         $serverRequest = $this->getServerRequest([
             'data' => [
                 TransitionDispatcher::FIELD__NAME => 'test',
-                TransitionDispatcher::FIELD__SCHEMA_NAME => 'test',
                 TransitionDispatcher::FIELD__TRANSITION_NAME => 'test',
-                TransitionDispatcher::FIELD__TEMPLATE => 'test'
+                TransitionDispatcher::FIELD__SAMPLE_NAME => 'test'
             ]
         ]);
         $serverResponse = $this->getServerResponse();

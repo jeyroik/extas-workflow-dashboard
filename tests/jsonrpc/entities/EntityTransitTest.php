@@ -50,7 +50,7 @@ class EntityTransitTest extends TestCase
     /**
      * @var IRepository|null
      */
-    protected ?IRepository $transitionTemplateDispatcherRepo = null;
+    protected ?IRepository $transitionDispatcherTemplateRepo = null;
 
     /**
      * @var IRepository|null
@@ -167,7 +167,7 @@ class EntityTransitTest extends TestCase
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
-            Schema::FIELD__ENTITY_TEMPLATE => 'test'
+            Schema::FIELD__ENTITY_NAME => 'test'
         ]));
 
         $operation(
@@ -189,7 +189,7 @@ class EntityTransitTest extends TestCase
             'schema_name' => 'test',
             'transition_name' => 'test',
             'entity' => [
-                Entity::FIELD__STATE => 'not from'
+                Entity::FIELD__STATE_NAME => 'not from'
             ]
         ]);
         $serverResponse = $this->getServerResponse();
@@ -201,7 +201,7 @@ class EntityTransitTest extends TestCase
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
-            Schema::FIELD__ENTITY_TEMPLATE => 'test'
+            Schema::FIELD__ENTITY_NAME => 'test'
         ]));
 
         $this->transitionRepo->create(new Transition([
@@ -229,7 +229,7 @@ class EntityTransitTest extends TestCase
             'schema_name' => 'test',
             'transition_name' => 'test',
             'entity' => [
-                Entity::FIELD__STATE => 'from'
+                Entity::FIELD__STATE_NAME => 'from'
             ]
         ]);
         $serverResponse = $this->getServerResponse();
@@ -241,8 +241,8 @@ class EntityTransitTest extends TestCase
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
-            Schema::FIELD__ENTITY_TEMPLATE => 'test',
-            Schema::FIELD__TRANSITIONS => ['test']
+            Schema::FIELD__ENTITY_NAME => 'test',
+            Schema::FIELD__TRANSITIONS_NAMES => ['test']
         ]));
 
         $this->transitionRepo->create(new Transition([
@@ -253,10 +253,9 @@ class EntityTransitTest extends TestCase
 
         $this->transitionDispatcherRepo->create(new TransitionDispatcher([
             TransitionDispatcher::FIELD__NAME => 'test',
-            TransitionDispatcher::FIELD__SCHEMA_NAME => 'test',
             TransitionDispatcher::FIELD__TYPE => TransitionDispatcher::TYPE__CONDITION,
             TransitionDispatcher::FIELD__TRANSITION_NAME => 'test',
-            TransitionDispatcher::FIELD__TEMPLATE => 'test',
+            TransitionDispatcher::FIELD__SAMPLE_NAME => 'test',
             TransitionDispatcher::FIELD__PARAMETERS => [
                 [IParameter::FIELD__NAME => 'test']
             ]
@@ -289,7 +288,7 @@ class EntityTransitTest extends TestCase
             'schema_name' => 'test',
             'transition_name' => 'test',
             'entity' => [
-                Entity::FIELD__STATE => 'from',
+                Entity::FIELD__STATE_NAME => 'from',
                 'test' => true
             ]
         ]);
@@ -302,8 +301,8 @@ class EntityTransitTest extends TestCase
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
-            Schema::FIELD__ENTITY_TEMPLATE => 'test',
-            Schema::FIELD__TRANSITIONS => ['test']
+            Schema::FIELD__ENTITY_NAME => 'test',
+            Schema::FIELD__TRANSITIONS_NAMES => ['test']
         ]));
 
         $this->transitionRepo->create(new Transition([
@@ -314,10 +313,9 @@ class EntityTransitTest extends TestCase
 
         $this->transitionDispatcherRepo->create(new TransitionDispatcher([
             TransitionDispatcher::FIELD__NAME => 'test',
-            TransitionDispatcher::FIELD__SCHEMA_NAME => 'test',
             TransitionDispatcher::FIELD__TYPE => TransitionDispatcher::TYPE__CONDITION,
             TransitionDispatcher::FIELD__TRANSITION_NAME => 'test',
-            TransitionDispatcher::FIELD__TEMPLATE => 'test',
+            TransitionDispatcher::FIELD__SAMPLE_NAME => 'test',
             TransitionDispatcher::FIELD__PARAMETERS => [
                 [IParameter::FIELD__NAME => 'test']
             ]
