@@ -2,6 +2,7 @@
 namespace tests;
 
 use extas\components\packages\entities\EntityRepository;
+use extas\interfaces\packages\entities\IEntityRepository;
 use PHPUnit\Framework\TestCase;
 use extas\components\workflows\entities\EntitySampleRepository;
 use extas\interfaces\workflows\entities\IEntitySampleRepository;
@@ -85,8 +86,8 @@ class EntityTransitTest extends TestCase
             TransitionDispatcherSampleRepository::class
         );
         SystemContainer::addItem(
-            IEntitySampleRepository::class,
-            EntitySampleRepository::class
+            IEntityRepository::class,
+            EntityRepository::class
         );
         SystemContainer::addItem(
             ITransitionRepository::class,
@@ -292,7 +293,8 @@ class EntityTransitTest extends TestCase
             'entity' => [
                 Entity::FIELD__STATE_NAME => 'from',
                 'test' => true
-            ]
+            ],
+            'context' => []
         ]);
         $serverResponse = $this->getServerResponse();
 
@@ -315,10 +317,7 @@ class EntityTransitTest extends TestCase
             Transition::FIELD__SAMPLE_NAME => 'test'
         ]));
 
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($serverRequest, $serverResponse);
 
         /**
          * @var $jsonRpcResponse IResponse

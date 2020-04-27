@@ -26,7 +26,6 @@ trait TGetTransition
          * @var ITransitionRepository $transitionRepo
          */
         $transitionRepo = SystemContainer::getItem(ITransitionRepository::class);
-
         $transition = $transitionRepo->one($query);
 
         if (!$transition) {
