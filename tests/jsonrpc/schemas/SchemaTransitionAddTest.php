@@ -1,6 +1,7 @@
 <?php
 namespace tests;
 
+use extas\components\workflows\transitions\TransitionSample;
 use extas\components\workflows\transitions\TransitionSampleRepository;
 use extas\interfaces\workflows\transitions\ITransitionSampleRepository;
 use PHPUnit\Framework\TestCase;
@@ -62,6 +63,11 @@ class SchemaTransitionAddTest extends TestCase
     /**
      * @var IRepository|null
      */
+    protected ?IRepository $transitionSampleRepo = null;
+
+    /**
+     * @var IRepository|null
+     */
     protected ?IRepository $schemaRepo = null;
 
     protected function setUp(): void
@@ -74,6 +80,7 @@ class SchemaTransitionAddTest extends TestCase
         $this->transitionDispatcherRepo = new TransitionDispatcherRepository();
         $this->transitionDispatcherTemplateRepo = new TransitionDispatcherSampleRepository();
         $this->transitionRepo = new TransitionRepository();
+        $this->transitionSampleRepo = new TransitionSampleRepository();
         $this->schemaRepo = new SchemaRepository();
 
         SystemContainer::addItem(
@@ -108,6 +115,7 @@ class SchemaTransitionAddTest extends TestCase
         $this->transitionDispatcherRepo->delete([TransitionDispatcher::FIELD__NAME => 'test']);
         $this->transitionDispatcherTemplateRepo->delete([TDT::FIELD__NAME => 'test']);
         $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
+        $this->transitionSampleRepo->delete([TransitionSample::FIELD__NAME => 'test']);
         $this->schemaRepo->delete([Schema::FIELD__NAME => 'test']);
     }
 
@@ -197,7 +205,8 @@ class SchemaTransitionAddTest extends TestCase
         $operation = new SchemaTransitionAdd();
         $serverRequest = $this->getServerRequest([
             'schema_name' => 'test',
-            'transition_name' => 'test'
+            'transition_name' => 'test',
+            'transition_sample_name' => 'test'
         ]);
         $serverResponse = $this->getServerResponse();
 
@@ -205,6 +214,12 @@ class SchemaTransitionAddTest extends TestCase
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__ENTITY_NAME => 'test',
             Schema::FIELD__TRANSITIONS_NAMES => []
+        ]));
+
+        $this->transitionSampleRepo->create(new TransitionSample([
+            TransitionSample::FIELD__NAME => 'test',
+            TransitionSample::FIELD__STATE_FROM => 'from',
+            TransitionSample::FIELD__STATE_TO => 'to'
         ]));
 
         $operation($serverRequest, $serverResponse);
@@ -224,7 +239,8 @@ class SchemaTransitionAddTest extends TestCase
         $operation = new SchemaTransitionAdd();
         $serverRequest = $this->getServerRequest([
             'schema_name' => 'test',
-            'transition_name' => 'test',
+            'transition_name' => 'test',,
+            'transition_sample_name' => 'test',
             'dispatchers' => [
                 [
                     ITransitionDispatcher::FIELD__NAME => 'test',
@@ -247,6 +263,12 @@ class SchemaTransitionAddTest extends TestCase
             Schema::FIELD__TRANSITIONS_NAMES => []
         ]));
 
+        $this->transitionSampleRepo->create(new TransitionSample([
+            TransitionSample::FIELD__NAME => 'test',
+            TransitionSample::FIELD__STATE_FROM => 'from',
+            TransitionSample::FIELD__STATE_TO => 'to'
+        ]));
+
         $operation($serverRequest, $serverResponse);
 
         /**
@@ -267,7 +289,8 @@ class SchemaTransitionAddTest extends TestCase
         $operation = new SchemaTransitionAdd();
         $serverRequest = $this->getServerRequest([
             'schema_name' => 'test',
-            'transition_name' => 'test',
+            'transition_name' => 'test',,
+            'transition_sample_name' => 'test',
             'dispatchers' => [
                 [
                     ITransitionDispatcher::FIELD__NAME => 'test',
@@ -288,6 +311,12 @@ class SchemaTransitionAddTest extends TestCase
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__ENTITY_NAME => 'test',
             Schema::FIELD__TRANSITIONS_NAMES => []
+        ]));
+
+        $this->transitionSampleRepo->create(new TransitionSample([
+            TransitionSample::FIELD__NAME => 'test',
+            TransitionSample::FIELD__STATE_FROM => 'from',
+            TransitionSample::FIELD__STATE_TO => 'to'
         ]));
 
         $operation($serverRequest, $serverResponse);
