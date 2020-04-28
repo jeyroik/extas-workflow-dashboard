@@ -111,7 +111,9 @@ class SchemaByTransitionsTest extends TestCase
         $this->assertEquals(
             ['schemas' => [
                 [
-                    Schema::FIELD__TRANSITIONS_NAMES => [
+                    Schema::FIELD__NAME => 'test',
+                    Schema::FIELD__TRANSITIONS_NAMES => ['test'],
+                    'transitions' => [
                         [
                             Transition::FIELD__NAME => 'test',
                             Transition::FIELD__TITLE => 'test',

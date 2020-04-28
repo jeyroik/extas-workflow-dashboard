@@ -170,26 +170,4 @@ class BeforeStateDeleteTest extends TestCase
         $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
         $this->assertTrue($jsonRpcResponse->hasError());
     }
-
-    /**
-     * @throws
-     */
-    public function testUnknownState()
-    {
-        $operation = new BeforeStateDelete();
-        $serverRequest = $this->getServerRequest([
-            'data' => [
-                State::FIELD__NAME => 'unknown'
-            ]
-        ]);
-        $serverResponse = $this->getServerResponse();
-
-        $operation($serverRequest, $serverResponse);
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
-    }
 }
