@@ -6,8 +6,10 @@ use extas\components\plugins\Plugin;
 use extas\components\plugins\workflows\views\TItemsView;
 use extas\components\SystemContainer;
 use extas\components\workflows\transitions\Transition;
+use extas\components\workflows\transitions\TransitionSample;
 use extas\interfaces\workflows\transitions\ITransition;
 use extas\interfaces\workflows\transitions\ITransitionRepository;
+use extas\interfaces\workflows\transitions\ITransitionSample;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -22,6 +24,8 @@ class ViewTransitionSave extends Plugin
 {
     use TItemsView;
 
+    protected bool $updated = false;
+
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response
@@ -35,58 +39,56 @@ class ViewTransitionSave extends Plugin
          */
         $repo = SystemContainer::getItem(ITransitionRepository::class);
         $transitions = $repo->all([]);
-        $itemsView = '';
+
         $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'transitions/item']);
 
         $transitionName = $args['name'] ?? '';
-        $transitionTitle = $_REQUEST['title'] ?? '';
-        $transitionDesc = $_REQUEST['description'] ?? '';
-        $transitionStateFrom = $_REQUEST['state_from'] ?? '';
-        $transitionStateTo = $_REQUEST['state_to'] ?? '';
+        $transitionSample = $this->extractData($transitionName);
+        $itemsView = $this->buildView($transitions, $transitionSample, $repo, $itemTemplate);
 
-        $updated = false;
-
-        foreach ($transitions as $index => $transition) {
-            if ($transition->getName() == $transitionName) {
-                $transition
-                    ->setTitle($transitionTitle)
-                    ->setDescription($transitionDesc)
-                    ->setStateFromName($transitionStateFrom)
-                    ->setStateToName($transitionStateTo);
-                $repo->update($transition);
-                $updated = true;
-            }
-            $itemsView .= $itemTemplate->render(['transition' => $transition]);
-        }
-
-        if (!$updated) {
-            $this->createTransition(
-                $transitionTitle, $transitionDesc, $transitionStateFrom,
-                $transitionStateTo, $itemTemplate, $repo, $itemsView
-            );
+        if (!$this->updated) {
+            $newTransition = new Transition();
+            $newTransition->buildFromSample($transitionSample);
+            $newTransition = $repo->create($newTransition);
+            $itemsView = $itemTemplate->render(['transition' => $newTransition]) . $itemsView;
         }
         $this->renderPage($itemsView, $response, 'transitions', 'Переходы');
     }
 
     /**
-     * @param string $title
-     * @param string $description
-     * @param string $stateFrom
-     * @param string $stateTo
-     * @param DashboardView $template
-     * @param ITransitionRepository $repo
-     * @param string $view
+     * @param $transitions
+     * @param $transitionSample
+     * @param $repo
+     * @param $itemTemplate
+     * @return string
      */
-    protected function createTransition($title, $description, $stateFrom, $stateTo, $template, $repo, &$view)
+    protected function buildView($transitions, $transitionSample, $repo, $itemTemplate): string
     {
-        $newTransition = new Transition([
-            Transition::FIELD__NAME => 'from__' . $stateFrom . '__to__' . $stateTo,
-            Transition::FIELD__TITLE => $title,
-            Transition::FIELD__DESCRIPTION => $description,
-            Transition::FIELD__STATE_FROM => $stateFrom,
-            Transition::FIELD__STATE_TO => $stateTo
+        $itemsView = '';
+        foreach ($transitions as $index => $transition) {
+            if ($transition->getName() == $transitionSample->getName()) {
+                $transition->buildFromSample($transitionSample);
+                $repo->update($transition);
+                $this->updated = true;
+            }
+            $itemsView .= $itemTemplate->render(['transition' => $transition]);
+        }
+
+        return $itemsView;
+    }
+
+    /**
+     * @param string $name
+     * @return ITransitionSample
+     */
+    protected function extractData(string $name): ITransitionSample
+    {
+        return new TransitionSample([
+            Transition::FIELD__NAME => $name,
+            Transition::FIELD__TITLE => $_REQUEST['title'] ?? '',
+            Transition::FIELD__DESCRIPTION => $_REQUEST['description'] ?? '',
+            Transition::FIELD__STATE_FROM => $_REQUEST['state_from'] ?? '',
+            Transition::FIELD__STATE_TO => $_REQUEST['state_to'] ?? ''
         ]);
-        $repo->create($newTransition);
-        $view = $template->render(['transition' => $newTransition]) . $view;
     }
 }

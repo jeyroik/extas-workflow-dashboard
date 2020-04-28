@@ -6,6 +6,8 @@ use extas\components\plugins\Plugin;
 use extas\components\plugins\workflows\views\TItemsView;
 use extas\components\SystemContainer;
 use extas\components\workflows\states\State;
+use extas\interfaces\dashboards\IDashboardView;
+use extas\interfaces\repositories\IRepository;
 use extas\interfaces\workflows\states\IState;
 use extas\interfaces\workflows\states\IStateRepository;
 use Psr\Http\Message\RequestInterface;
@@ -23,6 +25,22 @@ class ViewStateSave extends Plugin
 {
     use TItemsView;
 
+    protected ?IRepository $stateRepo = null;
+    protected bool $updated = false;
+    protected ?IDashboardView $itemTemplate = null;
+
+    /**
+     * ViewStateSave constructor.
+     * @param array $config
+     */
+    public function __construct(array $config = [])
+    {
+        parent::__construct($config);
+
+        $this->stateRepo = SystemContainer::getItem(IStateRepository::class);
+        $this->itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'states/item']);
+    }
+
     /**
      * @param RequestInterface|ServerRequestInterface $request
      * @param ResponseInterface $response
@@ -31,49 +49,56 @@ class ViewStateSave extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array $args)
     {
         /**
-         * @var $stateRepo IStateRepository
          * @var $states IState[]
          */
-        $stateRepo = SystemContainer::getItem(IStateRepository::class);
-        $states = $stateRepo->all([]);
-        $itemsView = '';
-        $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'states/item']);
+        $states = $this->stateRepo->all([]);
         $stateName = $args['name'] ?? '';
         $stateTitle = $_REQUEST['title'] ?? '';
         $stateDesc = $_REQUEST['description'] ?? '';
+        $itemsView = $this->buildView($states, $stateName, $stateTitle, $stateDesc);
 
-        $updated = false;
-        foreach ($states as $index => $state) {
-            if ($state->getName() == $stateName) {
-                $state->setTitle(htmlspecialchars($stateTitle))
-                    ->setDescription(htmlspecialchars($stateDesc));
-                $stateRepo->update($state);
-                $updated = true;
-            }
-            $itemsView .= $itemTemplate->render(['state' => $state]);
-        }
-
-        if (!$updated) {
-            $this->createState($stateTitle, $stateDesc, $itemTemplate, $stateRepo, $itemsView);
+        if (!$this->updated) {
+            $newState = $this->createState($stateTitle, $stateDesc);
+            $itemsView = $this->itemTemplate->render(['state' => $newState]) . $itemsView;
         }
         $this->renderPage($itemsView, $response);
     }
 
     /**
+     * @param $states
+     * @param $stateName
+     * @param $stateTitle
+     * @param $stateDesc
+     * @return string
+     */
+    protected function buildView($states, $stateName, $stateTitle, $stateDesc): string
+    {
+        $itemsView = '';
+        foreach ($states as $index => $state) {
+            if ($state->getName() == $stateName) {
+                $state->setTitle(htmlspecialchars($stateTitle))
+                    ->setDescription(htmlspecialchars($stateDesc));
+                $this->stateRepo->update($state);
+                $this->updated = true;
+            }
+            $itemsView .= $this->itemTemplate->render(['state' => $state]);
+        }
+
+        return $itemsView;
+    }
+
+    /**
      * @param string $title
      * @param string $description
-     * @param DashboardView $template
-     * @param IStateRepository $repo
-     * @param string $view
+     * @return IState
      */
-    protected function createState($title, $description, $template, $repo, &$view)
+    protected function createState($title, $description): IState
     {
         $newState = new State([
             State::FIELD__NAME => uniqid(),
             State::FIELD__TITLE => $title,
             State::FIELD__DESCRIPTION => $description
         ]);
-        $repo->create($newState);
-        $view = $template->render(['state' => $newState]) . $view;
+        return $this->stateRepo->create($newState);
     }
 }
