@@ -28,32 +28,25 @@ trait TDashboardChart
                 'from' => $transition->getStateFromName(),
                 'to' => $transition->getStateToName(),
                 'dataLabels' => [
-                    // ex. Not actual (todo -> not_actual)
                     'linkFormat' => $transition->getTitle() . '<br>{point.fromNode.name} \u2192 {point.toNode.name}'
                 ]
             ];
-            if (!isset($states[$transition->getStateFromName()])) {
-                $title = ($state = $transition->getStateFrom()) ? $state->getTitle() : '';
-                $states[$transition->getStateFromName()] = true;
-                $nodes[] = [
-                    'id' => $transition->getStateFromName(),
-                    'dataLabels' => [
-                        'format' => $title
-                    ]
-                ];
-            }
-            if (!isset($states[$transition->getStateToName()])) {
-                $title = ($state = $transition->getStateTo()) ? $state->getTitle() : '';
-                $states[$transition->getStateToName()] = true;
-                $nodes[] = [
-                    'id' => $transition->getStateToName(),
-                    'dataLabels' => [
-                        'format' => $title
-                    ]
-                ];
-            }
+            $this->addStatesFrom($states, $transition, $nodes);
+            $this->addStatesTo($states, $transition, $nodes);
         }
 
+        return $this->renderChart($chartTemplate, $chartData, $schema, $nodes);
+    }
+
+    /**
+     * @param $chartTemplate
+     * @param $chartData
+     * @param $schema
+     * @param $nodes
+     * @return string
+     */
+    protected function renderChart($chartTemplate, $chartData, $schema, $nodes)
+    {
         return $chartTemplate->render([
             'chart' => [
                 'name' => $schema->getName(),
@@ -63,5 +56,47 @@ trait TDashboardChart
                 'nodes' => json_encode($nodes)
             ]
         ]);
+    }
+
+    /**
+     * @param array $states
+     * @param ITransition $transition
+     * @param array $nodes
+     */
+    protected function addStatesTo(array $states, ITransition $transition, array &$nodes)
+    {
+        $this->addStates($states, $transition, $nodes, 'To');
+    }
+
+    /**
+     * @param array $states
+     * @param ITransition $transition
+     * @param array $nodes
+     */
+    protected function addStatesFrom(array $states, ITransition $transition, array &$nodes)
+    {
+        $this->addStates($states, $transition, $nodes, 'From');
+    }
+
+    /**
+     * @param array $states
+     * @param ITransition $transition
+     * @param array $nodes
+     * @param string $dir
+     */
+    protected function addStates(array $states, ITransition $transition, array &$nodes, string $dir = 'From')
+    {
+        $nameMethod = 'getState' . $dir . 'Name';
+        $stateMethod = 'getState' . $dir;
+        if (!isset($states[$transition->$nameMethod()])) {
+            $title = ($state = $transition->$stateMethod()) ? $state->getTitle() : '';
+            $states[$transition->$nameMethod()] = true;
+            $nodes[] = [
+                'id' => $transition->getStateFromName(),
+                'dataLabels' => [
+                    'format' => $title
+                ]
+            ];
+        }
     }
 }
