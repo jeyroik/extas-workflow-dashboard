@@ -9,8 +9,6 @@ use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
-use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherSample;
-use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherSampleRepository;
 use extas\interfaces\workflows\transitions\ITransition;
 use extas\interfaces\workflows\transitions\ITransitionRepository;
 use extas\interfaces\workflows\transitions\ITransitionSample;
@@ -64,17 +62,8 @@ class SchemaTransitionAdd extends OperationDispatcher
     protected function createDispatchers(array $dispatchersData, string $transitionName): void
     {
         $dispatcherRepo = SystemContainer::getItem(ITransitionDispatcherRepository::class);
-        $unknownSamples = $this->getUnknownDispatcherSamples($dispatchersData);
-        $allDispatchers = array_column(
-            $dispatchersData,
-            ITransitionDispatcher::FIELD__SAMPLE_NAME,
-            ITransitionDispatcher::FIELD__NAME
-        );
-        $dispatchersWithExistingSamples = array_intersect($unknownSamples, $allDispatchers);
-        $dispatchersData = array_column($dispatchersData, null, ITransitionDispatcher::FIELD__NAME);
-        $applicableDispatchers = array_intersect_key($dispatchersData, array_flip($dispatchersWithExistingSamples));
 
-        foreach ($applicableDispatchers as $dispatchersDatum) {
+        foreach ($dispatchersData as $dispatchersDatum) {
             $dispatchersDatum[ITransitionDispatcher::FIELD__TRANSITION_NAME] = $transitionName;
             $dispatcher = new TransitionDispatcher($dispatchersDatum);
             $dispatcherRepo->create($dispatcher);
@@ -130,28 +119,5 @@ class SchemaTransitionAdd extends OperationDispatcher
         }
 
         return $sample;
-    }
-
-    /**
-     * @param $dispatchers
-     *
-     * @return array
-     */
-    protected function getUnknownDispatcherSamples($dispatchers): array
-    {
-        $samplesNames = array_column($dispatchers, ITransitionDispatcher::FIELD__SAMPLE_NAME);
-
-        /**
-         * @var $repo ITransitionDispatcherSampleRepository
-         * @var $samples ITransitionDispatcherSample[]
-         */
-        $repo = SystemContainer::getItem(ITransitionDispatcherSampleRepository::class);
-        $samples = $repo->all([ITransitionDispatcherSample::FIELD__NAME => $samplesNames]);
-        $existedNames = [];
-        foreach ($samples as $sample) {
-            $existedNames[] = $sample->getName();
-        }
-
-        return array_diff($samplesNames, $existedNames);
     }
 }

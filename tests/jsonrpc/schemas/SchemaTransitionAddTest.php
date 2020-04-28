@@ -200,6 +200,40 @@ class SchemaTransitionAddTest extends TestCase
     /**
      * @throws
      */
+    public function testSchemaHasTransition()
+    {
+        $operation = new SchemaTransitionAdd();
+        $serverRequest = $this->getServerRequest([
+            'schema_name' => 'test',
+            'transition_name' => 'test',
+            'transition_sample_name' => 'test'
+        ]);
+        $serverResponse = $this->getServerResponse();
+
+        $this->schemaRepo->create(new Schema([
+            Schema::FIELD__NAME => 'test',
+            Schema::FIELD__ENTITY_NAME => 'test',
+            Schema::FIELD__TRANSITIONS_NAMES => ['test']
+        ]));
+
+        $this->transitionSampleRepo->create(new TransitionSample([
+            TransitionSample::FIELD__NAME => 'test',
+            TransitionSample::FIELD__STATE_FROM => 'from',
+            TransitionSample::FIELD__STATE_TO => 'to'
+        ]));
+
+        $operation($serverRequest, $serverResponse);
+
+        /**
+         * @var $jsonRpcResponse IResponse
+         */
+        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
+        $this->assertTrue($jsonRpcResponse->hasError());
+    }
+
+    /**
+     * @throws
+     */
     public function testSchemaHasNotTransition()
     {
         $operation = new SchemaTransitionAdd();
@@ -279,55 +313,5 @@ class SchemaTransitionAddTest extends TestCase
 
         $dispatcher = $this->transitionDispatcherRepo->one([ITransitionDispatcher::FIELD__NAME => 'test']);
         $this->assertNotEmpty($dispatcher);
-    }
-
-    /**
-     * @throws
-     */
-    public function testTransitionWithDispatchersWithUnknownTemplate()
-    {
-        $operation = new SchemaTransitionAdd();
-        $serverRequest = $this->getServerRequest([
-            'schema_name' => 'test',
-            'transition_name' => 'test',
-            'transition_sample_name' => 'test',
-            'dispatchers' => [
-                [
-                    ITransitionDispatcher::FIELD__NAME => 'test',
-                    ITransitionDispatcher::FIELD__TYPE => ITransitionDispatcher::TYPE__CONDITION,
-                    ITransitionDispatcher::FIELD__SAMPLE_NAME => 'unknown',
-                    ITransitionDispatcher::FIELD__PARAMETERS => [
-                        [
-                            IParameter::FIELD__NAME => 'field_name',
-                            IParameter::FIELD__VALUE => 'test'
-                        ]
-                    ]
-                ]
-            ]
-        ]);
-        $serverResponse = $this->getServerResponse();
-
-        $this->schemaRepo->create(new Schema([
-            Schema::FIELD__NAME => 'test',
-            Schema::FIELD__ENTITY_NAME => 'test',
-            Schema::FIELD__TRANSITIONS_NAMES => []
-        ]));
-
-        $this->transitionSampleRepo->create(new TransitionSample([
-            TransitionSample::FIELD__NAME => 'test',
-            TransitionSample::FIELD__STATE_FROM => 'from',
-            TransitionSample::FIELD__STATE_TO => 'to'
-        ]));
-
-        $operation($serverRequest, $serverResponse);
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertFalse($jsonRpcResponse->hasError());
-
-        $dispatcher = $this->transitionDispatcherRepo->one([ITransitionDispatcher::FIELD__NAME => 'test']);
-        $this->assertEmpty($dispatcher);
     }
 }
