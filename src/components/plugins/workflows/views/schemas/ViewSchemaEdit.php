@@ -52,18 +52,28 @@ class ViewSchemaEdit extends Plugin
             ]);
             $schema['entity_name'] = $entity->render();
 
-            $itemView = $editTemplate->render(['schema' => $schema]);
-            $pageTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'layouts/main']);
-            $page = $pageTemplate->render([
-                'page' => [
-                    'title' => 'Схемы - Редактирование',
-                    'head' => '',
-                    'content' => $itemView,
-                    'footer' => ''
-                ]
-            ]);
-
-            $response->getBody()->write($page);
+            $this->renderPage($schema, $editTemplate, $response);
         }
+    }
+
+    /**
+     * @param $schema
+     * @param $editTemplate
+     * @param ResponseInterface $response
+     */
+    protected function renderPage($schema, $editTemplate, ResponseInterface &$response)
+    {
+        $itemView = $editTemplate->render(['schema' => $schema]);
+        $pageTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'layouts/main']);
+        $page = $pageTemplate->render([
+            'page' => [
+                'title' => 'Схемы - Редактирование',
+                'head' => '',
+                'content' => $itemView,
+                'footer' => ''
+            ]
+        ]);
+
+        $response->getBody()->write($page);
     }
 }
