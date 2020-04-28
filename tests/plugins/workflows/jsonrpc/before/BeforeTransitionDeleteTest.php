@@ -32,11 +32,6 @@ class BeforeTransitionDeleteTest extends TestCase
      */
     protected ?IRepository $transitionRepo = null;
 
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $schemaRepo = null;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -44,22 +39,16 @@ class BeforeTransitionDeleteTest extends TestCase
         $env->load();
 
         $this->transitionRepo = new TransitionDispatcherRepository();
-        $this->schemaRepo = new SchemaRepository();
 
         SystemContainer::addItem(
             ITransitionDispatcherRepository::class,
             TransitionDispatcherRepository::class
-        );
-        SystemContainer::addItem(
-            ISchemaRepository::class,
-            SchemaRepository::class
         );
     }
 
     public function tearDown(): void
     {
         $this->transitionRepo->delete([TransitionDispatcher::FIELD__NAME => 'test']);
-        $this->schemaRepo->delete([Schema::FIELD__NAME => 'test']);
     }
 
     protected function getServerRequest(array $params)
@@ -93,36 +82,6 @@ class BeforeTransitionDeleteTest extends TestCase
     /**
      * @throws
      */
-    public function testHasSchema()
-    {
-        $operation = new BeforeTransitionDelete();
-        $serverRequest = $this->getServerRequest([
-            'data' => [
-                Transition::FIELD__NAME => 'test'
-            ]
-        ]);
-        $serverResponse = $this->getServerResponse();
-
-        $this->schemaRepo->create(new Schema([
-            Schema::FIELD__NAME => 'test',
-            Schema::FIELD__TRANSITIONS_NAMES => ['test']
-        ]));
-
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
-    }
-
-    /**
-     * @throws
-     */
     public function testHasDispatchers()
     {
         $operation = new BeforeTransitionDelete();
@@ -138,22 +97,19 @@ class BeforeTransitionDeleteTest extends TestCase
             TransitionDispatcher::FIELD__TRANSITION_NAME => 'test'
         ]));
 
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($serverRequest, $serverResponse);
 
         /**
          * @var $jsonRpcResponse IResponse
          */
         $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
+        $this->assertFalse($jsonRpcResponse->hasError());
     }
 
     /**
      * @throws
      */
-    public function testValid()
+    public function testHasNotDispatchers()
     {
         $operation = new BeforeTransitionDelete();
         $serverRequest = $this->getServerRequest([
@@ -163,10 +119,7 @@ class BeforeTransitionDeleteTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($serverRequest, $serverResponse);
 
         /**
          * @var $jsonRpcResponse IResponse

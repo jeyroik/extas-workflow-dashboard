@@ -1,12 +1,10 @@
 <?php
+namespace tests;
 
 use PHPUnit\Framework\TestCase;
 use extas\interfaces\repositories\IRepository;
 use extas\components\workflows\schemas\Schema;
 use extas\components\SystemContainer;
-use extas\components\workflows\transitions\Transition;
-use extas\components\workflows\transitions\TransitionRepository;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
 use extas\interfaces\parameters\IParameter;
 use extas\components\plugins\workflows\jsonrpc\before\schemas\BeforeSchemaCreate;
 use extas\components\servers\requests\ServerRequest;
@@ -29,11 +27,6 @@ class BeforeSchemaCreateTest extends TestCase
     /**
      * @var IRepository|null
      */
-    protected ?IRepository $transitionRepo = null;
-
-    /**
-     * @var IRepository|null
-     */
     protected ?IRepository $schemaRepo = null;
 
     protected function setUp(): void
@@ -42,13 +35,8 @@ class BeforeSchemaCreateTest extends TestCase
         $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
-        $this->transitionRepo = new TransitionRepository();
         $this->schemaRepo = new SchemaRepository();
 
-        SystemContainer::addItem(
-            ITransitionRepository::class,
-            TransitionRepository::class
-        );
         SystemContainer::addItem(
             ISchemaRepository::class,
             SchemaRepository::class
@@ -57,7 +45,6 @@ class BeforeSchemaCreateTest extends TestCase
 
     public function tearDown(): void
     {
-        $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
         $this->schemaRepo->delete([Schema::FIELD__NAME => 'test']);
     }
 
@@ -102,46 +89,9 @@ class BeforeSchemaCreateTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->schemaRepo->create(new Schema([
-            Schema::FIELD__NAME => 'test'
-        ]));
+        $this->schemaRepo->create(new Schema([Schema::FIELD__NAME => 'test']));
 
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
-    }
-
-    /**
-     * @throws
-     */
-    public function testInvalidSchema()
-    {
-        $operation = new BeforeSchemaCreate();
-        $serverRequest = $this->getServerRequest([
-            'data' => [
-                Schema::FIELD__NAME => 'test',
-                Schema::FIELD__TRANSITIONS_NAMES => ['unknown', 'test']
-            ]
-        ]);
-        $serverResponse = $this->getServerResponse();
-
-        $this->transitionRepo->create(new Transition([
-            Transition::FIELD__NAME => 'test',
-            Transition::FIELD__STATE_FROM => 'from',
-            Transition::FIELD__STATE_TO => 'to'
-        ]));
-
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($serverRequest, $serverResponse);
 
         /**
          * @var $jsonRpcResponse IResponse
@@ -159,21 +109,12 @@ class BeforeSchemaCreateTest extends TestCase
         $serverRequest = $this->getServerRequest([
             'data' => [
                 Schema::FIELD__NAME => 'test',
-                Schema::FIELD__TRANSITIONS_NAMES => ['test']
+                Schema::FIELD__TRANSITIONS_NAMES => []
             ]
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->transitionRepo->create(new Transition([
-            Transition::FIELD__NAME => 'test',
-            Transition::FIELD__STATE_FROM => 'from',
-            Transition::FIELD__STATE_TO => 'to'
-        ]));
-
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($serverRequest, $serverResponse);
 
         /**
          * @var $jsonRpcResponse IResponse

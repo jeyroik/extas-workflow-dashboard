@@ -3,6 +3,7 @@ namespace extas\components\plugins\workflows\views\states;
 
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
+use extas\components\plugins\workflows\views\TItemsView;
 use extas\components\SystemContainer;
 use extas\components\workflows\states\State;
 use extas\interfaces\workflows\states\IState;
@@ -20,6 +21,8 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ViewStateSave extends Plugin
 {
+    use TItemsView;
+
     /**
      * @param RequestInterface|ServerRequestInterface $request
      * @param ResponseInterface $response
@@ -35,7 +38,6 @@ class ViewStateSave extends Plugin
         $states = $stateRepo->all([]);
         $itemsView = '';
         $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'states/item']);
-
         $stateName = $args['name'] ?? '';
         $stateTitle = $_REQUEST['title'] ?? '';
         $stateDesc = $_REQUEST['description'] ?? '';
@@ -54,21 +56,7 @@ class ViewStateSave extends Plugin
         if (!$updated) {
             $this->createState($stateTitle, $stateDesc, $itemTemplate, $stateRepo, $itemsView);
         }
-
-        $listTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'states/index']);
-        $listView = $listTemplate->render(['states' => $itemsView]);
-
-        $pageTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'layouts/main']);
-        $page = $pageTemplate->render([
-            'page' => [
-                'title' => 'Состояния',
-                'head' => '',
-                'content' => $listView,
-                'footer' => ''
-            ]
-        ]);
-
-        $response->getBody()->write($page);
+        $this->renderPage($itemsView, $response);
     }
 
     /**

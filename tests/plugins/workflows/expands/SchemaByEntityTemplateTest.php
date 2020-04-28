@@ -9,7 +9,7 @@ use extas\interfaces\workflows\entities\IEntitySampleRepository;
 use extas\interfaces\parameters\IParameter;
 use extas\components\servers\requests\ServerRequest;
 use extas\components\servers\responses\ServerResponse;
-use extas\components\plugins\workflows\expands\schemas\SchemaExpandByEntityTemplate;
+use extas\components\plugins\workflows\expands\schemas\SchemaExpandByEntity;
 use extas\components\workflows\schemas\Schema;
 use extas\components\expands\ExpandingBox;
 
@@ -61,7 +61,7 @@ class SchemaByEntityTemplateTest extends TestCase
      */
     public function testEmptyValue()
     {
-        $operation = new SchemaExpandByEntityTemplate();
+        $operation = new SchemaExpandByEntity();
         $serverRequest = $this->getServerRequest();
         $serverResponse = $this->getServerResponse();
         $parent = new ExpandingBox([
@@ -86,7 +86,7 @@ class SchemaByEntityTemplateTest extends TestCase
      */
     public function testUnknownTemplate()
     {
-        $operation = new SchemaExpandByEntityTemplate();
+        $operation = new SchemaExpandByEntity();
         $serverRequest = $this->getServerRequest();
         $serverResponse = $this->getServerResponse();
         $parent = new ExpandingBox([
@@ -125,7 +125,7 @@ class SchemaByEntityTemplateTest extends TestCase
      */
     public function testValidTemplate()
     {
-        $operation = new SchemaExpandByEntityTemplate();
+        $operation = new SchemaExpandByEntity();
         $serverRequest = $this->getServerRequest();
         $serverResponse = $this->getServerResponse();
         $parent = new ExpandingBox([

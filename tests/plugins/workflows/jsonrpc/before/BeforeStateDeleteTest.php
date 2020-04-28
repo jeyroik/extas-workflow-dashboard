@@ -101,15 +101,9 @@ class BeforeStateDeleteTest extends TestCase
             ]
         ]);
         $serverResponse = $this->getServerResponse();
+        $this->stateRepo->create(new State([State::FIELD__NAME => 'test']));
 
-        $this->stateRepo->create(new State([
-            State::FIELD__NAME => 'test'
-        ]));
-
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($serverRequest, $serverResponse);
 
         /**
          * @var $jsonRpcResponse IResponse
@@ -131,20 +125,14 @@ class BeforeStateDeleteTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->stateRepo->create(new State([
-            State::FIELD__NAME => 'test'
-        ]));
-
+        $this->stateRepo->create(new State([State::FIELD__NAME => 'test']));
         $this->transitionRepo->create(new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__STATE_FROM => 'from',
             Transition::FIELD__STATE_TO => 'test'
         ]));
 
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($serverRequest, $serverResponse);
 
         /**
          * @var $jsonRpcResponse IResponse
@@ -166,9 +154,7 @@ class BeforeStateDeleteTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->stateRepo->create(new State([
-            State::FIELD__NAME => 'test'
-        ]));
+        $this->stateRepo->create(new State([State::FIELD__NAME => 'test']));
 
         $this->transitionRepo->create(new Transition([
             Transition::FIELD__NAME => 'test',
@@ -176,10 +162,7 @@ class BeforeStateDeleteTest extends TestCase
             Transition::FIELD__STATE_TO => 'to'
         ]));
 
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($serverRequest, $serverResponse);
 
         /**
          * @var $jsonRpcResponse IResponse
@@ -201,10 +184,7 @@ class BeforeStateDeleteTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($serverRequest, $serverResponse);
 
         /**
          * @var $jsonRpcResponse IResponse

@@ -119,9 +119,7 @@ class BeforeTransitionDispatcherCreateTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->schemaRepo->create(new Schema([
-            Schema::FIELD__NAME => 'test'
-        ]));
+        $this->schemaRepo->create(new Schema([Schema::FIELD__NAME => 'test']));
 
         $operation($serverRequest, $serverResponse);
 
@@ -147,13 +145,8 @@ class BeforeTransitionDispatcherCreateTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->schemaRepo->create(new Schema([
-            Schema::FIELD__NAME => 'test'
-        ]));
-
-        $this->transitionRepo->create(new Transition([
-            Transition::FIELD__NAME => 'test'
-        ]));
+        $this->schemaRepo->create(new Schema([Schema::FIELD__NAME => 'test']));
+        $this->transitionRepo->create(new Transition([Transition::FIELD__NAME => 'test']));
 
         $this->transitionTemplateRepo->create(new TransitionDispatcherSample([
             TransitionDispatcherSample::FIELD__NAME => 'test'

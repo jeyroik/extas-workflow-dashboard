@@ -4,12 +4,9 @@ namespace extas\components\plugins\workflows\jsonrpc\before\states;
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
 use extas\components\workflows\states\State;
-use extas\interfaces\IHasName;
 use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\repositories\IRepository;
 use extas\interfaces\workflows\states\IState;
-use extas\interfaces\workflows\states\IStateRepository;
 use extas\interfaces\workflows\transitions\ITransition;
 use extas\interfaces\workflows\transitions\ITransitionRepository;
 
@@ -30,16 +27,8 @@ class BeforeStateDelete extends OperationDispatcher
     {
         if (!$response->hasError()) {
             $item = new State($request->getData());
-            /**
-             * @var $repo IRepository
-             */
-            $repo = SystemContainer::getItem(IStateRepository::class);
-            if (!$repo->one([IHasName::FIELD__NAME => $item->getName()])) {
-                $response->error('Unknown state', 400);
-            } else {
-                $this->checkTransitionsTo($response, $item);
-                $this->checkTransitionsFrom($response, $item);
-            }
+            $this->checkTransitionsTo($response, $item);
+            $this->checkTransitionsFrom($response, $item);
         }
     }
 

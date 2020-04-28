@@ -6,8 +6,8 @@ use extas\components\SystemContainer;
 use extas\interfaces\expands\IExpandingBox;
 use extas\interfaces\servers\requests\IServerRequest;
 use extas\interfaces\servers\responses\IServerResponse;
-use extas\interfaces\workflows\entities\IEntitySample;
-use extas\interfaces\workflows\entities\IEntitySampleRepository;
+use extas\interfaces\workflows\entities\IEntity;
+use extas\interfaces\workflows\entities\IEntityRepository;
 use extas\interfaces\workflows\schemas\ISchema;
 
 /**
@@ -17,7 +17,7 @@ use extas\interfaces\workflows\schemas\ISchema;
  * @package extas\components\plugins\expands\schemas
  * @author jeyroik@gmail.com
  */
-class SchemaExpandByEntityTemplate extends PluginExpandAbstract
+class SchemaExpandByEntity extends PluginExpandAbstract
 {
     /**
      * @param IExpandingBox $parent
@@ -28,8 +28,8 @@ class SchemaExpandByEntityTemplate extends PluginExpandAbstract
     {
         /**
          * @var $schemas
-         * @var $repo IEntitySampleRepository
-         * @var $items IEntitySample[]
+         * @var $repo IEntityRepository
+         * @var $items IEntity[]
          */
         $value = $parent->getValue([]);
         if (empty($value)) {
@@ -38,23 +38,20 @@ class SchemaExpandByEntityTemplate extends PluginExpandAbstract
         } else {
             $schemas = $value['schemas'];
         }
-        $names = [];
-        foreach ($schemas as $schema) {
-            $names[] = $schema[ISchema::FIELD__ENTITY_NAME];
-        }
 
-        $repo = SystemContainer::getItem(IEntitySampleRepository::class);
-        $items = $repo->all([IEntitySample::FIELD__NAME => $names]);
+        $names = array_column($schemas, ISchema::FIELD__ENTITY_NAME);
+        $repo = SystemContainer::getItem(IEntityRepository::class);
+        $items = $repo->all([IEntity::FIELD__NAME => $names]);
         $byName = [];
-        foreach ($items as $entityTemplate) {
-            $byName[$entityTemplate->getName()] = $entityTemplate->__toArray();
+        foreach ($items as $entity) {
+            $byName[$entity->getName()] = $entity->__toArray();
         }
 
         foreach ($schemas as &$schema) {
-            $template = $schema[ISchema::FIELD__ENTITY_NAME];
-            $schema[ISchema::FIELD__ENTITY_NAME] = $byName[$template] ?? [
-                IEntitySample::FIELD__NAME => $template,
-                IEntitySample::FIELD__TITLE => 'Ошибка: Неизвестный шаблон сущности [' . $template . ']'
+            $entityName = $schema[ISchema::FIELD__ENTITY_NAME];
+            $schema[ISchema::FIELD__ENTITY_NAME] = $byName[$entityName] ?? [
+                IEntity::FIELD__NAME => $entityName,
+                IEntity::FIELD__TITLE => 'Ошибка: Неизвестная сущность [' . $entityName . ']'
             ];
         }
 

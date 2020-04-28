@@ -1,5 +1,8 @@
 <?php
+namespace tests;
 
+use Dotenv\Dotenv;
+use extas\interfaces\servers\responses\IServerResponse;
 use PHPUnit\Framework\TestCase;
 use extas\interfaces\repositories\IRepository;
 use extas\components\SystemContainer;
@@ -39,7 +42,7 @@ class BeforeTransitionCreateTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
+        $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
         $this->transitionRepo = new TransitionRepository();
@@ -103,16 +106,8 @@ class BeforeTransitionCreateTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
+        $operation($serverRequest, $serverResponse);
+        $this->hasError($serverResponse, 'True');
     }
 
     /**
@@ -129,21 +124,10 @@ class BeforeTransitionCreateTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->stateRepo->create(new State([
-            State::FIELD__NAME => 'test',
-            State::FIELD__TITLE => 'test'
-        ]));
+        $this->installState();
 
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
+        $operation($serverRequest, $serverResponse);
+        $this->hasError($serverResponse, 'True');
     }
 
     /**
@@ -160,21 +144,10 @@ class BeforeTransitionCreateTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
-        $this->stateRepo->create(new State([
-            State::FIELD__NAME => 'test',
-            State::FIELD__TITLE => 'test'
-        ]));
+        $this->installState();
 
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
+        $operation($serverRequest, $serverResponse);
+        $this->hasError($serverResponse, 'True');
     }
 
     /**
@@ -191,25 +164,34 @@ class BeforeTransitionCreateTest extends TestCase
         ]);
         $serverResponse = $this->getServerResponse();
 
+        $this->installState('from');
+        $this->installState('to');
+
+        $operation($serverRequest, $serverResponse);
+        $this->hasError($serverResponse, 'False');
+    }
+
+    /**
+     * @param string $name
+     */
+    protected function installState(string $name = 'test')
+    {
         $this->stateRepo->create(new State([
-            State::FIELD__NAME => 'from',
+            State::FIELD__NAME => $name,
             State::FIELD__TITLE => 'test'
         ]));
+    }
 
-        $this->stateRepo->create(new State([
-            State::FIELD__NAME => 'to',
-            State::FIELD__TITLE => 'test'
-        ]));
-
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
-
+    /**
+     * @param IServerResponse $serverResponse
+     * @param string $assert
+     */
+    protected function hasError(IServerResponse $serverResponse, string $assert = 'False')
+    {
         /**
          * @var $jsonRpcResponse IResponse
          */
         $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertFalse($jsonRpcResponse->hasError());
+        $this->{'assert' . $assert}($jsonRpcResponse->hasError());
     }
 }

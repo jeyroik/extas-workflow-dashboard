@@ -3,6 +3,7 @@ namespace extas\components\plugins\workflows\views\states;
 
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
+use extas\components\plugins\workflows\views\TItemsView;
 use extas\components\SystemContainer;
 use extas\interfaces\workflows\states\IState;
 use extas\interfaces\workflows\states\IStateRepository;
@@ -18,6 +19,8 @@ use Psr\Http\Message\ResponseInterface;
  */
 class ViewStateEdit extends Plugin
 {
+    use TItemsView;
+
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response
@@ -44,20 +47,6 @@ class ViewStateEdit extends Plugin
                 $itemsView .= $itemTemplate->render(['state' => $state]);
             }
         }
-
-        $listTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'states/index']);
-        $listView = $listTemplate->render(['states' => $itemsView]);
-
-        $pageTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'layouts/main']);
-        $page = $pageTemplate->render([
-            'page' => [
-                'title' => 'Состояния',
-                'head' => '',
-                'content' => $listView,
-                'footer' => ''
-            ]
-        ]);
-
-        $response->getBody()->write($page);
+        $this->renderPage($itemsView, $response);
     }
 }

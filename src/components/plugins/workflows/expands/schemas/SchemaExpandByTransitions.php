@@ -44,19 +44,17 @@ class SchemaExpandByTransitions extends PluginExpandAbstract
         }
 
         $transitRepo = SystemContainer::getItem(ITransitionRepository::class);
-        $transitions = $transitRepo->all([ITransition::FIELD__NAME => $transitionsNames]);
+        $transitions = $transitRepo->all([]);
         $transitionsByName = [];
         foreach ($transitions as $transition) {
             $transitionsByName[$transition->getName()] = $transition->__toArray();
         }
 
         foreach ($schemas as &$schema) {
-            foreach ($schema[ISchema::FIELD__TRANSITIONS_NAMES] as $index => $transition) {
-                $schema[ISchema::FIELD__TRANSITIONS_NAMES][$index] = $transitionsByName[$transition] ?? [
-                    ITransition::FIELD__NAME => $transition,
-                    ITransition::FIELD__TITLE => 'Ошибка: Неизвестный переход [' . $transition . ']'
-                ];
-            }
+            $schema[ISchema::FIELD__TRANSITIONS_NAMES] = array_intersect_key(
+                $transitionsByName,
+                $schema[ISchema::FIELD__TRANSITIONS_NAMES]
+            );
         }
 
         $parent->addToValue('schemas', $schemas);

@@ -3,6 +3,7 @@ namespace extas\components\plugins\workflows\views\transitions;
 
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
+use extas\components\plugins\workflows\views\TItemsView;
 use extas\components\SystemContainer;
 use extas\interfaces\workflows\transitions\ITransition;
 use extas\interfaces\workflows\transitions\ITransitionRepository;
@@ -18,6 +19,8 @@ use Psr\Http\Message\ResponseInterface;
  */
 class ViewTransitionsIndex extends Plugin
 {
+    use TItemsView;
+
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response
@@ -38,19 +41,6 @@ class ViewTransitionsIndex extends Plugin
             $itemsView .= $itemTemplate->render(['transition' => $transition]);
         }
 
-        $listTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'transitions/index']);
-        $listView = $listTemplate->render(['transitions' => $itemsView]);
-
-        $pageTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'layouts/main']);
-        $page = $pageTemplate->render([
-            'page' => [
-                'title' => 'Переходы',
-                'head' => '',
-                'content' => $listView,
-                'footer' => ''
-            ]
-        ]);
-
-        $response->getBody()->write($page);
+        $this->renderPage($itemsView, $response, 'transitions', 'Переходы');
     }
 }

@@ -8,8 +8,6 @@ use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\workflows\schemas\ISchema;
 use extas\interfaces\workflows\schemas\ISchemaRepository;
-use extas\interfaces\workflows\transitions\ITransition;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
 
 /**
  * Class BeforeSchemaCreate
@@ -35,31 +33,14 @@ class BeforeSchemaCreate extends OperationDispatcher
             if ($repo->one([ISchema::FIELD__NAME => $item->getName()])) {
                 $response->error('Schema already exist', 400);
             } else {
-                $this->checkTransitions($response, $item);
+                /**
+                 * 1. Создание схемы.
+                 * 2. Создание перехода.
+                 * 3. Добавление перехода в схему.
+                 * Поэтому при создании схемы она не может содержать переходы.
+                 */
+                $item->setTransitionsNames([]);
             }
-        }
-    }
-
-    /**
-     * @param IResponse $response
-     * @param ISchema $item
-     */
-    protected function checkTransitions(IResponse &$response, ISchema $item)
-    {
-        $transitions = $item->getTransitionsNames();
-        /**
-         * @var ITransitionRepository $repo
-         * @var ITransition[] $wTransitions
-         */
-        $repo = SystemContainer::getItem(ITransitionRepository::class);
-        $wTransitions = $repo->all([ITransition::FIELD__NAME => $transitions]);
-
-        if (count($wTransitions) != count($transitions)) {
-            $transitions = array_flip($transitions);
-            foreach ($wTransitions as $transition) {
-                unset($transitions[$transition->getName()]);
-            }
-            $response->error('Unknown transition', 400, array_keys($transitions));
         }
     }
 }
