@@ -1,11 +1,13 @@
 <?php
+namespace tests;
 
+use Dotenv\Dotenv;
+use extas\components\workflows\entities\Entity;
+use extas\components\workflows\entities\EntityRepository;
+use extas\interfaces\workflows\entities\IEntityRepository;
 use PHPUnit\Framework\TestCase;
 use extas\interfaces\repositories\IRepository;
 use extas\components\SystemContainer;
-use extas\components\workflows\entities\EntitySample;
-use extas\components\workflows\entities\EntitySampleRepository;
-use extas\interfaces\workflows\entities\IEntitySampleRepository;
 use extas\interfaces\parameters\IParameter;
 use extas\components\servers\requests\ServerRequest;
 use extas\components\servers\responses\ServerResponse;
@@ -13,30 +15,36 @@ use extas\components\plugins\workflows\expands\schemas\SchemaExpandByEntity;
 use extas\components\workflows\schemas\Schema;
 use extas\components\expands\ExpandingBox;
 
-class SchemaByEntityTemplateTest extends TestCase
+/**
+ * Class SchemaByEntityTest
+ *
+ * @package tests
+ * @author jeyroik@gmail.com
+ */
+class SchemaByEntityTest extends TestCase
 {
     /**
      * @var IRepository|null
      */
-    protected ?IRepository $templateRepo = null;
+    protected ?IRepository $stateRepo = null;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
+        $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
-        $this->templateRepo = new EntitySampleRepository();
+        $this->stateRepo = new EntityRepository();
 
         SystemContainer::addItem(
-            IEntitySampleRepository::class,
-            EntitySampleRepository::class
+            IEntityRepository::class,
+            EntityRepository::class
         );
     }
 
     public function tearDown(): void
     {
-        $this->templateRepo->delete([EntitySample::FIELD__NAME => 'test']);
+        $this->stateRepo->delete([Entity::FIELD__NAME => 'test']);
     }
 
     protected function getServerRequest()
@@ -69,11 +77,7 @@ class SchemaByEntityTemplateTest extends TestCase
             ExpandingBox::DATA__MARKER . 'schema' => []
         ]);
 
-        $operation(
-            $parent,
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($parent, $serverRequest, $serverResponse);
 
         $this->assertEquals(
             ['schemas' => []],
@@ -84,7 +88,7 @@ class SchemaByEntityTemplateTest extends TestCase
     /**
      * @throws
      */
-    public function testUnknownTemplate()
+    public function testUnknown()
     {
         $operation = new SchemaExpandByEntity();
         $serverRequest = $this->getServerRequest();
@@ -101,18 +105,14 @@ class SchemaByEntityTemplateTest extends TestCase
             ]
         ]);
 
-        $operation(
-            $parent,
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($parent, $serverRequest, $serverResponse);
 
         $this->assertEquals(
             ['schemas' => [
                 [
                     Schema::FIELD__ENTITY_NAME => [
-                        EntitySample::FIELD__NAME => 'unknown',
-                        EntitySample::FIELD__TITLE => 'Ошибка: Неизвестный шаблон сущности [unknown]'
+                        Entity::FIELD__NAME => 'unknown',
+                        Entity::FIELD__TITLE => 'Ошибка: Неизвестная сущность [unknown]'
                     ]
                 ]
             ]],
@@ -123,7 +123,7 @@ class SchemaByEntityTemplateTest extends TestCase
     /**
      * @throws
      */
-    public function testValidTemplate()
+    public function testValid()
     {
         $operation = new SchemaExpandByEntity();
         $serverRequest = $this->getServerRequest();
@@ -140,23 +140,19 @@ class SchemaByEntityTemplateTest extends TestCase
             ]
         ]);
 
-        $this->templateRepo->create(new EntitySample([
-            EntitySample::FIELD__NAME => 'test',
-            EntitySample::FIELD__TITLE => 'test'
+        $this->stateRepo->create(new Entity([
+            Entity::FIELD__NAME => 'test',
+            Entity::FIELD__TITLE => 'test'
         ]));
 
-        $operation(
-            $parent,
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($parent, $serverRequest, $serverResponse);
 
         $this->assertEquals(
             ['schemas' => [
                 [
                     Schema::FIELD__ENTITY_NAME => [
-                        EntitySample::FIELD__NAME => 'test',
-                        EntitySample::FIELD__TITLE => 'test'
+                        Entity::FIELD__NAME => 'test',
+                        Entity::FIELD__TITLE => 'test'
                     ]
                 ]
             ]],

@@ -1,5 +1,7 @@
 <?php
+namespace tests;
 
+use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
 use extas\interfaces\repositories\IRepository;
 use extas\components\SystemContainer;
@@ -23,7 +25,7 @@ class SchemaByTransitionsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
+        $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
         $this->transitionRepo = new TransitionRepository();
@@ -69,11 +71,7 @@ class SchemaByTransitionsTest extends TestCase
             ExpandingBox::DATA__MARKER . 'schema' => []
         ]);
 
-        $operation(
-            $parent,
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($parent, $serverRequest, $serverResponse);
 
         $this->assertEquals(
             ['schemas' => []],
@@ -84,7 +82,7 @@ class SchemaByTransitionsTest extends TestCase
     /**
      * @throws
      */
-    public function testUnknownTemplate()
+    public function testValid()
     {
         $operation = new SchemaExpandByTransitions();
         $serverRequest = $this->getServerRequest();
@@ -95,47 +93,7 @@ class SchemaByTransitionsTest extends TestCase
             ExpandingBox::FIELD__VALUE => [
                 'schemas' => [
                     [
-                        Schema::FIELD__TRANSITIONS_NAMES => ['unknown']
-                    ]
-                ]
-            ]
-        ]);
-
-        $operation(
-            $parent,
-            $serverRequest,
-            $serverResponse
-        );
-
-        $this->assertEquals(
-            ['schemas' => [
-                [
-                    Schema::FIELD__TRANSITIONS_NAMES => [
-                        [
-                            Transition::FIELD__NAME => 'unknown',
-                            Transition::FIELD__TITLE => 'Ошибка: Неизвестный переход [unknown]'
-                        ]
-                    ]
-                ]
-            ]],
-            $parent->getValue()
-        );
-    }
-
-    /**
-     * @throws
-     */
-    public function testValidTemplate()
-    {
-        $operation = new SchemaExpandByTransitions();
-        $serverRequest = $this->getServerRequest();
-        $serverResponse = $this->getServerResponse();
-        $parent = new ExpandingBox([
-            ExpandingBox::FIELD__NAME => 'schema',
-            ExpandingBox::DATA__MARKER . 'schema' => [],
-            ExpandingBox::FIELD__VALUE => [
-                'schemas' => [
-                    [
+                        Schema::FIELD__NAME => 'test',
                         Schema::FIELD__TRANSITIONS_NAMES => ['test']
                     ]
                 ]
@@ -144,14 +102,11 @@ class SchemaByTransitionsTest extends TestCase
 
         $this->transitionRepo->create(new Transition([
             Transition::FIELD__NAME => 'test',
-            Transition::FIELD__TITLE => 'test'
+            Transition::FIELD__TITLE => 'test',
+            Transition::FIELD__SCHEMA_NAME => 'test'
         ]));
 
-        $operation(
-            $parent,
-            $serverRequest,
-            $serverResponse
-        );
+        $operation($parent, $serverRequest, $serverResponse);
 
         $this->assertEquals(
             ['schemas' => [
@@ -159,7 +114,8 @@ class SchemaByTransitionsTest extends TestCase
                     Schema::FIELD__TRANSITIONS_NAMES => [
                         [
                             Transition::FIELD__NAME => 'test',
-                            Transition::FIELD__TITLE => 'test'
+                            Transition::FIELD__TITLE => 'test',
+                            Transition::FIELD__SCHEMA_NAME => 'test'
                         ]
                     ]
                 ]
