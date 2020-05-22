@@ -58,7 +58,11 @@ class SchemaByEntityTest extends TestCase
             ExpandingBox::DATA__MARKER . 'schema' => []
         ]);
 
-        $operation($parent, $this->getPsrRequest('.schema.index'), $this->getPsrResponse());
+        $operation(
+            $parent,
+            $this->getPsrRequest('.schema.index', ['x-extas-expand' => 'schema.entity']),
+            $this->getPsrResponse()
+        );
 
         $this->assertEquals(['schemas' => []], $parent->getValue(), print_r($parent, true));
     }
