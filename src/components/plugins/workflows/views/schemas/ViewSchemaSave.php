@@ -51,8 +51,7 @@ class ViewSchemaSave extends Plugin
                 $schema
                     ->setTitle($schemaTitle)
                     ->setDescription($schemaDesc)
-                    ->setTransitionsNames($matches[0] ?? [])
-                    ->setEntityName($schemaEntity);
+                    ->setEntity($schemaEntity);
                 $schemaRepo->update($schema);
             }
             $this->buildTransitions($schema, $itemView, $itemsView, $footer);
