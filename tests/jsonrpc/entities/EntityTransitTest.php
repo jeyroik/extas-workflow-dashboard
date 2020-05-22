@@ -72,20 +72,11 @@ class EntityTransitTest extends TestCase
         $this->transitionRepo = new TransitionRepository();
         $this->schemaRepo = new SchemaRepository();
         $this->addReposForExt([
-            ITransitionDispatcherRepository::class => TransitionDispatcherRepository::class,
-            ITransitionDispatcherSampleRepository::class => TransitionDispatcherSampleRepository::class,
-            IEntityRepository::class => EntityRepository::class,
-            ITransitionRepository::class => TransitionRepository::class,
-            ISchemaRepository::class => SchemaRepository::class,
             'workflowTransitionDispatcherRepository' => TransitionDispatcherRepository::class,
             'workflowTransitionDispatcherSampleRepository' => TransitionDispatcherSampleRepository::class,
             'workflowEntityRepository' => EntityRepository::class,
             'workflowTransitionRepository' => TransitionRepository::class,
             'workflowSchemaRepository' => SchemaRepository::class
-        ]);
-        $this->createRepoExt([
-            'workflowTransitionDispatcherRepository', 'workflowTransitionDispatcherSampleRepository',
-            'workflowEntityRepository', 'workflowTransitionRepository', 'workflowSchemaRepository'
         ]);
     }
 

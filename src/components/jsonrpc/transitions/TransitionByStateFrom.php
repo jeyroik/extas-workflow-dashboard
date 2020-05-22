@@ -3,7 +3,6 @@ namespace extas\components\jsonrpc\transitions;
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\jsonrpc\schemas\TGetSchema;
-use extas\components\SystemContainer;
 use extas\components\workflows\entities\Entity;
 use extas\components\workflows\entities\EntityContext;
 use extas\components\workflows\transits\TransitResult;
@@ -11,7 +10,6 @@ use extas\interfaces\IItem;
 use extas\interfaces\workflows\entities\IEntity;
 use extas\interfaces\workflows\schemas\ISchema;
 use extas\interfaces\workflows\transitions\ITransition;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -32,6 +30,8 @@ use Psr\Http\Message\ResponseInterface;
  * @jsonrpc_response_field description:string
  * @jsonrpc_response_field state_from:string
  * @jsonrpc_response_field state_to:string
+ *
+ * @method workflowTransitionRepository()
  *
  * @stage run.jsonrpc.transition.by_state_from.index
  * @package extas\components\jsonrpc\transitions
@@ -102,13 +102,7 @@ class TransitionByStateFrom extends OperationDispatcher
      */
     protected function getTransitions(string $stateName, ISchema $schema): array
     {
-        /**
-         * @var $repo ITransitionRepository
-         * @var $transitions ITransition[]
-         */
-        $repo = SystemContainer::getItem(ITransitionRepository::class);
-
-        return $repo->all([
+        return $this->workflowTransitionRepository()->all([
             ITransition::FIELD__NAME => $schema->getTransitionsNames(),
             ITransition::FIELD__STATE_FROM => $stateName
         ]);

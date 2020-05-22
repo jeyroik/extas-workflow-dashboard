@@ -3,13 +3,12 @@ namespace tests\jsonrpc\states;
 
 use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
+use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
 use extas\interfaces\repositories\IRepository;
-use extas\components\SystemContainer;
 use extas\components\workflows\states\State;
 use extas\components\jsonrpc\states\StateLoad;
 use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\workflows\states\IStateRepository;
 use extas\components\workflows\states\StateRepository;
 
 /**
@@ -20,6 +19,7 @@ use extas\components\workflows\states\StateRepository;
 class StateLoadTest extends TestCase
 {
     use TSnuffHttp;
+    use TSnuffExtensions;
 
     /**
      * @var IRepository|null
@@ -33,16 +33,13 @@ class StateLoadTest extends TestCase
         $env->load();
 
         $this->stateRepo = new StateRepository();
-
-        SystemContainer::addItem(
-            IStateRepository::class,
-            StateRepository::class
-        );
+        $this->addReposForExt(['workflowStateRepository' => StateRepository::class]);
     }
 
     public function tearDown(): void
     {
         $this->stateRepo->delete([State::FIELD__TITLE => 'test']);
+        $this->deleteSnuffExtensions();
     }
 
     /**

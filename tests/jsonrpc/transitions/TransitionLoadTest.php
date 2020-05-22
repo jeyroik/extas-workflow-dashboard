@@ -44,10 +44,9 @@ class TransitionLoadTest extends TestCase
         $this->repo = new TransitionRepository();
         $this->stateRepo = new StateRepository();
         $this->addReposForExt([
-            ITransitionRepository::class => TransitionRepository::class,
-            IStateRepository::class => StateRepository::class
+            'workflowTransitionRepository' => TransitionRepository::class,
+            'workflowStateRepository' => StateRepository::class
         ]);
-        $this->createRepoExt(['workflowTransitionRepository', 'workflowStateRepository']);
     }
 
     public function tearDown(): void

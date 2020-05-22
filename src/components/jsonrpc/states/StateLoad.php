@@ -3,9 +3,7 @@ namespace extas\components\jsonrpc\states;
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\jsonrpc\TLoad;
-use extas\components\SystemContainer;
 use extas\components\workflows\states\State;
-use extas\interfaces\workflows\states\IStateRepository;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -18,6 +16,8 @@ use Psr\Http\Message\ResponseInterface;
  * @jsonrpc_request_field data:array
  * @jsonrpc_response_field created_count:int
  * @jsonrpc_response_field got_count:int
+ *
+ * @method workflowStateRepository()
  *
  * @stage run.jsonrpc.state.load
  * @package extas\components\jsonrpc\states
@@ -37,7 +37,7 @@ class StateLoad extends OperationDispatcher
 
         return $this->defaultLoad(
             $states,
-            SystemContainer::getItem(IStateRepository::class),
+            $this->workflowStateRepository(),
             State::class,
             $request
         );

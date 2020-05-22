@@ -4,15 +4,15 @@ namespace extas\components\plugins\workflows\views\states;
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
 use extas\components\plugins\workflows\views\TItemsView;
-use extas\components\SystemContainer;
 use extas\components\workflows\states\State;
 use extas\interfaces\workflows\states\IState;
-use extas\interfaces\workflows\states\IStateRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class ViewStateCreate
+ *
+ * @method workflowStateRepository()
  *
  * @stage view.states.create
  * @package extas\components\plugins\workflows\views
@@ -30,10 +30,9 @@ class ViewStateCreate extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array $args)
     {
         /**
-         * @var $stateRepo IStateRepository
          * @var $states IState[]
          */
-        $stateRepo = SystemContainer::getItem(IStateRepository::class);
+        $stateRepo = $this->workflowStateRepository();
         $states = $stateRepo->all([]);
         $itemsView = '';
         $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'states/item']);

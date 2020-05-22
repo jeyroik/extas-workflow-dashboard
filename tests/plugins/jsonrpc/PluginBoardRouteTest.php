@@ -2,23 +2,19 @@
 namespace tests\plugins\jsonrpc;
 
 use Dotenv\Dotenv;
+use PHPUnit\Framework\TestCase;
 use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
-use PHPUnit\Framework\TestCase;
 use extas\components\jsonrpc\App;
 use extas\components\plugins\jsonrpc\PluginBoardRoute;
-use \extas\components\plugins\Plugin;
-use \extas\components\plugins\PluginRepository;
+use extas\components\plugins\Plugin;
+use extas\components\plugins\PluginRepository;
 use extas\components\plugins\workflows\views\ViewIndexIndex;
-use extas\interfaces\workflows\schemas\ISchemaRepository;
 use extas\components\workflows\schemas\SchemaRepository;
 use extas\components\workflows\transitions\TransitionRepository;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
 use extas\components\workflows\transitions\Transition;
 use extas\components\workflows\schemas\Schema;
-use extas\components\SystemContainer;
 use extas\interfaces\repositories\IRepository;
-use Slim\Factory\AppFactory;
 use Slim\Psr7\Headers;
 use Slim\Psr7\Request;
 use Slim\Psr7\Stream;
@@ -57,10 +53,9 @@ class PluginBoardRouteTest extends TestCase
         $this->schemaRepo = new SchemaRepository();
         $this->transitionRepo = new TransitionRepository();
         $this->addReposForExt([
-            ISchemaRepository::class => SchemaRepository::class,
-            ITransitionRepository::class => TransitionRepository::class
+            'workflowSchemaRepository' => SchemaRepository::class,
+            'workflowTransitionRepository' => TransitionRepository::class
         ]);
-        $this->createRepoExt(['workflowSchemaRepository', 'workflowTransitionRepository']);
     }
 
     public function tearDown(): void

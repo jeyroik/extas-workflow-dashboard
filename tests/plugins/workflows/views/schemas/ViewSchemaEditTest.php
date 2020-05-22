@@ -2,6 +2,7 @@
 namespace tests;
 
 use Dotenv\Dotenv;
+use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
 use PHPUnit\Framework\TestCase;
 use extas\components\plugins\workflows\views\schemas\ViewSchemaEdit;
@@ -11,7 +12,6 @@ use extas\components\workflows\transitions\TransitionRepository;
 use extas\interfaces\workflows\transitions\ITransitionRepository;
 use extas\components\workflows\transitions\Transition;
 use extas\components\workflows\schemas\Schema;
-use extas\components\SystemContainer;
 use extas\interfaces\repositories\IRepository;
 use Psr\Http\Message\ResponseInterface;
 
@@ -23,6 +23,7 @@ use Psr\Http\Message\ResponseInterface;
 class ViewSchemaEditTest extends TestCase
 {
     use TSnuffHttp;
+    use TSnuffExtensions;
 
     /**
      * @var IRepository|null
@@ -43,21 +44,17 @@ class ViewSchemaEditTest extends TestCase
 
         $this->schemaRepo = new SchemaRepository();
         $this->transitionRepo = new TransitionRepository();
-
-        SystemContainer::addItem(
-            ISchemaRepository::class,
-            SchemaRepository::class
-        );
-        SystemContainer::addItem(
-            ITransitionRepository::class,
-            TransitionRepository::class
-        );
+        $this->addReposForExt([
+            'workflowSchemaRepository' => SchemaRepository::class,
+            'workflowTransitionRepository' => TransitionRepository::class
+        ]);
     }
 
     public function tearDown(): void
     {
         $this->schemaRepo->delete([Schema::FIELD__NAME => 'test']);
         $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
+        $this->deleteSnuffExtensions();
     }
 
     public function testEditingSchema()

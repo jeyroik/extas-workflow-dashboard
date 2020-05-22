@@ -4,18 +4,17 @@ namespace extas\components\plugins\workflows\views\states;
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
 use extas\components\plugins\workflows\views\TItemsView;
-use extas\components\SystemContainer;
 use extas\components\workflows\states\State;
 use extas\interfaces\dashboards\IDashboardView;
-use extas\interfaces\repositories\IRepository;
 use extas\interfaces\workflows\states\IState;
-use extas\interfaces\workflows\states\IStateRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class ViewStateSave
+ *
+ * @method workflowStateRepository()
  *
  * @stage view.states.save
  * @package extas\components\plugins\workflows\views
@@ -25,7 +24,6 @@ class ViewStateSave extends Plugin
 {
     use TItemsView;
 
-    protected ?IRepository $stateRepo = null;
     protected bool $updated = false;
     protected ?IDashboardView $itemTemplate = null;
 
@@ -37,7 +35,6 @@ class ViewStateSave extends Plugin
     {
         parent::__construct($config);
 
-        $this->stateRepo = SystemContainer::getItem(IStateRepository::class);
         $this->itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'states/item']);
     }
 
@@ -51,7 +48,7 @@ class ViewStateSave extends Plugin
         /**
          * @var $states IState[]
          */
-        $states = $this->stateRepo->all([]);
+        $states = $this->workflowStateRepository()->all([]);
         $stateName = $args['name'] ?? '';
         $stateTitle = $_REQUEST['title'] ?? '';
         $stateDesc = $_REQUEST['description'] ?? '';
@@ -74,11 +71,12 @@ class ViewStateSave extends Plugin
     protected function buildView($states, $stateName, $stateTitle, $stateDesc): string
     {
         $itemsView = '';
+        $repo = $this->workflowStateRepository();
         foreach ($states as $index => $state) {
             if ($state->getName() == $stateName) {
                 $state->setTitle(htmlspecialchars($stateTitle))
                     ->setDescription(htmlspecialchars($stateDesc));
-                $this->stateRepo->update($state);
+                $repo->update($state);
                 $this->updated = true;
             }
             $itemsView .= $this->itemTemplate->render(['state' => $state]);
@@ -99,6 +97,6 @@ class ViewStateSave extends Plugin
             State::FIELD__TITLE => $title,
             State::FIELD__DESCRIPTION => $description
         ]);
-        return $this->stateRepo->create($newState);
+        return $this->workflowStateRepository()->create($newState);
     }
 }

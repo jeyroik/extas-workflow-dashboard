@@ -5,15 +5,15 @@ use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
 use extas\components\plugins\workflows\views\TItemsView;
 use extas\components\plugins\workflows\views\TTransitionView;
-use extas\components\SystemContainer;
 use extas\components\workflows\transitions\Transition;
 use extas\interfaces\workflows\transitions\ITransition;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class ViewTransitionCreate
+ *
+ * @method workflowTransitionRepository()
  *
  * @stage view.transitions.create
  * @package extas\components\plugins\workflows\views
@@ -32,11 +32,9 @@ class ViewTransitionCreate extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array $args)
     {
         /**
-         * @var $repo ITransitionRepository
          * @var $transitions ITransition[]
          */
-        $repo = SystemContainer::getItem(ITransitionRepository::class);
-        $transitions = $repo->all([]);
+        $transitions = $this->workflowTransitionRepository()->all([]);
         $itemsView = '';
         $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'transitions/item']);
         $editTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'transitions/edit']);

@@ -2,12 +2,12 @@
 namespace tests;
 
 use Dotenv\Dotenv;
+use PHPUnit\Framework\TestCase;
 use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
 use extas\components\workflows\entities\EntitySample;
 use extas\components\workflows\entities\EntitySampleRepository;
 use extas\interfaces\workflows\entities\IEntitySampleRepository;
-use PHPUnit\Framework\TestCase;
 use extas\components\plugins\workflows\views\schemas\ViewSchemaSave;
 use extas\interfaces\workflows\schemas\ISchemaRepository;
 use extas\components\workflows\schemas\SchemaRepository;
@@ -15,7 +15,6 @@ use extas\components\workflows\transitions\TransitionRepository;
 use extas\interfaces\workflows\transitions\ITransitionRepository;
 use extas\components\workflows\transitions\Transition;
 use extas\components\workflows\schemas\Schema;
-use extas\components\SystemContainer;
 use extas\interfaces\repositories\IRepository;
 
 /**
@@ -43,15 +42,9 @@ class ViewSchemaSaveTest extends TestCase
         $this->transitionRepo = new TransitionRepository();
         $this->entitySampleRepo = new EntitySampleRepository();
         $this->addReposForExt([
-            ISchemaRepository::class => SchemaRepository::class,
-            ITransitionRepository::class => TransitionRepository::class,
-            IEntitySampleRepository::class => EntitySampleRepository::class,
             'workflowSchemaRepository' => SchemaRepository::class,
             'workflowTransitionRepository' => TransitionRepository::class,
             'workflowEntitySampleRepository' => EntitySampleRepository::class
-        ]);
-        $this->createRepoExt([
-            'workflowSchemaRepository', 'workflowTransitionRepository', 'workflowEntitySampleRepository'
         ]);
         $this->entitySampleRepo->create(new EntitySample([
             EntitySample::FIELD__NAME => 'new'
@@ -63,6 +56,7 @@ class ViewSchemaSaveTest extends TestCase
         $this->schemaRepo->delete([Schema::FIELD__NAME => 'test']);
         $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
         $this->entitySampleRepo->delete([EntitySample::FIELD__NAME => 'new']);
+        $this->deleteSnuffExtensions();
     }
 
     public function testUpdateSchema()

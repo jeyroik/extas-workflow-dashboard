@@ -2,15 +2,11 @@
 namespace extas\components\jsonrpc\schemas;
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
-use extas\components\SystemContainer;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
 use extas\components\workflows\transitions\Transition;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
-use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
 use extas\interfaces\workflows\transitions\ITransition;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
 use extas\interfaces\workflows\transitions\ITransitionSample;
-use extas\interfaces\workflows\transitions\ITransitionSampleRepository;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -27,6 +23,10 @@ use Psr\Http\Message\ResponseInterface;
  * @jsonrpc_request_field transition_sample_name:string
  * @jsonrpc_request_field dispatchers:array
  * @jsonrpc_response_field name:string
+ *
+ * @method workflowTransitionDispatcherRepository()
+ * @method workflowTransitionRepository()
+ * @method workflowTransitionSampleRepository()
  *
  * @stage run.jsonrpc.schema.transition.add
  * @package extas\components\jsonrpc\schemas
@@ -67,7 +67,7 @@ class SchemaTransitionAdd extends OperationDispatcher
      */
     protected function createDispatchers(array $dispatchersData, string $transitionName): void
     {
-        $dispatcherRepo = SystemContainer::getItem(ITransitionDispatcherRepository::class);
+        $dispatcherRepo = $this->workflowTransitionDispatcherRepository();
 
         foreach ($dispatchersData as $dispatchersDatum) {
             $dispatchersDatum[ITransitionDispatcher::FIELD__TRANSITION_NAME] = $transitionName;
@@ -94,17 +94,13 @@ class SchemaTransitionAdd extends OperationDispatcher
             ->setSchemaName($schemaName)
             ->setName($transitionName);
 
-        /**
-         * @var ITransitionRepository $repo
-         */
-        $repo = SystemContainer::getItem(ITransitionRepository::class);
-        $exits = $repo->one([ITransition::FIELD__NAME => $transitionName]);
+        $exits = $this->workflowTransitionRepository()->one([ITransition::FIELD__NAME => $transitionName]);
 
         if ($exits) {
             throw new \Exception('Transition already exists');
         }
 
-        return $repo->create($transition);
+        return $this->workflowTransitionRepository()->create($transition);
     }
 
     /**
@@ -114,11 +110,7 @@ class SchemaTransitionAdd extends OperationDispatcher
      */
     protected function getTransitionSample(string $name): ITransitionSample
     {
-        /**
-         * @var $transitionSampleRepo ITransitionSampleRepository
-         */
-        $transitionSampleRepo = SystemContainer::getItem(ITransitionSampleRepository::class);
-        $sample = $transitionSampleRepo->one([ITransitionSample::FIELD__NAME => $name]);
+        $sample = $this->workflowTransitionSampleRepository()->one([ITransitionSample::FIELD__NAME => $name]);
 
         if (!$sample) {
             throw new \Exception('Missed transition sample');

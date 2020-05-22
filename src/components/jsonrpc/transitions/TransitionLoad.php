@@ -3,9 +3,7 @@ namespace extas\components\jsonrpc\transitions;
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\jsonrpc\TLoad;
-use extas\components\SystemContainer;
 use extas\components\workflows\transitions\Transition;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -18,6 +16,8 @@ use Psr\Http\Message\ResponseInterface;
  * @jsonrpc_request_field data:array
  * @jsonrpc_response_field created_count:int
  * @jsonrpc_response_field got_count:int
+ *
+ * @method workflowTransitionRepository()
  *
  * @stage run.jsonrpc.transition.load
  * @package extas\components\jsonrpc\transitions
@@ -37,7 +37,7 @@ class TransitionLoad extends OperationDispatcher
 
         return $this->defaultLoad(
             $transitions,
-            SystemContainer::getItem(ITransitionRepository::class),
+            $this->workflowTransitionRepository(),
             Transition::class,
             $request
         );

@@ -2,16 +2,16 @@
 namespace extas\components\plugins\workflows\expands\schemas;
 
 use extas\components\plugins\expands\PluginExpandAbstract;
-use extas\components\SystemContainer;
 use extas\interfaces\expands\IExpandingBox;
 use extas\interfaces\workflows\entities\IEntity;
-use extas\interfaces\workflows\entities\IEntityRepository;
 use extas\interfaces\workflows\schemas\ISchema;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class SchemaExpandByEntityTemplate
+ *
+ * @method workflowEntityRepository()
  *
  * @stage expand.index.schema
  * @package extas\components\plugins\expands\schemas
@@ -28,7 +28,6 @@ class SchemaExpandByEntity extends PluginExpandAbstract
     {
         /**
          * @var $schemas
-         * @var $repo IEntityRepository
          * @var $items IEntity[]
          */
         $value = $parent->getValue([]);
@@ -40,8 +39,7 @@ class SchemaExpandByEntity extends PluginExpandAbstract
         }
 
         $names = array_column($schemas, ISchema::FIELD__ENTITY_NAME);
-        $repo = SystemContainer::getItem(IEntityRepository::class);
-        $items = $repo->all([IEntity::FIELD__NAME => $names]);
+        $items = $this->workflowEntityRepository()->all([IEntity::FIELD__NAME => $names]);
         $byName = [];
         foreach ($items as $entity) {
             $byName[$entity->getName()] = $entity->__toArray();

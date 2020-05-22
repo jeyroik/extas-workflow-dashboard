@@ -4,16 +4,16 @@ namespace extas\components\plugins\workflows\views\schemas;
 use extas\components\dashboards\DashboardList;
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
-use extas\components\SystemContainer;
 use extas\interfaces\workflows\entities\IEntitySample;
-use extas\interfaces\workflows\entities\IEntitySampleRepository;
 use extas\interfaces\workflows\schemas\ISchema;
-use extas\interfaces\workflows\schemas\ISchemaRepository;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class ViewSchemaEdit
+ *
+ * @method workflowSchemaRepository()
+ * @method workflowEntitySampleRepository()
  *
  * @stage view.schemas.edit
  * @package extas\components\plugins\workflows\views
@@ -29,13 +29,10 @@ class ViewSchemaEdit extends Plugin
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array $args)
     {
         /**
-         * @var $repo ISchemaRepository
          * @var $schema ISchema
-         * @var $templatesRepo IEntitySampleRepository
          * @var $templates IEntitySample[]
          */
-        $repo = SystemContainer::getItem(ISchemaRepository::class);
-        $schema = $repo->one([ISchema::FIELD__NAME => $args['name'] ?? '']);
+        $schema = $this->workflowSchemaRepository()->one([ISchema::FIELD__NAME => $args['name'] ?? '']);
 
         if (!$schema) {
             $response = $response->withHeader('Location', '/');
@@ -43,12 +40,11 @@ class ViewSchemaEdit extends Plugin
             $editTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'schemas/edit']);
             $schema['transitions'] = implode(', ', $schema->getTransitionsNames());
 
-            $templatesRepo = SystemContainer::getItem(IEntitySampleRepository::class);
             $entity = new DashboardList([
                 DashboardList::FIELD__SELECTED => $schema->getEntityName(),
                 DashboardList::FIELD__TITLE => 'Сущность',
                 DashboardList::FIELD__NAME => 'entity_name',
-                DashboardList::FIELD__ITEMS => $templatesRepo->all([])
+                DashboardList::FIELD__ITEMS => $this->workflowEntitySampleRepository()->all([])
             ]);
             $schema['entity_name'] = $entity->render();
 

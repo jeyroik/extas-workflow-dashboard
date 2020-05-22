@@ -2,12 +2,10 @@
 namespace extas\components\jsonrpc\schemas;
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
-use extas\components\SystemContainer;
 use extas\components\workflows\exceptions\transitions\ExceptionTransitionMissed;
+use extas\interfaces\workflows\exceptions\transitions\IExceptionTransitionMissed;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
-use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
 use extas\interfaces\workflows\transitions\ITransition;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -23,6 +21,9 @@ use Psr\Http\Message\ResponseInterface;
  * @jsonrpc_request_field transition_name:string
  * @jsonrpc_response_field name:string
  *
+ * @method workflowTransitionRepository()
+ * @method workflowTransitionDispatcherRepository()
+ *
  * @stage run.jsonrpc.schema.transition.remove
  * @package extas\components\jsonrpc\schemas
  * @author jeyroik@gmail.com
@@ -31,11 +32,9 @@ class SchemaTransitionRemove extends OperationDispatcher
 {
     use TGetSchema;
 
-    protected ?ITransitionRepository $transitionRepo = null;
-
     /**
      * @return ResponseInterface
-     * @throws \extas\interfaces\workflows\exceptions\transitions\IExceptionTransitionMissed
+     * @throws IExceptionTransitionMissed
      */
     public function __invoke(): ResponseInterface
     {
@@ -65,13 +64,10 @@ class SchemaTransitionRemove extends OperationDispatcher
      */
     protected function removeTransitionAndDispatchers(string $transitionName): void
     {
-        $this->transitionRepo->delete([ITransition::FIELD__NAME => $transitionName]);
-
-        /**
-         * @var ITransitionDispatcherRepository $dispatchersRepo
-         */
-        $dispatchersRepo = SystemContainer::getItem(ITransitionDispatcherRepository::class);
-        $dispatchersRepo->delete([ITransitionDispatcher::FIELD__TRANSITION_NAME => $transitionName]);
+        $this->workflowTransitionRepository()->delete([ITransition::FIELD__NAME => $transitionName]);
+        $this->workflowTransitionDispatcherRepository()->delete([
+            ITransitionDispatcher::FIELD__TRANSITION_NAME => $transitionName
+        ]);
     }
 
     /**
@@ -81,8 +77,7 @@ class SchemaTransitionRemove extends OperationDispatcher
      */
     protected function checkTransition(string $transitionName)
     {
-        $this->transitionRepo = SystemContainer::getItem(ITransitionRepository::class);
-        $transition = $this->transitionRepo->one([ITransition::FIELD__NAME => $transitionName]);
+        $transition = $this->workflowTransitionRepository()->one([ITransition::FIELD__NAME => $transitionName]);
 
         if (!$transition) {
             throw new ExceptionTransitionMissed($transitionName);

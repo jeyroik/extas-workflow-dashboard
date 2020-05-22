@@ -1,13 +1,13 @@
 <?php
 namespace tests\plugins\workflows\views\states;
 
-use extas\components\http\TSnuffHttp;
+use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
+use extas\components\extensions\TSnuffExtensions;
+use extas\components\http\TSnuffHttp;
 use extas\components\plugins\workflows\views\states\ViewStateSave;
-use extas\interfaces\workflows\states\IStateRepository;
 use extas\components\workflows\states\StateRepository;
 use extas\components\workflows\states\State;
-use extas\components\SystemContainer;
 use extas\interfaces\repositories\IRepository;
 
 /**
@@ -18,6 +18,7 @@ use extas\interfaces\repositories\IRepository;
 class ViewStateSaveTest extends TestCase
 {
     use TSnuffHttp;
+    use TSnuffExtensions;
 
     /**
      * @var IRepository|null
@@ -27,21 +28,18 @@ class ViewStateSaveTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
+        $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
         $this->stateRepo = new StateRepository();
-
-        SystemContainer::addItem(
-            IStateRepository::class,
-            StateRepository::class
-        );
+        $this->addReposForExt(['workflowStateRepository' => StateRepository::class]);
     }
 
     public function tearDown(): void
     {
         $this->stateRepo->delete([State::FIELD__TITLE => 'test']);
+        $this->deleteSnuffExtensions();
     }
 
     public function testStateUpdate()
