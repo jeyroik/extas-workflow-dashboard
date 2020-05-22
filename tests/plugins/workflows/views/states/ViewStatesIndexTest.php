@@ -1,5 +1,7 @@
 <?php
+namespace tests\plugins\workflows\views\states;
 
+use extas\components\http\TSnuffHttp;
 use PHPUnit\Framework\TestCase;
 use extas\components\plugins\workflows\views\states\ViewStatesIndex;
 use extas\interfaces\workflows\states\IStateRepository;
@@ -15,6 +17,8 @@ use extas\interfaces\repositories\IRepository;
  */
 class ViewStatesIndexTest extends TestCase
 {
+    use TSnuffHttp;
+
     /**
      * @var IRepository|null
      */
@@ -42,16 +46,8 @@ class ViewStatesIndexTest extends TestCase
 
     public function testStatesIndex()
     {
-        $request = new \Slim\Http\Request(
-            'GET',
-            new \Slim\Http\Uri('http', 'localhost', 80, '/'),
-            new \Slim\Http\Headers(['Content-type' => 'text/html']),
-            [],
-            [],
-            new \Slim\Http\Stream(fopen('php://input', 'r'))
-        );
-
-        $response = new \Slim\Http\Response();
+        $request = $this->getPsrRequest();
+        $response = $this->getPsrResponse();
 
         $this->stateRepo->create(new State([
             State::FIELD__NAME => 'test'

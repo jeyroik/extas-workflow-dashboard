@@ -2,6 +2,7 @@
 namespace tests;
 
 use Dotenv\Dotenv;
+use extas\components\http\TSnuffHttp;
 use PHPUnit\Framework\TestCase;
 use extas\components\plugins\workflows\views\schemas\ViewSchemaSave;
 use extas\interfaces\workflows\schemas\ISchemaRepository;
@@ -12,11 +13,6 @@ use extas\components\workflows\transitions\Transition;
 use extas\components\workflows\schemas\Schema;
 use extas\components\SystemContainer;
 use extas\interfaces\repositories\IRepository;
-use Slim\Http\Headers;
-use Slim\Http\Request;
-use Slim\Http\Response;
-use Slim\Http\Stream;
-use Slim\Http\Uri;
 
 /**
  * Class ViewSchemaSaveTest
@@ -25,6 +21,8 @@ use Slim\Http\Uri;
  */
 class ViewSchemaSaveTest extends TestCase
 {
+    use TSnuffHttp;
+
     /**
      * @var IRepository|null
      */
@@ -63,33 +61,26 @@ class ViewSchemaSaveTest extends TestCase
 
     public function testUpdateSchema()
     {
-        $request = new Request(
-            'GET',
-            new Uri('http', 'localhost', 80, '/'),
-            new Headers(['Content-type' => 'text/html']),
-            [],
-            [],
-            new Stream(fopen('php://input', 'r'))
-        );
-
-        $response = new Response();
+        $request = $this->getPsrRequest();
+        $response = $this->getPsrResponse();
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__TITLE => 'Test',
             Schema::FIELD__DESCRIPTION => 'Test',
-            Schema::FIELD__TRANSITIONS_NAMES => ['test'],
             Schema::FIELD__ENTITY_NAME => 'test'
         ]));
         $this->transitionRepo->create(new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__TITLE => 'Test',
             Transition::FIELD__STATE_FROM => 'from',
-            Transition::FIELD__STATE_TO => 'to'
+            Transition::FIELD__STATE_TO => 'to',
+            Transition::FIELD__SCHEMA_NAME => 'test'
         ]));
 
         $_REQUEST['transitions'] = 'test';
         $_REQUEST['entity_name'] = 'new';
+
         $dispatcher = new ViewSchemaSave();
         $dispatcher($request, $response, ['name' => 'test']);
         $this->assertEquals(200, $response->getStatusCode());

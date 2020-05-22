@@ -1,6 +1,9 @@
 <?php
+namespace tests\plugins\workflows\views\transitions;
 
 use PHPUnit\Framework\TestCase;
+use extas\components\extensions\TSnuffExtensions;
+use extas\components\http\TSnuffHttp;
 use extas\components\plugins\workflows\views\transitions\ViewTransitionsIndex;
 use extas\interfaces\workflows\transitions\ITransitionRepository;
 use extas\components\workflows\transitions\TransitionRepository;
@@ -15,6 +18,9 @@ use extas\interfaces\repositories\IRepository;
  */
 class ViewTransitionsIndexTest extends TestCase
 {
+    use TSnuffHttp;
+    use TSnuffExtensions;
+
     /**
      * @var IRepository|null
      */
@@ -28,11 +34,7 @@ class ViewTransitionsIndexTest extends TestCase
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
         $this->transitionRepo = new TransitionRepository();
-
-        SystemContainer::addItem(
-            ITransitionRepository::class,
-            TransitionRepository::class
-        );
+        $this->addReposForExt([ITransitionRepository::class => TransitionRepository::class]);
     }
 
     public function tearDown(): void
@@ -42,16 +44,8 @@ class ViewTransitionsIndexTest extends TestCase
 
     public function testTransitionsIndex()
     {
-        $request = new \Slim\Http\Request(
-            'GET',
-            new \Slim\Http\Uri('http', 'localhost', 80, '/'),
-            new \Slim\Http\Headers(['Content-type' => 'text/html']),
-            [],
-            [],
-            new \Slim\Http\Stream(fopen('php://input', 'r'))
-        );
-
-        $response = new \Slim\Http\Response();
+        $request = $this->getPsrRequest();
+        $response = $this->getPsrResponse();
 
         $this->transitionRepo->create(new Transition([
             Transition::FIELD__NAME => 'test'

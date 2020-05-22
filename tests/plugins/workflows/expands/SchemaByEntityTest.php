@@ -58,7 +58,7 @@ class SchemaByEntityTest extends TestCase
             ExpandingBox::DATA__MARKER . 'schema' => []
         ]);
 
-        $operation($parent, $this->getPsrRequest(), $this->getPsrResponse());
+        $operation($parent, $this->getPsrRequest('.schema.index'), $this->getPsrResponse());
 
         $this->assertEquals(['schemas' => []], $parent->getValue());
     }
@@ -81,7 +81,7 @@ class SchemaByEntityTest extends TestCase
             ]
         ]);
 
-        $operation($parent, $this->getPsrRequest(), $this->getPsrResponse());
+        $operation($parent, $this->getPsrRequest('.schema.index'), $this->getPsrResponse());
 
         $this->assertEquals(
             ['schemas' => [
@@ -119,7 +119,7 @@ class SchemaByEntityTest extends TestCase
             Entity::FIELD__TITLE => 'test'
         ]));
 
-        $operation($parent, $this->getPsrRequest(), $this->getPsrResponse());
+        $operation($parent, $this->getPsrRequest('.schema.index'), $this->getPsrResponse());
 
         $this->assertEquals(
             ['schemas' => [

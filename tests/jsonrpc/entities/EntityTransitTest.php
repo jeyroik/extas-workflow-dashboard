@@ -2,6 +2,7 @@
 namespace tests\jsonrpc\entities;
 
 use Dotenv\Dotenv;
+use extas\interfaces\samples\parameters\ISampleParameter;
 use PHPUnit\Framework\TestCase;
 use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
@@ -18,7 +19,6 @@ use extas\interfaces\workflows\transitions\ITransitionRepository;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherSampleRepository;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcherSampleRepository;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcherSample as TDT;
-use extas\interfaces\parameters\IParameter;
 use extas\components\workflows\entities\Entity;
 use extas\components\jsonrpc\entities\EntityTransit;
 use extas\interfaces\jsonrpc\IResponse;
@@ -189,7 +189,7 @@ class EntityTransitTest extends TestCase
             TransitionDispatcher::FIELD__CLASS =>
                 'extas\\components\\workflows\\transitions\\dispatchers\\EntityHasAllParams',
             TransitionDispatcher::FIELD__PARAMETERS => [
-                [IParameter::FIELD__NAME => 'test']
+                [ISampleParameter::FIELD__NAME => 'test']
             ]
         ]));
 
