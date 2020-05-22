@@ -222,6 +222,11 @@ class EntityTransitTest extends TestCase
             Transition::FIELD__SAMPLE_NAME => 'test'
         ]));
 
-        $this->assertFalse($this->isJsonRpcResponseHasError($operation(), IResponse::RESPONSE__ERROR));
+        $response = $operation();
+
+        $this->assertFalse(
+            $this->isJsonRpcResponseHasError($response, IResponse::RESPONSE__ERROR),
+            'Response has error. Response: ' . json_encode($this->getJsonRpcResponse($response))
+        );
     }
 }
