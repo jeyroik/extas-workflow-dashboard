@@ -5,12 +5,19 @@ use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\jsonrpc\TLoad;
 use extas\components\SystemContainer;
 use extas\components\workflows\transitions\Transition;
-use extas\interfaces\jsonrpc\IRequest;
-use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\workflows\transitions\ITransitionRepository;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class TransitionLoad
+ *
+ * @jsonrpc_operation
+ * @jsonrpc_name workflow.transition.load
+ * @jsonrpc_title Load transitions
+ * @jsonrpc_description Load transitions
+ * @jsonrpc_request_field data:array
+ * @jsonrpc_response_field created_count:int
+ * @jsonrpc_response_field got_count:int
  *
  * @stage run.jsonrpc.transition.load
  * @package extas\components\jsonrpc\transitions
@@ -21,17 +28,26 @@ class TransitionLoad extends OperationDispatcher
     use TLoad;
 
     /**
-     * @param IRequest $request
-     * @param IResponse $response
+     * @return ResponseInterface
      */
-    protected function dispatch(IRequest $request, IResponse &$response)
+    public function __invoke(): ResponseInterface
     {
+        $request = $this->convertPsrToJsonRpcRequest();
         $transitions = $request->getData();
-        $this->defaultLoad(
+
+        return $this->defaultLoad(
             $transitions,
             SystemContainer::getItem(ITransitionRepository::class),
             Transition::class,
-            $response
+            $request
         );
+    }
+
+    /**
+     * @return string
+     */
+    protected function getSubjectForExtension(): string
+    {
+        return 'extas.workflow.transition.load';
     }
 }

@@ -1,16 +1,17 @@
 <?php
-namespace tests;
+namespace tests\jsonrpc\entities;
 
+use Dotenv\Dotenv;
+use PHPUnit\Framework\TestCase;
+use extas\components\extensions\TSnuffExtensions;
+use extas\components\http\TSnuffHttp;
 use extas\components\workflows\entities\EntityRepository;
 use extas\interfaces\workflows\entities\IEntityRepository;
-use PHPUnit\Framework\TestCase;
 use extas\interfaces\repositories\IRepository;
 use extas\components\workflows\schemas\Schema;
-use extas\components\workflows\entities\EntitySample;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcherRepository;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
-use extas\components\SystemContainer;
 use extas\components\workflows\transitions\Transition;
 use extas\components\workflows\transitions\TransitionRepository;
 use extas\interfaces\workflows\transitions\ITransitionRepository;
@@ -20,15 +21,9 @@ use extas\components\workflows\transitions\dispatchers\TransitionDispatcherSampl
 use extas\interfaces\parameters\IParameter;
 use extas\components\workflows\entities\Entity;
 use extas\components\jsonrpc\entities\EntityTransit;
-use extas\components\servers\requests\ServerRequest;
-use extas\components\servers\responses\ServerResponse;
-use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
-use extas\components\jsonrpc\Request;
-use extas\components\jsonrpc\Response;
 use extas\components\workflows\schemas\SchemaRepository;
 use extas\interfaces\workflows\schemas\ISchemaRepository;
-use Slim\Http\Response as PsrResponse;
 
 /**
  * Class EntityTransitTest
@@ -37,6 +32,9 @@ use Slim\Http\Response as PsrResponse;
  */
 class EntityTransitTest extends TestCase
 {
+    use TSnuffHttp;
+    use TSnuffExtensions;
+
     /**
      * @var IRepository|null
      */
@@ -65,7 +63,7 @@ class EntityTransitTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
+        $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
         $this->entityRepo = new EntityRepository();
@@ -73,27 +71,17 @@ class EntityTransitTest extends TestCase
         $this->transitionDispatcherTemplateRepo = new TransitionDispatcherSampleRepository();
         $this->transitionRepo = new TransitionRepository();
         $this->schemaRepo = new SchemaRepository();
-
-        SystemContainer::addItem(
-            ITransitionDispatcherRepository::class,
-            TransitionDispatcherRepository::class
-        );
-        SystemContainer::addItem(
-            ITransitionDispatcherSampleRepository::class,
-            TransitionDispatcherSampleRepository::class
-        );
-        SystemContainer::addItem(
-            IEntityRepository::class,
-            EntityRepository::class
-        );
-        SystemContainer::addItem(
-            ITransitionRepository::class,
-            TransitionRepository::class
-        );
-        SystemContainer::addItem(
-            ISchemaRepository::class,
-            SchemaRepository::class
-        );
+        $this->addReposForExt([
+            ITransitionDispatcherRepository::class => TransitionDispatcherRepository::class,
+            ITransitionDispatcherSampleRepository::class => TransitionDispatcherSampleRepository::class,
+            IEntityRepository::class => EntityRepository::class,
+            ITransitionRepository::class => TransitionRepository::class,
+            ISchemaRepository::class => SchemaRepository::class
+        ]);
+        $this->createRepoExt([
+            'workflowTransitionDispatcherRepository', 'workflowTransitionDispatcherSampleRepository',
+            'workflowEntityRepository', 'workflowTransitionRepository', 'workflowSchemaRepository'
+        ]);
     }
 
     public function tearDown(): void
@@ -103,100 +91,53 @@ class EntityTransitTest extends TestCase
         $this->transitionDispatcherTemplateRepo->delete([TDT::FIELD__NAME => 'test']);
         $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
         $this->schemaRepo->delete([Schema::FIELD__NAME => 'test']);
-    }
-
-    protected function getServerRequest(array $params)
-    {
-        return new ServerRequest([
-            ServerRequest::FIELD__PARAMETERS => [
-                [
-                    IParameter::FIELD__NAME => IRequest::SUBJECT,
-                    IParameter::FIELD__VALUE => new Request([
-                        IRequest::FIELD__PARAMS => $params
-                    ])
-                ]
-            ]
-        ]);
-    }
-
-    protected function getServerResponse()
-    {
-        return new ServerResponse([
-            ServerResponse::FIELD__PARAMETERS => [
-                [
-                    IParameter::FIELD__NAME => IResponse::SUBJECT,
-                    IParameter::FIELD__VALUE => new Response([
-                        Response::FIELD__RESPONSE => new PsrResponse()
-                    ])
-                ]
-            ]
-        ]);
+        $this->deleteSnuffExtensions();
     }
 
     public function testUnknownSchema()
     {
-        $operation = new EntityTransit();
-        $serverRequest = $this->getServerRequest(['schema_name' => 'unknown']);
-        $serverResponse = $this->getServerResponse();
-
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
+        $operation = new EntityTransit([
+            EntityTransit::FIELD__PSR_REQUEST => $this->getPsrRequest('.entity.transit.schema.unknown'),
+            EntityTransit::FIELD__PSR_RESPONSE => $this->getPsrResponse()
+        ]);
+        $this->assertTrue($this->isJsonRpcResponseHasError($operation(), IResponse::RESPONSE__ERROR));
     }
 
     public function testUnknownTransition()
     {
-        $operation = new EntityTransit();
-        $serverRequest = $this->getServerRequest([
-            'schema_name' => 'test',
-            'transition_name' => 'unknown'
+        $operation = new EntityTransit([
+            EntityTransit::FIELD__PSR_REQUEST => $this->getPsrRequest(
+                '.entity.transit.transition.unknown'
+            ),
+            EntityTransit::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
-        $serverResponse = $this->getServerResponse();
 
-        $this->entityRepo->create(new EntitySample([
-            EntitySample::FIELD__NAME => 'test',
-            EntitySample::FIELD__CLASS => Entity::class
+        $this->entityRepo->create(new Entity([
+            Entity::FIELD__NAME => 'test',
+            Entity::FIELD__CLASS => Entity::class,
+            Entity::FIELD__SCHEMA_NAME => 'test'
         ]));
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__ENTITY_NAME => 'test'
         ]));
-
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
+        $this->assertTrue($this->isJsonRpcResponseHasError($operation(), IResponse::RESPONSE__ERROR));
     }
 
     public function testInvalidEntityState()
     {
-        $operation = new EntityTransit();
-        $serverRequest = $this->getServerRequest([
-            'schema_name' => 'test',
-            'transition_name' => 'test',
-            'entity' => [
-                Entity::FIELD__STATE_NAME => 'not from'
-            ]
+        $operation = new EntityTransit([
+            EntityTransit::FIELD__PSR_REQUEST => $this->getPsrRequest(
+                '.entity.transit.state.invalid'
+            ),
+            EntityTransit::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
-        $serverResponse = $this->getServerResponse();
 
-        $this->entityRepo->create(new EntitySample([
-            EntitySample::FIELD__NAME => 'test',
-            EntitySample::FIELD__CLASS => Entity::class
+        $this->entityRepo->create(new Entity([
+            Entity::FIELD__NAME => 'test',
+            Entity::FIELD__CLASS => Entity::class,
+            Entity::FIELD__SCHEMA_NAME => 'test'
         ]));
 
         $this->schemaRepo->create(new Schema([
@@ -207,48 +148,37 @@ class EntityTransitTest extends TestCase
         $this->transitionRepo->create(new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__STATE_FROM => 'from',
-            Transition::FIELD__STATE_TO => 'to'
+            Transition::FIELD__STATE_TO => 'to',
+            Transition::FIELD__SCHEMA_NAME => 'test'
         ]));
 
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
+        $this->assertTrue($this->isJsonRpcResponseHasError($operation(), IResponse::RESPONSE__ERROR));
     }
 
     public function testInvalidEntityContent()
     {
-        $operation = new EntityTransit();
-        $serverRequest = $this->getServerRequest([
-            'schema_name' => 'test',
-            'transition_name' => 'test',
-            'entity' => [
-                Entity::FIELD__STATE_NAME => 'from'
-            ]
+        $operation = new EntityTransit([
+            EntityTransit::FIELD__PSR_REQUEST => $this->getPsrRequest(
+                '.entity.transit.content.invalid'
+            ),
+            EntityTransit::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
-        $serverResponse = $this->getServerResponse();
-
-        $this->entityRepo->create(new EntitySample([
-            EntitySample::FIELD__NAME => 'test',
-            EntitySample::FIELD__CLASS => Entity::class
+        $this->entityRepo->create(new Entity([
+            Entity::FIELD__NAME => 'test',
+            Entity::FIELD__CLASS => Entity::class,
+            Entity::FIELD__SCHEMA_NAME => 'test'
         ]));
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
-            Schema::FIELD__ENTITY_NAME => 'test',
-            Schema::FIELD__TRANSITIONS_NAMES => ['test']
+            Schema::FIELD__ENTITY_NAME => 'test'
         ]));
 
         $this->transitionRepo->create(new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__STATE_FROM => 'from',
-            Transition::FIELD__STATE_TO => 'to'
+            Transition::FIELD__STATE_TO => 'to',
+            Transition::FIELD__SCHEMA_NAME => 'test'
         ]));
 
         $this->transitionDispatcherRepo->create(new TransitionDispatcher([
@@ -256,55 +186,32 @@ class EntityTransitTest extends TestCase
             TransitionDispatcher::FIELD__TYPE => TransitionDispatcher::TYPE__CONDITION,
             TransitionDispatcher::FIELD__TRANSITION_NAME => 'test',
             TransitionDispatcher::FIELD__SAMPLE_NAME => 'test',
+            TransitionDispatcher::FIELD__CLASS =>
+                'extas\\components\\workflows\\transitions\\dispatchers\\EntityHasAllParams',
             TransitionDispatcher::FIELD__PARAMETERS => [
                 [IParameter::FIELD__NAME => 'test']
             ]
         ]));
 
-        $this->transitionDispatcherTemplateRepo->create(new TDT([
-            TDT::FIELD__NAME => 'test',
-            TDT::FIELD__TITLE => '',
-            TDT::FIELD__DESCRIPTION => '',
-            TDT::FIELD__CLASS => 'extas\\components\\workflows\\transitions\\dispatchers\\EntityHasAllParams',
-            TDT::FIELD__PARAMETERS => []
-        ]));
-
-        $operation(
-            $serverRequest,
-            $serverResponse
-        );
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
+        $this->assertTrue($this->isJsonRpcResponseHasError($operation(), IResponse::RESPONSE__ERROR));
     }
 
     public function testValid()
     {
-        $operation = new EntityTransit();
-        $serverRequest = $this->getServerRequest([
-            'schema_name' => 'test',
-            'transition_name' => 'test',
-            'entity' => [
-                Entity::FIELD__NAME => 'test',
-                Entity::FIELD__STATE_NAME => 'from',
-                'test' => true
-            ],
-            'context' => []
+        $operation = new EntityTransit([
+            EntityTransit::FIELD__PSR_REQUEST => $this->getPsrRequest('.entity.transit.valid'),
+            EntityTransit::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
-        $serverResponse = $this->getServerResponse();
 
         $this->entityRepo->create(new Entity([
-            EntitySample::FIELD__NAME => 'test',
-            EntitySample::FIELD__CLASS => Entity::class
+            Entity::FIELD__NAME => 'test',
+            Entity::FIELD__CLASS => Entity::class,
+            Entity::FIELD__SCHEMA_NAME => 'test'
         ]));
 
         $this->schemaRepo->create(new Schema([
             Schema::FIELD__NAME => 'test',
-            Schema::FIELD__ENTITY_NAME => 'test',
-            Schema::FIELD__TRANSITIONS_NAMES => ['test']
+            Schema::FIELD__ENTITY_NAME => 'test'
         ]));
 
         $this->transitionRepo->create(new Transition([
@@ -315,12 +222,6 @@ class EntityTransitTest extends TestCase
             Transition::FIELD__SAMPLE_NAME => 'test'
         ]));
 
-        $operation($serverRequest, $serverResponse);
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertFalse($jsonRpcResponse->hasError());
+        $this->assertFalse($this->isJsonRpcResponseHasError($operation(), IResponse::RESPONSE__ERROR));
     }
 }

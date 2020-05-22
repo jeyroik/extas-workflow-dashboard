@@ -4,14 +4,14 @@ namespace extas\components\jsonrpc\entities;
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\jsonrpc\workflows\TGetTransition;
 use extas\components\jsonrpc\workflows\TTransit;
-use extas\interfaces\jsonrpc\IRequest;
-use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\workflows\transitions\ITransition;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class EntityTransit
  *
- * @deprecated
+ * @deprecated use workflow.transit
+ *
  * @stage run.jsonrpc.entity.run
  * @package extas\components\jsonrpc\states
  * @author jeyroik@gmail.com
@@ -27,11 +27,11 @@ class EntityTransit extends OperationDispatcher
     public const FIELD__TRANSITION_NAME = 'transition_name';
 
     /**
-     * @param IRequest $request
-     * @param IResponse $response
+     * @return ResponseInterface
      */
-    protected function dispatch(IRequest $request, IResponse &$response)
+    public function __invoke(): ResponseInterface
     {
+        $request = $this->convertPsrToJsonRpcRequest();
         list($entityData, $contextData, $schemaName, $transitionName) = $this->listData($request->getParams());
 
         try {
@@ -42,9 +42,9 @@ class EntityTransit extends OperationDispatcher
                 ],
                 $transitionName
             );
-            $this->transit($contextData, $entityData, $transition, $response);
+            return $this->transit($contextData, $entityData, $transition, $request);
         } catch (\Exception $e) {
-            $response->error($e->getMessage(), 400);
+            return $this->errorResponse($request->getId(), $e->getMessage(), 400);
         }
     }
 
@@ -60,5 +60,13 @@ class EntityTransit extends OperationDispatcher
             $jRpcData[static::FIELD__SCHEMA_NAME] ?? '',
             $jRpcData[static::FIELD__TRANSITION_NAME] ?? ''
         ];
+    }
+
+    /**
+     * @return string
+     */
+    protected function getSubjectForExtension(): string
+    {
+        return 'workflow.entity.transit';
     }
 }

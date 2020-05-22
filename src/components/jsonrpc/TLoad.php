@@ -2,9 +2,13 @@
 namespace extas\components\jsonrpc;
 
 use extas\interfaces\IHasName;
+use extas\interfaces\jsonrpc\IRequest;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Trait TLoad
+ *
+ * @method successResponse(string $id, array $data = [])
  *
  * @package extas\components\jsonrpc
  * @author jeyroik@gmail.com
@@ -15,9 +19,10 @@ trait TLoad
      * @param $items
      * @param $repo
      * @param $itemClass
-     * @param $response
+     * @param IRequest $request
+     * @return ResponseInterface
      */
-    protected function defaultLoad($items, $repo, $itemClass, &$response)
+    protected function defaultLoad($items, $repo, $itemClass, IRequest $request): ResponseInterface
     {
         $names = array_column($items, IHasName::FIELD__NAME);
         $byName = array_column($items, null, IHasName::FIELD__NAME);
@@ -37,7 +42,7 @@ trait TLoad
             $created++;
         }
 
-        $response->success([
+        return $this->successResponse($request->getId(), [
             'created_count' => $created,
             'got_count' => count($items)
         ]);

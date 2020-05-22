@@ -5,17 +5,28 @@ use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\SystemContainer;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
 use extas\components\workflows\transitions\Transition;
-use extas\interfaces\jsonrpc\IRequest;
-use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
 use extas\interfaces\workflows\transitions\ITransition;
 use extas\interfaces\workflows\transitions\ITransitionRepository;
 use extas\interfaces\workflows\transitions\ITransitionSample;
 use extas\interfaces\workflows\transitions\ITransitionSampleRepository;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class SchemaTransitionAdd
+ *
+ * @deprecated use workflow.transition.create
+ *
+ * @jsonrpc_operation
+ * @jsonrpc_name workflow.schema.transition.add
+ * @jsonrpc_title Add transition to a schema
+ * @jsonrpc_description This method is deprecated! Use workflow.transition.create
+ * @jsonrpc_request_field schema_name:string
+ * @jsonrpc_request_field transition_name:string
+ * @jsonrpc_request_field transition_sample_name:string
+ * @jsonrpc_request_field dispatchers:array
+ * @jsonrpc_response_field name:string
  *
  * @stage run.jsonrpc.schema.transition.add
  * @package extas\components\jsonrpc\schemas
@@ -25,12 +36,9 @@ class SchemaTransitionAdd extends OperationDispatcher
 {
     use TGetSchema;
 
-    /**
-     * @param IRequest $request
-     * @param IResponse $response
-     */
-    protected function dispatch(IRequest $request, IResponse &$response)
+    public function __invoke(): ResponseInterface
     {
+        $request = $this->convertPsrToJsonRpcRequest();
         $jRpcData = $request->getParams();
         $transitionName = $jRpcData['transition_name'] ?? '';
         $transitionSampleName = $jRpcData['transition_sample_name'] ?? '';
@@ -39,19 +47,17 @@ class SchemaTransitionAdd extends OperationDispatcher
 
         try {
             $schema = $this->getSchema($schemaName);
-            $sample = $this->getTransitionSample($transitionSampleName);
 
-            if ($schema->hasTransitionName($transitionName)) {
+            if ($schema->hasTransition($transitionName)) {
                 throw new \Exception('Schema has already this transition');
             }
 
-            $transition = $this->createTransition($sample, $schemaName, $transitionName);
-            $schema->addTransitionName($transition->getName());
+            $transition = $schema->addTransition($transitionSampleName);
             $this->updateSchema($schema);
-            $this->createDispatchers($dispatchersData, $transitionName);
-            $response->success(['name' => $transitionName]);
+            $this->createDispatchers($dispatchersData, $transition->getName());
+            return $this->successResponse($request->getId(), ['name' => $transition->getName()]);
         } catch (\Exception $e) {
-            $response->error($e->getMessage(), 400);
+            return $this->errorResponse($request->getId(), $e->getMessage(), 400);
         }
     }
 
@@ -119,5 +125,13 @@ class SchemaTransitionAdd extends OperationDispatcher
         }
 
         return $sample;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getSubjectForExtension(): string
+    {
+        return 'extas.workflow.schema.transition.add';
     }
 }

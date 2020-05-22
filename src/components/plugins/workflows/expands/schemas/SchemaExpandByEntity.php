@@ -4,11 +4,11 @@ namespace extas\components\plugins\workflows\expands\schemas;
 use extas\components\plugins\expands\PluginExpandAbstract;
 use extas\components\SystemContainer;
 use extas\interfaces\expands\IExpandingBox;
-use extas\interfaces\servers\requests\IServerRequest;
-use extas\interfaces\servers\responses\IServerResponse;
 use extas\interfaces\workflows\entities\IEntity;
 use extas\interfaces\workflows\entities\IEntityRepository;
 use extas\interfaces\workflows\schemas\ISchema;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class SchemaExpandByEntityTemplate
@@ -21,10 +21,10 @@ class SchemaExpandByEntity extends PluginExpandAbstract
 {
     /**
      * @param IExpandingBox $parent
-     * @param IServerRequest $request
-     * @param IServerResponse $response
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      */
-    protected function dispatch(IExpandingBox &$parent, IServerRequest &$request, IServerResponse &$response)
+    protected function dispatch(IExpandingBox &$parent, RequestInterface $request, ResponseInterface $response)
     {
         /**
          * @var $schemas

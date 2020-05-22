@@ -2,9 +2,10 @@
 namespace extas\components\plugins\jsonrpc;
 
 use extas\components\Plugins;
-use \extas\components\plugins\Plugin;
+use extas\components\plugins\Plugin;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Slim\App;
 
 /**
  * Class PluginBoardRoute
@@ -14,9 +15,9 @@ use Psr\Http\Message\ResponseInterface as Response;
 class PluginBoardRoute extends Plugin
 {
     /**
-     * @param \extas\components\jsonrpc\App $app
+     * @param App $app
      */
-    public function __invoke(\extas\components\jsonrpc\App &$app): void
+    public function __invoke(App &$app): void
     {
         $app->any(
             '/[{section}[/{action}[/{name}]]]',

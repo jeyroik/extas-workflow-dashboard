@@ -37,7 +37,7 @@ class DashboardListTest extends TestCase
                     'name' => 'test_0',
                     'title' => 'Test item',
                     'description' => 'Test description'
-                ]),
+                ])
             ]
         ]);
 
@@ -48,7 +48,7 @@ class DashboardListTest extends TestCase
 
     /**
      * @param $config
-     * @return \extas\components\Item|__anonymous@962
+     * @return IHasName
      */
     protected function buildItem($config)
     {
