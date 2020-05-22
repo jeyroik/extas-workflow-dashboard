@@ -173,7 +173,8 @@ class TransitionByStateFromTest extends TestCase
                     [
                         Transition::FIELD__NAME => 'test',
                         Transition::FIELD__STATE_FROM => 'from',
-                        Transition::FIELD__STATE_TO => 'to'
+                        Transition::FIELD__STATE_TO => 'to',
+                        Transition::FIELD__SCHEMA_NAME => 'test'
                     ]
                 ]
             ],

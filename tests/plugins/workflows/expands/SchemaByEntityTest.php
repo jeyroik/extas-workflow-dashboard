@@ -60,7 +60,7 @@ class SchemaByEntityTest extends TestCase
 
         $operation($parent, $this->getPsrRequest('.schema.index'), $this->getPsrResponse());
 
-        $this->assertEquals(['schemas' => []], $parent->getValue());
+        $this->assertEquals(['schemas' => []], $parent->getValue(), print_r($parent, true));
     }
 
     /**
