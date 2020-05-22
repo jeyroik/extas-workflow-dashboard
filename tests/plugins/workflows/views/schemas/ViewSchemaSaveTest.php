@@ -2,7 +2,11 @@
 namespace tests;
 
 use Dotenv\Dotenv;
+use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
+use extas\components\workflows\entities\EntitySample;
+use extas\components\workflows\entities\EntitySampleRepository;
+use extas\interfaces\workflows\entities\IEntitySampleRepository;
 use PHPUnit\Framework\TestCase;
 use extas\components\plugins\workflows\views\schemas\ViewSchemaSave;
 use extas\interfaces\workflows\schemas\ISchemaRepository;
@@ -22,16 +26,11 @@ use extas\interfaces\repositories\IRepository;
 class ViewSchemaSaveTest extends TestCase
 {
     use TSnuffHttp;
+    use TSnuffExtensions;
 
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $schemaRepo = null;
-
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $transitionRepo = null;
+    protected IRepository $schemaRepo;
+    protected IRepository $transitionRepo;
+    protected IRepository $entitySampleRepo;
 
     protected function setUp(): void
     {
@@ -42,21 +41,28 @@ class ViewSchemaSaveTest extends TestCase
 
         $this->schemaRepo = new SchemaRepository();
         $this->transitionRepo = new TransitionRepository();
-
-        SystemContainer::addItem(
-            ISchemaRepository::class,
-            SchemaRepository::class
-        );
-        SystemContainer::addItem(
-            ITransitionRepository::class,
-            TransitionRepository::class
-        );
+        $this->entitySampleRepo = new EntitySampleRepository();
+        $this->addReposForExt([
+            ISchemaRepository::class => SchemaRepository::class,
+            ITransitionRepository::class => TransitionRepository::class,
+            IEntitySampleRepository::class => EntitySampleRepository::class,
+            'workflowSchemaRepository' => SchemaRepository::class,
+            'workflowTransitionRepository' => TransitionRepository::class,
+            'workflowEntitySampleRepository' => EntitySampleRepository::class
+        ]);
+        $this->createRepoExt([
+            'workflowSchemaRepository', 'workflowTransitionRepository', 'workflowEntitySampleRepository'
+        ]);
+        $this->entitySampleRepo->create(new EntitySample([
+            EntitySample::FIELD__NAME => 'new'
+        ]));
     }
 
     public function tearDown(): void
     {
         $this->schemaRepo->delete([Schema::FIELD__NAME => 'test']);
         $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
+        $this->entitySampleRepo->delete([EntitySample::FIELD__NAME => 'new']);
     }
 
     public function testUpdateSchema()
@@ -93,6 +99,6 @@ class ViewSchemaSaveTest extends TestCase
          */
         $schema = $this->schemaRepo->one([Schema::FIELD__NAME => 'test']);
         $this->assertNotEmpty($schema);
-        $this->assertEquals('new', $schema->getEntityName());
+        $this->assertEquals('new', $schema->getEntity()->getSampleName());
     }
 }
