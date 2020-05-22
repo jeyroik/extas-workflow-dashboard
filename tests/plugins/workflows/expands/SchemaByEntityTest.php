@@ -85,7 +85,11 @@ class SchemaByEntityTest extends TestCase
             ]
         ]);
 
-        $operation($parent, $this->getPsrRequest('.schema.index'), $this->getPsrResponse());
+        $operation(
+            $parent,
+            $this->getPsrRequest('.schema.index', ['x-extas-expand' => 'schema.entity']),
+            $this->getPsrResponse()
+        );
 
         $this->assertEquals(
             ['schemas' => [
@@ -123,7 +127,11 @@ class SchemaByEntityTest extends TestCase
             Entity::FIELD__TITLE => 'test'
         ]));
 
-        $operation($parent, $this->getPsrRequest('.schema.index'), $this->getPsrResponse());
+        $operation(
+            $parent,
+            $this->getPsrRequest('.schema.index', ['x-extas-expand' => 'schema.entity']),
+            $this->getPsrResponse()
+        );
 
         $this->assertEquals(
             ['schemas' => [
