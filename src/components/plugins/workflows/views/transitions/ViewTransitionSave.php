@@ -65,8 +65,10 @@ class ViewTransitionSave extends Plugin
         $itemsView = '';
         foreach ($transitions as $index => $transition) {
             if ($currentTransition && ($transition->getName() == $currentTransition->getName())) {
-                $sample = $currentTransition->buildFromSample($this->extractData($currentTransition->getName()));
-                $transition = $currentTransition->buildFromSample($sample, '');
+                $transition = $currentTransition->buildFromSample(
+                    $this->extractData($currentTransition->getName(), $currentTransition),
+                    ''
+                );
                 $repo->update($transition);
                 $this->updated = true;
             }
@@ -83,15 +85,14 @@ class ViewTransitionSave extends Plugin
      */
     protected function extractData(string $name, ITransition $transition = null): ITransitionSample
     {
-        $defaults = $transition
-            ? $transition->__toArray()
-            : [
-                Transition::FIELD__TITLE => '',
-                Transition::FIELD__DESCRIPTION => '',
-                Transition::FIELD__STATE_FROM => '',
-                Transition::FIELD__STATE_TO => '',
-                Transition::FIELD__SCHEMA_NAME => ''
-            ];
+        $transitionData = $transition ? $transition->__toArray() : [];
+        $defaults = array_merge($transitionData, [
+            Transition::FIELD__TITLE => '',
+            Transition::FIELD__DESCRIPTION => '',
+            Transition::FIELD__STATE_FROM => '',
+            Transition::FIELD__STATE_TO => '',
+            Transition::FIELD__SCHEMA_NAME => ''
+        ]);
 
         return new TransitionSample([
             Transition::FIELD__NAME => $name,
