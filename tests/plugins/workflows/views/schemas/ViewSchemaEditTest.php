@@ -5,6 +5,7 @@ use Dotenv\Dotenv;
 use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
 use extas\components\workflows\entities\EntityRepository;
+use extas\components\workflows\entities\EntitySampleRepository;
 use PHPUnit\Framework\TestCase;
 use extas\components\plugins\workflows\views\schemas\ViewSchemaEdit;
 use extas\interfaces\workflows\schemas\ISchemaRepository;
@@ -48,6 +49,7 @@ class ViewSchemaEditTest extends TestCase
         $this->addReposForExt([
             'workflowSchemaRepository' => SchemaRepository::class,
             'workflowTransitionRepository' => TransitionRepository::class,
+            'workflowEntitySampleRepository' => EntitySampleRepository::class,
             'workflowEntityRepository' => EntityRepository::class
         ]);
     }

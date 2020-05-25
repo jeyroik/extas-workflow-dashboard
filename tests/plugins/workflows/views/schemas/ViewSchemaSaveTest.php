@@ -3,6 +3,7 @@ namespace tests;
 
 use Dotenv\Dotenv;
 use extas\components\workflows\entities\EntityRepository;
+use extas\components\workflows\states\StateRepository;
 use PHPUnit\Framework\TestCase;
 use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
@@ -46,7 +47,8 @@ class ViewSchemaSaveTest extends TestCase
             'workflowSchemaRepository' => SchemaRepository::class,
             'workflowTransitionRepository' => TransitionRepository::class,
             'workflowEntitySampleRepository' => EntitySampleRepository::class,
-            'workflowEntityRepository' => EntityRepository::class
+            'workflowEntityRepository' => EntityRepository::class,
+            'workflowStateRepository' => StateRepository::class
         ]);
         $this->entitySampleRepo->create(new EntitySample([
             EntitySample::FIELD__NAME => 'new'
