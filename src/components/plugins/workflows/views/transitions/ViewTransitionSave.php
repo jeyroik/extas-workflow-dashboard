@@ -55,16 +55,16 @@ class ViewTransitionSave extends Plugin
 
     /**
      * @param $transitions
-     * @param $currentTransition
+     * @param ITransition|null $currentTransition
      * @param $repo
      * @param $itemTemplate
      * @return string
      */
-    protected function buildView($transitions, $currentTransition, $repo, $itemTemplate): string
+    protected function buildView(array $transitions, ?ITransition $currentTransition, $repo, $itemTemplate): string
     {
         $itemsView = '';
         foreach ($transitions as $index => $transition) {
-            if ($transition->getName() == $currentTransition->getName()) {
+            if ($currentTransition && ($transition->getName() == $currentTransition->getName())) {
                 $repo->update($transition);
                 $this->updated = true;
             }
