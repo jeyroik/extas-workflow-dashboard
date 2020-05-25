@@ -105,6 +105,11 @@ class SchemaTransitionAddTest extends TestCase
 
         $this->createSchema();
 
+        $this->transitionRepo->create(new Transition([
+            Transition::FIELD__SAMPLE_NAME => 'test',
+            Transition::FIELD__SCHEMA_NAME => 'test'
+        ]));
+
         $this->transitionSampleRepo->create(new TransitionSample([
             TransitionSample::FIELD__NAME => 'test',
             TransitionSample::FIELD__STATE_FROM => 'from',

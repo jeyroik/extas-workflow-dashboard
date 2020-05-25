@@ -50,7 +50,6 @@ class SchemaTransitionRemoveTest extends TestCase
 
     public function tearDown(): void
     {
-        $this->entityTemplateRepo->delete([EntitySample::FIELD__NAME => 'test']);
         $this->transitionDispatcherRepo->delete([TransitionDispatcher::FIELD__NAME => 'test']);
         $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
         $this->schemaRepo->delete([Schema::FIELD__NAME => 'test']);
