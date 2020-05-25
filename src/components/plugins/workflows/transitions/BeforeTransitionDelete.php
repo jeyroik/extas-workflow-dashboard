@@ -8,7 +8,7 @@ use extas\interfaces\workflows\transitions\ITransition;
 /**
  * Class BeforeTransitionDelete
  *
- * @method workflowTransitionRepository()
+ * @method workflowTransitionDispatcherRepository()
  *
  * @stage extas.workflow_transitions.delete.before
  * @package extas\components\plugins\workflows\transitions
@@ -22,7 +22,7 @@ class BeforeTransitionDelete extends Plugin
      */
     public function __invoke(ITransition $transition, array $where): void
     {
-        $this->workflowTransitionRepository()->delete([
+        $this->workflowTransitionDispatcherRepository()->delete([
             ITransitionDispatcher::FIELD__TRANSITION_NAME => $transition->getName()
         ]);
     }

@@ -1,0 +1,21 @@
+{
+  "id": "2f5d0719-5b82-4280-9b3b-10f23aff226b",
+  "method": "workflow.transition.add",
+  "params": {
+    "schema_name": "test",
+    "transition_sample_name": "test",
+    "dispatchers": [
+      {
+        "name": "test",
+        "type": "condition",
+        "class": "extas\\components\\workflows\\transitions\\dispatchers\\ContextHasAllParams",
+        "parameters": {
+          "field_name": {
+            "name": "field_name",
+            "value": "test"
+          }
+        }
+      }
+    ]
+  }
+}

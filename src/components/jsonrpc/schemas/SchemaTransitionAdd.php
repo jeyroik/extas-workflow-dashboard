@@ -40,7 +40,6 @@ class SchemaTransitionAdd extends OperationDispatcher
     {
         $request = $this->convertPsrToJsonRpcRequest();
         $jRpcData = $request->getParams();
-        $transitionName = $jRpcData['transition_name'] ?? '';
         $transitionSampleName = $jRpcData['transition_sample_name'] ?? '';
         $schemaName = $jRpcData['schema_name'] ?? '';
         $dispatchersData = $jRpcData['dispatchers'] ?? [];
@@ -48,8 +47,8 @@ class SchemaTransitionAdd extends OperationDispatcher
         try {
             $schema = $this->getSchema($schemaName);
 
-            if ($schema->hasTransition($transitionName)) {
-                throw new \Exception('Schema has already this transition');
+            if ($this->hasTransitionByThisSample($schemaName, $transitionSampleName)) {
+                throw new \Exception('Schema has already transition by this sample');
             }
 
             $transition = $schema->addTransition($transitionSampleName);
@@ -59,6 +58,21 @@ class SchemaTransitionAdd extends OperationDispatcher
         } catch (\Exception $e) {
             return $this->errorResponse($request->getId(), $e->getMessage(), 400);
         }
+    }
+
+    /**
+     * @param string $schemaName
+     * @param string $transitionSampleName
+     * @return bool
+     */
+    protected function hasTransitionByThisSample(string $schemaName, string $transitionSampleName): bool
+    {
+        $transition = $this->workflowTransitionRepository()->one([
+            ITransition::FIELD__SCHEMA_NAME => $schemaName,
+            ITransition::FIELD__SAMPLE_NAME => $transitionSampleName
+        ]);
+
+        return $transition ? true : false;
     }
 
     /**
@@ -101,22 +115,6 @@ class SchemaTransitionAdd extends OperationDispatcher
         }
 
         return $this->workflowTransitionRepository()->create($transition);
-    }
-
-    /**
-     * @param string $name
-     * @return ITransitionSample
-     * @throws \Exception
-     */
-    protected function getTransitionSample(string $name): ITransitionSample
-    {
-        $sample = $this->workflowTransitionSampleRepository()->one([ITransitionSample::FIELD__NAME => $name]);
-
-        if (!$sample) {
-            throw new \Exception('Missed transition sample');
-        }
-
-        return $sample;
     }
 
     /**
