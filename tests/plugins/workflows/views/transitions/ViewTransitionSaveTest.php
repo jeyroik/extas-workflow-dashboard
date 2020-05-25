@@ -72,7 +72,11 @@ class ViewTransitionSaveTest extends TestCase
          * @var Transition $transition
          */
         $transition = $this->transitionRepo->one([Transition::FIELD__NAME => 'test']);
-        $this->assertEquals('test', $transition->getDescription());
+        $this->assertEquals(
+            'test',
+            $transition->getDescription(),
+            'Wrong transition description.' . print_r($transition->__toArray(), true)
+        );
     }
 
     public function testTransitionCreateOnUpdateIfNotExists()
