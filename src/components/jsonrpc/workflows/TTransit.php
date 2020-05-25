@@ -7,6 +7,7 @@ use extas\components\workflows\Workflow;
 use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\workflows\entities\IEntity;
 use extas\interfaces\workflows\transitions\ITransition;
+use extas\interfaces\workflows\transits\ITransitResult;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -36,10 +37,30 @@ trait TTransit
         $workflow = new Workflow([Workflow::FIELD__CONTEXT => new EntityContext($contextData)]);
         $result = $workflow->transit($this->buildEntity($entityData), $transition);
         if ($result->hasErrors()) {
-            return $this->errorResponse($request->getId(), 'Error entity transition', 400);
+            return $this->errorResponse(
+                $request->getId(),
+                'Error entity transition',
+                400,
+                $this->getResultErrors($result)
+            );
         } else {
             return $this->successResponse($request->getId(), $result->getEntity()->__toArray());
         }
+    }
+
+    /**
+     * @param ITransitResult $result
+     * @return array
+     */
+    protected function getResultErrors(ITransitResult $result): array
+    {
+        $errors = [];
+        $resultErrors = $result->getErrors();
+        foreach ($resultErrors as $error) {
+            $errors[] = $error->__toArray();
+        }
+
+        return $errors;
     }
 
     /**

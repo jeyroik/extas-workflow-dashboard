@@ -6,12 +6,12 @@
     "jeyroik/extas-installer": "2.*",
     "jeyroik/extas-jsonrpc": "1.*",
     "jeyroik/extas-repositories-mongo": "1.*",
-    "jeyroik/extas-repositories-get": "0.*"
+    "jeyroik/extas-repositories-get": "0.*",
+    "jeyroik/extas-workflow-dispatchers": "1.*"
   },
   "require-dev": {
     "phpunit/phpunit": "^9",
     "vlucas/phpdotenv": "^3.4",
-    "jeyroik/extas-workflow-dispatchers": "1.*",
     "jeyroik/extas-snuffbox": "0.*"
   },
   "autoload": {

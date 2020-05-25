@@ -35,29 +35,10 @@ class EntityTransitTest extends TestCase
     use TSnuffHttp;
     use TSnuffExtensions;
 
-    /**
-     * @var IRepository|null
-     */
     protected ?IRepository $entityRepo = null;
-
-    /**
-     * @var IRepository|null
-     */
     protected ?IRepository $transitionDispatcherRepo = null;
-
-    /**
-     * @var IRepository|null
-     */
     protected ?IRepository $transitionDispatcherTemplateRepo = null;
-
-    /**
-     * @var IRepository|null
-     */
     protected ?IRepository $transitionRepo = null;
-
-    /**
-     * @var IRepository|null
-     */
     protected ?IRepository $schemaRepo = null;
 
     protected function setUp(): void
