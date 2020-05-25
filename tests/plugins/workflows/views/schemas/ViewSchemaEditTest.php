@@ -76,7 +76,8 @@ class ViewSchemaEditTest extends TestCase
         $this->assertEquals(
             302,
             $response->getStatusCode(),
-            'Incorrect response status: ' . $response->getStatusCode()
+            'Incorrect response status: ' . $response->getStatusCode() . ', headers:'
+            . json_encode($response->getHeaders())
         );
     }
 
