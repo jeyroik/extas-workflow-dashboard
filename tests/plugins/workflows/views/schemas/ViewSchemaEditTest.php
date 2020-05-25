@@ -4,6 +4,7 @@ namespace tests;
 use Dotenv\Dotenv;
 use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
+use extas\components\workflows\entities\EntityRepository;
 use PHPUnit\Framework\TestCase;
 use extas\components\plugins\workflows\views\schemas\ViewSchemaEdit;
 use extas\interfaces\workflows\schemas\ISchemaRepository;
@@ -46,7 +47,8 @@ class ViewSchemaEditTest extends TestCase
         $this->transitionRepo = new TransitionRepository();
         $this->addReposForExt([
             'workflowSchemaRepository' => SchemaRepository::class,
-            'workflowTransitionRepository' => TransitionRepository::class
+            'workflowTransitionRepository' => TransitionRepository::class,
+            'workflowEntityRepository' => EntityRepository::class
         ]);
     }
 

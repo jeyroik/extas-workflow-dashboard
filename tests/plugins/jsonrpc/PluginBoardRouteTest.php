@@ -2,6 +2,7 @@
 namespace tests\plugins\jsonrpc;
 
 use Dotenv\Dotenv;
+use extas\components\workflows\states\StateRepository;
 use PHPUnit\Framework\TestCase;
 use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
@@ -54,7 +55,8 @@ class PluginBoardRouteTest extends TestCase
         $this->transitionRepo = new TransitionRepository();
         $this->addReposForExt([
             'workflowSchemaRepository' => SchemaRepository::class,
-            'workflowTransitionRepository' => TransitionRepository::class
+            'workflowTransitionRepository' => TransitionRepository::class,
+            'workflowStateRepository' => StateRepository::class
         ]);
     }
 
