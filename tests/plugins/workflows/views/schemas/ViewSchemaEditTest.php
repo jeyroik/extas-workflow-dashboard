@@ -73,7 +73,11 @@ class ViewSchemaEditTest extends TestCase
     public function testRedirectOnEmptySchema()
     {
         $response = $this->runDispatcher(['name' => 'unknown']);
-        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertEquals(
+            302,
+            $response->getStatusCode(),
+            'Incorrect response status: ' . $response->getStatusCode()
+        );
     }
 
     protected function runDispatcher(array $args): ResponseInterface
