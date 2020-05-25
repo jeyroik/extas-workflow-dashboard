@@ -20,6 +20,7 @@
     }
   },
   "scripts": {
-    "test": "vendor/bin/phpunit --testdox --coverage-clover=coverage.xml --whitelist=src/components tests"
+    "test": "vendor/bin/phpunit --testdox --coverage-clover=coverage.xml --whitelist=src/components tests",
+    "stan": "vendor/bin/phpstan analyse -l 5 src"
   }
 }
