@@ -3,14 +3,21 @@ namespace extas\components\jsonrpc\states;
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\jsonrpc\TLoad;
-use extas\components\SystemContainer;
 use extas\components\workflows\states\State;
-use extas\interfaces\jsonrpc\IRequest;
-use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\workflows\states\IStateRepository;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class StateLoad
+ *
+ * @jsonrpc_operation
+ * @jsonrpc_name workflow.state.load
+ * @jsonrpc_title Load states
+ * @jsonrpc_description Load states
+ * @jsonrpc_request_field data:array
+ * @jsonrpc_response_field created_count:int
+ * @jsonrpc_response_field got_count:int
+ *
+ * @method workflowStateRepository()
  *
  * @stage run.jsonrpc.state.load
  * @package extas\components\jsonrpc\states
@@ -21,17 +28,26 @@ class StateLoad extends OperationDispatcher
     use TLoad;
 
     /**
-     * @param IRequest $request
-     * @param IResponse $response
+     * @return ResponseInterface
      */
-    protected function dispatch(IRequest $request, IResponse &$response)
+    public function __invoke(): ResponseInterface
     {
+        $request = $this->convertPsrToJsonRpcRequest();
         $states = $request->getData();
-        $this->defaultLoad(
+
+        return $this->defaultLoad(
             $states,
-            SystemContainer::getItem(IStateRepository::class),
+            $this->workflowStateRepository(),
             State::class,
-            $response
+            $request
         );
+    }
+
+    /**
+     * @return string
+     */
+    protected function getSubjectForExtension(): string
+    {
+        return 'extas.workflow.state.load';
     }
 }

@@ -353,15 +353,9 @@
       "stage": "extas.jsonrpc.init"
     },
     {
-      "class": "extas\\components\\plugins\\workflows\\expands\\schemas\\SchemaExpandByTransitions",
-      "stage": "expand.index.schema"
-    },
-    {
       "class": "extas\\components\\plugins\\workflows\\expands\\schemas\\SchemaExpandByEntity",
       "stage": "expand.index.schema"
     },
-
-
     {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\transitions\\BeforeTransitionCreate",
       "stage": "before.run.jsonrpc.transition.create"
@@ -371,8 +365,8 @@
       "stage": "before.run.jsonrpc.transition.update"
     },
     {
-      "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\transitions\\BeforeTransitionDelete",
-      "stage": "before.run.jsonrpc.transition.delete"
+      "class": "extas\\components\\plugins\\workflows\\transitions\\BeforeTransitionDelete",
+      "stage": "extas.workflow_transitions.delete.before"
     },
     {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\transitions\\dispatchers\\BeforeTransitionDispatcherCreate",

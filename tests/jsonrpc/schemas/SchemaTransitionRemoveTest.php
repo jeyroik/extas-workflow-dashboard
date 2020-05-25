@@ -1,32 +1,20 @@
 <?php
+namespace tests\jsonrpc\schemas;
 
+use Dotenv\Dotenv;
+use extas\components\extensions\TSnuffExtensions;
+use extas\components\http\TSnuffHttp;
+use extas\interfaces\workflows\schemas\ISchema;
 use PHPUnit\Framework\TestCase;
-use extas\components\workflows\entities\EntitySampleRepository;
-use extas\interfaces\workflows\entities\IEntitySampleRepository;
 use extas\interfaces\repositories\IRepository;
 use extas\components\workflows\schemas\Schema;
 use extas\components\workflows\entities\EntitySample;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcherRepository;
-use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
-use extas\components\SystemContainer;
 use extas\components\workflows\transitions\Transition;
 use extas\components\workflows\transitions\TransitionRepository;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
-use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherSampleRepository;
-use extas\components\workflows\transitions\dispatchers\TransitionDispatcherSampleRepository;
-use extas\components\workflows\transitions\dispatchers\TransitionDispatcherSample as TDT;
-use extas\interfaces\parameters\IParameter;
 use extas\components\jsonrpc\schemas\SchemaTransitionRemove;
-use extas\components\servers\requests\ServerRequest;
-use extas\components\servers\responses\ServerResponse;
-use extas\interfaces\jsonrpc\IRequest;
-use extas\interfaces\jsonrpc\IResponse;
-use extas\components\jsonrpc\Request;
-use extas\components\jsonrpc\Response;
 use extas\components\workflows\schemas\SchemaRepository;
-use extas\interfaces\workflows\schemas\ISchemaRepository;
-use Slim\Http\Response as PsrResponse;
 
 /**
  * Class SchemaTransitionRemoveTest
@@ -35,100 +23,37 @@ use Slim\Http\Response as PsrResponse;
  */
 class SchemaTransitionRemoveTest extends TestCase
 {
-    /**
-     * @var IRepository|null
-     */
+    use TSnuffHttp;
+    use TSnuffExtensions;
+
     protected ?IRepository $entityTemplateRepo = null;
-
-    /**
-     * @var IRepository|null
-     */
     protected ?IRepository $transitionDispatcherRepo = null;
-
-    /**
-     * @var IRepository|null
-     */
     protected ?IRepository $transitionDispatcherTemplateRepo = null;
-
-    /**
-     * @var IRepository|null
-     */
     protected ?IRepository $transitionRepo = null;
-
-    /**
-     * @var IRepository|null
-     */
     protected ?IRepository $schemaRepo = null;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
+        $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
-        $this->entityTemplateRepo = new EntitySampleRepository();
         $this->transitionDispatcherRepo = new TransitionDispatcherRepository();
-        $this->transitionDispatcherTemplateRepo = new TransitionDispatcherSampleRepository();
         $this->transitionRepo = new TransitionRepository();
         $this->schemaRepo = new SchemaRepository();
-
-        SystemContainer::addItem(
-            ITransitionDispatcherRepository::class,
-            TransitionDispatcherRepository::class
-        );
-        SystemContainer::addItem(
-            ITransitionDispatcherSampleRepository::class,
-            TransitionDispatcherSampleRepository::class
-        );
-        SystemContainer::addItem(
-            IEntitySampleRepository::class,
-            EntitySampleRepository::class
-        );
-        SystemContainer::addItem(
-            ITransitionRepository::class,
-            TransitionRepository::class
-        );
-        SystemContainer::addItem(
-            ISchemaRepository::class,
-            SchemaRepository::class
-        );
+        $this->addReposForExt([
+            'workflowTransitionDispatcherRepository' => TransitionDispatcherRepository::class,
+            'workflowTransitionRepository' => TransitionRepository::class,
+            'workflowSchemaRepository' => SchemaRepository::class
+        ]);
     }
 
     public function tearDown(): void
     {
-        $this->entityTemplateRepo->delete([EntitySample::FIELD__NAME => 'test']);
         $this->transitionDispatcherRepo->delete([TransitionDispatcher::FIELD__NAME => 'test']);
-        $this->transitionDispatcherTemplateRepo->delete([TDT::FIELD__NAME => 'test']);
         $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
         $this->schemaRepo->delete([Schema::FIELD__NAME => 'test']);
-    }
-
-    protected function getServerRequest(array $params)
-    {
-        return new ServerRequest([
-            ServerRequest::FIELD__PARAMETERS => [
-                [
-                    IParameter::FIELD__NAME => IRequest::SUBJECT,
-                    IParameter::FIELD__VALUE => new Request([
-                        IRequest::FIELD__PARAMS => $params
-                    ])
-                ]
-            ]
-        ]);
-    }
-
-    protected function getServerResponse()
-    {
-        return new ServerResponse([
-            ServerResponse::FIELD__PARAMETERS => [
-                [
-                    IParameter::FIELD__NAME => IResponse::SUBJECT,
-                    IParameter::FIELD__VALUE => new Response([
-                        Response::FIELD__RESPONSE => new PsrResponse()
-                    ])
-                ]
-            ]
-        ]);
+        $this->deleteSnuffExtensions();
     }
 
     /**
@@ -136,20 +61,16 @@ class SchemaTransitionRemoveTest extends TestCase
      */
     public function testUnknownSchema()
     {
-        $operation = new SchemaTransitionRemove();
-        $serverRequest = $this->getServerRequest(['schema_name' => 'unknown']);
-        $serverResponse = $this->getServerResponse();
+        $operation = new SchemaTransitionRemove([
+            SchemaTransitionRemove::FIELD__PSR_REQUEST => $this->getPsrRequest('.trm.missed.schema'),
+            SchemaTransitionRemove::FIELD__PSR_RESPONSE => $this->getPsrResponse()
+        ]);
 
-        $operation(
-            $serverRequest,
-            $serverResponse
+        $response = $operation();
+        $this->assertTrue(
+            $this->isJsonRpcResponseHasError($response),
+            print_r($this->getJsonRpcResponse($response), true)
         );
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
     }
 
     /**
@@ -157,28 +78,17 @@ class SchemaTransitionRemoveTest extends TestCase
      */
     public function testUnknownTransition()
     {
-        $operation = new SchemaTransitionRemove();
-        $serverRequest = $this->getServerRequest([
-            'schema_name' => 'test',
-            'transition_name' => 'unknown'
+        $operation = new SchemaTransitionRemove([
+            SchemaTransitionRemove::FIELD__PSR_REQUEST => $this->getPsrRequest('.trm.missed.transition'),
+            SchemaTransitionRemove::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
-        $serverResponse = $this->getServerResponse();
+        $this->createSchema();
 
-        $this->schemaRepo->create(new Schema([
-            Schema::FIELD__NAME => 'test',
-            Schema::FIELD__ENTITY_NAME => 'test'
-        ]));
-
-        $operation(
-            $serverRequest,
-            $serverResponse
+        $response = $operation();
+        $this->assertTrue(
+            $this->isJsonRpcResponseHasError($response),
+            print_r($this->getJsonRpcResponse($response), true)
         );
-
-        /**
-         * @var $jsonRpcResponse IResponse
-         */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertTrue($jsonRpcResponse->hasError());
     }
 
     /**
@@ -186,46 +96,43 @@ class SchemaTransitionRemoveTest extends TestCase
      */
     public function testValid()
     {
-        $operation = new SchemaTransitionRemove();
-        $serverRequest = $this->getServerRequest([
-            'schema_name' => 'test',
-            'transition_name' => 'test'
+        $operation = new SchemaTransitionRemove([
+            SchemaTransitionRemove::FIELD__PSR_REQUEST => $this->getPsrRequest('.trm'),
+            SchemaTransitionRemove::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
-        $serverResponse = $this->getServerResponse();
-
-        $this->schemaRepo->create(new Schema([
-            Schema::FIELD__NAME => 'test',
-            Schema::FIELD__ENTITY_NAME => 'test',
-            Schema::FIELD__TRANSITIONS_NAMES => ['test']
-        ]));
+        $this->createSchema();
 
         $this->transitionRepo->create(new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__STATE_FROM => 'from',
-            Transition::FIELD__STATE_TO => 'to'
+            Transition::FIELD__STATE_TO => 'to',
+            Transition::FIELD__SCHEMA_NAME => 'test'
         ]));
 
-        $this->transitionDispatcherTemplateRepo->create(new TDT([
-            TDT::FIELD__NAME => 'test',
-            TDT::FIELD__TITLE => '',
-            TDT::FIELD__DESCRIPTION => '',
-            TDT::FIELD__CLASS => 'extas\\components\\workflows\\transitions\\dispatchers\\EntityHasAllParams',
-            TDT::FIELD__PARAMETERS => []
+        $this->transitionDispatcherRepo->create(new TransitionDispatcher([
+            TransitionDispatcher::FIELD__NAME => 'test',
+            TransitionDispatcher::FIELD__CLASS => '',
+            TransitionDispatcher::FIELD__TRANSITION_NAME => 'test'
         ]));
 
-        $operation(
-            $serverRequest,
-            $serverResponse
+        $response = $operation();
+        $this->assertFalse(
+            $this->isJsonRpcResponseHasError($response),
+            print_r($this->getJsonRpcResponse($response), true)
         );
 
         /**
-         * @var $jsonRpcResponse IResponse
-         * @var $schema Schema
+         * @var ISchema $schema
          */
-        $jsonRpcResponse = $serverResponse->getParameter(IResponse::SUBJECT)->getValue();
-        $this->assertFalse($jsonRpcResponse->hasError());
-
         $schema = $this->schemaRepo->one([Schema::FIELD__NAME => 'test']);
-        $this->assertFalse($schema->hasTransitionName('test'));
+        $this->assertFalse($schema->hasTransition('test'), 'Schema has transition');
+    }
+
+    protected function createSchema(): void
+    {
+        $this->schemaRepo->create(new Schema([
+            Schema::FIELD__NAME => 'test',
+            Schema::FIELD__ENTITY_NAME => 'test'
+        ]));
     }
 }

@@ -1,0 +1,8 @@
+{
+  "id": "2f5d0719-5b82-4280-9b3b-10f23aff226b",
+  "method": "workflow.transition.remove",
+  "params": {
+    "schema_name": "test",
+    "transition_name": "unknown"
+  }
+}

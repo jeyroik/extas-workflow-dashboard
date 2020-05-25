@@ -3,20 +3,35 @@ namespace extas\components\jsonrpc\transitions;
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\jsonrpc\schemas\TGetSchema;
-use extas\components\SystemContainer;
 use extas\components\workflows\entities\Entity;
 use extas\components\workflows\entities\EntityContext;
 use extas\components\workflows\transits\TransitResult;
 use extas\interfaces\IItem;
-use extas\interfaces\jsonrpc\IRequest;
-use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\workflows\entities\IEntity;
 use extas\interfaces\workflows\schemas\ISchema;
 use extas\interfaces\workflows\transitions\ITransition;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class TransitionByStateFrom
+ *
+ * @deprecated use workflow.transition.index with filter: {state_from: {eq:<state.name>}}
+ *
+ * @jsonrpc_operation
+ * @jsonrpc_name workflow.transition.by_state_from.index
+ * @jsonrpc_title Transiiton index by state from
+ * @jsonrpc_description Get transitions list by state from
+ * @jsonrpc_request_field schema_name:string
+ * @jsonrpc_request_field state_name:string
+ * @jsonrpc_request_field entity:object
+ * @jsonrpc_request_field context:object
+ * @jsonrpc_response_field name:string
+ * @jsonrpc_response_field title:string
+ * @jsonrpc_response_field description:string
+ * @jsonrpc_response_field state_from:string
+ * @jsonrpc_response_field state_to:string
+ *
+ * @method workflowTransitionRepository()
  *
  * @stage run.jsonrpc.transition.by_state_from.index
  * @package extas\components\jsonrpc\transitions
@@ -27,11 +42,11 @@ class TransitionByStateFrom extends OperationDispatcher
     use TGetSchema;
 
     /**
-     * @param IRequest $request
-     * @param IResponse $response
+     * @return ResponseInterface
      */
-    protected function dispatch(IRequest $request, IResponse &$response)
+    public function __invoke(): ResponseInterface
     {
+        $request = $this->convertPsrToJsonRpcRequest();
         $jRpcData = $request->getParams();
 
         try {
@@ -52,9 +67,9 @@ class TransitionByStateFrom extends OperationDispatcher
                 : [];
 
             $result = array_intersect_key($result, $filterNames);
-            $response->success(array_values($result));
+            return $this->successResponse($request->getId(), array_values($result));
         } catch (\Exception $e) {
-            $response->error($e->getMessage(), 400);
+            return $this->errorResponse($request->getId(), $e->getMessage(), 400);
         }
     }
 
@@ -87,15 +102,17 @@ class TransitionByStateFrom extends OperationDispatcher
      */
     protected function getTransitions(string $stateName, ISchema $schema): array
     {
-        /**
-         * @var $repo ITransitionRepository
-         * @var $transitions ITransition[]
-         */
-        $repo = SystemContainer::getItem(ITransitionRepository::class);
-
-        return $repo->all([
+        return $this->workflowTransitionRepository()->all([
             ITransition::FIELD__NAME => $schema->getTransitionsNames(),
             ITransition::FIELD__STATE_FROM => $stateName
         ]);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getSubjectForExtension(): string
+    {
+        return 'extas.workflow.transition.by_state_from';
     }
 }

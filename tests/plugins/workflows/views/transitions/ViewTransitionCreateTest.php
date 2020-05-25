@@ -1,13 +1,13 @@
 <?php
+namespace tests\plugins\workflows\views\transitions;
 
 use PHPUnit\Framework\TestCase;
+use extas\components\extensions\TSnuffExtensions;
+use extas\components\http\TSnuffHttp;
 use extas\components\plugins\workflows\views\transitions\ViewTransitionCreate;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
 use extas\components\workflows\transitions\TransitionRepository;
-use extas\interfaces\workflows\states\IStateRepository;
 use extas\components\workflows\states\StateRepository;
 use extas\components\workflows\transitions\Transition;
-use extas\components\SystemContainer;
 use extas\interfaces\repositories\IRepository;
 
 /**
@@ -17,6 +17,9 @@ use extas\interfaces\repositories\IRepository;
  */
 class ViewTransitionCreateTest extends TestCase
 {
+    use TSnuffHttp;
+    use TSnuffExtensions;
+
     /**
      * @var IRepository|null
      */
@@ -30,16 +33,10 @@ class ViewTransitionCreateTest extends TestCase
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
         $this->transitionRepo = new TransitionRepository();
-
-        SystemContainer::addItem(
-            ITransitionRepository::class,
-            TransitionRepository::class
-        );
-
-        SystemContainer::addItem(
-            IStateRepository::class,
-            StateRepository::class
-        );
+        $this->addReposForExt([
+            'workflowTransitionRepository' => TransitionRepository::class,
+            'workflowStateRepository' => StateRepository::class
+        ]);
     }
 
     public function tearDown(): void
@@ -49,20 +46,10 @@ class ViewTransitionCreateTest extends TestCase
 
     public function testTransitionsIndex()
     {
-        $request = new \Slim\Http\Request(
-            'GET',
-            new \Slim\Http\Uri('http', 'localhost', 80, '/'),
-            new \Slim\Http\Headers(['Content-type' => 'text/html']),
-            [],
-            [],
-            new \Slim\Http\Stream(fopen('php://input', 'r'))
-        );
+        $request = $this->getPsrRequest();
+        $response = $this->getPsrResponse();
 
-        $response = new \Slim\Http\Response();
-
-        $this->transitionRepo->create(new Transition([
-            Transition::FIELD__NAME => 'test'
-        ]));
+        $this->transitionRepo->create(new Transition([Transition::FIELD__NAME => 'test']));
 
         $dispatcher = new ViewTransitionCreate();
         $dispatcher($request, $response, []);

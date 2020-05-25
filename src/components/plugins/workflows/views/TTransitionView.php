@@ -2,13 +2,13 @@
 namespace extas\components\plugins\workflows\views;
 
 use extas\components\dashboards\DashboardList;
-use extas\components\SystemContainer;
 use extas\interfaces\workflows\states\IState;
-use extas\interfaces\workflows\states\IStateRepository;
 use extas\interfaces\workflows\transitions\ITransition;
 
 /**
  * Trait TTransitionView
+ *
+ * @method workflowStateRepository()
  *
  * @package extas\components\plugins\workflows\views
  * @author jeyroik@gmail.com
@@ -21,11 +21,9 @@ trait TTransitionView
     protected function renderStates(ITransition &$transition)
     {
         /**
-         * @var $statesRepo IStateRepository
          * @var $states IState[]
          */
-        $statesRepo = SystemContainer::getItem(IStateRepository::class);
-        $states = $statesRepo->all([]);
+        $states = $this->workflowStateRepository()->all([]);
 
         $list = new DashboardList([
             DashboardList::FIELD__ITEMS => $states,

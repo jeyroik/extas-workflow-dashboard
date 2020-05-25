@@ -1,13 +1,13 @@
 <?php
 namespace extas\components\jsonrpc\workflows;
 
-use extas\components\SystemContainer;
 use extas\components\workflows\exceptions\transitions\ExceptionTransitionMissed;
 use extas\interfaces\workflows\transitions\ITransition;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
 
 /**
  * Trait TGetTransition
+ *
+ * @method workflowTransitionRepository()
  *
  * @package extas\components\jsonrpc\workflows
  * @author jeyroik@gmail.com
@@ -22,11 +22,7 @@ trait TGetTransition
      */
     protected function getTransition(array $query, string $transitionName): ?ITransition
     {
-        /**
-         * @var ITransitionRepository $transitionRepo
-         */
-        $transitionRepo = SystemContainer::getItem(ITransitionRepository::class);
-        $transition = $transitionRepo->one($query);
+        $transition = $this->workflowTransitionRepository()->one($query);
 
         if (!$transition) {
             throw new ExceptionTransitionMissed($transitionName);

@@ -2,12 +2,20 @@
 namespace extas\components\jsonrpc\workflows;
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
-use extas\interfaces\jsonrpc\IRequest;
-use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\workflows\transitions\ITransition;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class WorkflowTransit
+ *
+ * @jsonrpc_operation
+ * @jsonrpc_name workflow.transit
+ * @jsonrpc_title Workflow transit
+ * @jsonrpc_description Transit entity through a workflow
+ * @jsonrpc_request_field entity:object
+ * @jsonrpc_request_field transition_name
+ * @jsonrpc_request_field context:object
+ * @jsonrpc_response_field entity:object
  *
  * @stage run.jsonrpc.entity.run
  * @package extas\components\jsonrpc\workflows
@@ -23,18 +31,18 @@ class WorkflowTransit extends OperationDispatcher
     public const FIELD__TRANSITION_NAME = 'transition_name';
 
     /**
-     * @param IRequest $request
-     * @param IResponse $response
+     * @return ResponseInterface
      */
-    protected function dispatch(IRequest $request, IResponse &$response)
+    public function __invoke(): ResponseInterface
     {
+        $request = $this->convertPsrToJsonRpcRequest();
         list($entityData, $contextData, $transitionName) = $this->listData($request->getParams());
 
         try {
             $transition = $this->getTransition([ITransition::FIELD__NAME => $transitionName], $transitionName);
-            $this->transit($contextData, $entityData, $transition, $response);
+            return $this->transit($contextData, $entityData, $transition, $request);
         } catch (\Exception $e) {
-            $response->error($e->getMessage(), 400);
+            return $this->errorResponse($request->getId(), $e->getMessage(), 400);
         }
     }
 
@@ -49,5 +57,13 @@ class WorkflowTransit extends OperationDispatcher
             $jRpcData[static::FIELD__CONTEXT] ?? [],
             $jRpcData[static::FIELD__TRANSITION_NAME] ?? ''
         ];
+    }
+
+    /**
+     * @return string
+     */
+    protected function getSubjectForExtension(): string
+    {
+        return 'workflow.transit';
     }
 }

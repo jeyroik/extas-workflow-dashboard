@@ -1,19 +1,25 @@
 <?php
+namespace tests\plugins\jsonrpc;
 
+use Dotenv\Dotenv;
+use extas\components\workflows\states\StateRepository;
 use PHPUnit\Framework\TestCase;
+use extas\components\extensions\TSnuffExtensions;
+use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\App;
 use extas\components\plugins\jsonrpc\PluginBoardRoute;
-use \extas\components\plugins\Plugin;
-use \extas\components\plugins\PluginRepository;
+use extas\components\plugins\Plugin;
+use extas\components\plugins\PluginRepository;
 use extas\components\plugins\workflows\views\ViewIndexIndex;
-use extas\interfaces\workflows\schemas\ISchemaRepository;
 use extas\components\workflows\schemas\SchemaRepository;
 use extas\components\workflows\transitions\TransitionRepository;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
 use extas\components\workflows\transitions\Transition;
 use extas\components\workflows\schemas\Schema;
-use extas\components\SystemContainer;
 use extas\interfaces\repositories\IRepository;
+use Slim\Psr7\Headers;
+use Slim\Psr7\Request;
+use Slim\Psr7\Stream;
+use Slim\Psr7\Uri;
 
 /**
  * Class PluginBoardRouteTest
@@ -22,6 +28,9 @@ use extas\interfaces\repositories\IRepository;
  */
 class PluginBoardRouteTest extends TestCase
 {
+    use TSnuffExtensions;
+    use TSnuffHttp;
+
     /**
      * @var IRepository|null
      */
@@ -37,22 +46,18 @@ class PluginBoardRouteTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
+        $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
         $this->pluginRepo = new PluginRepository();
         $this->schemaRepo = new SchemaRepository();
         $this->transitionRepo = new TransitionRepository();
-
-        SystemContainer::addItem(
-            ISchemaRepository::class,
-            SchemaRepository::class
-        );
-        SystemContainer::addItem(
-            ITransitionRepository::class,
-            TransitionRepository::class
-        );
+        $this->addReposForExt([
+            'workflowSchemaRepository' => SchemaRepository::class,
+            'workflowTransitionRepository' => TransitionRepository::class,
+            'workflowStateRepository' => StateRepository::class
+        ]);
     }
 
     public function tearDown(): void
@@ -60,16 +65,15 @@ class PluginBoardRouteTest extends TestCase
         $this->pluginRepo->delete([Plugin::FIELD__CLASS => ViewIndexIndex::class]);
         $this->schemaRepo->delete([Schema::FIELD__NAME => 'test']);
         $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
+        $this->deleteSnuffExtensions();
     }
 
     public function testAddRoute()
     {
-        $app = new App();
+        $app = App::create();
         $plugin = new PluginBoardRoute();
         $plugin($app);
-        $container = $app->getContainer();
-        $router = $container->get('router');
-        $routes = $router->getRoutes();
+        $routes = $app->getRouteCollector()->getRoutes();
         /**
          * - /api/jsonrpc
          * - /specs
@@ -80,28 +84,21 @@ class PluginBoardRouteTest extends TestCase
 
     public function testBoardIndex()
     {
-        $request = new \Slim\Http\Request(
+        $request = new Request(
             'GET',
-            new \Slim\Http\Uri('http', 'localhost', 80, '/'),
-            new \Slim\Http\Headers([
-                'Content-type' => 'text/html'
-            ]),
+            new Uri('http', 'localhost', 80, '/'),
+            new Headers(['Content-type' => 'text/html']),
             [],
             [],
-            new \Slim\Http\Stream(fopen('php://input', 'r'))
+            new Stream(fopen('php://input', 'r'))
         );
 
-        $response = new \Slim\Http\Response();
+        $response = $this->getPsrResponse();
 
-        $app = new App();
+        $app = App::create();
         $plugin = new PluginBoardRoute();
         $plugin($app);
-        $container = $app->getContainer();
-        /**
-         * @var \Slim\Router $router
-         */
-        $router = $container->get('router');
-        $routes = $router->getRoutes();
+        $routes = $app->getRouteCollector()->getRoutes();
 
         $this->pluginRepo->create(new Plugin([
             Plugin::FIELD__CLASS => ViewIndexIndex::class,
@@ -111,14 +108,14 @@ class PluginBoardRouteTest extends TestCase
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__TITLE => 'Test',
             Schema::FIELD__DESCRIPTION => 'Test',
-            Schema::FIELD__TRANSITIONS_NAMES => ['test'],
             Schema::FIELD__ENTITY_NAME => 'test'
         ]));
         $this->transitionRepo->create(new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__TITLE => 'Test',
             Transition::FIELD__STATE_FROM => 'from',
-            Transition::FIELD__STATE_TO => 'to'
+            Transition::FIELD__STATE_TO => 'to',
+            Transition::FIELD__SCHEMA_NAME => 'test'
         ]));
 
         foreach ($routes as $route) {
@@ -134,6 +131,4 @@ class PluginBoardRouteTest extends TestCase
 
         $this->assertTrue(strpos($page, '<title>Схемы</title>') !== false);
     }
-
-
 }
