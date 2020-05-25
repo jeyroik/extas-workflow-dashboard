@@ -62,6 +62,7 @@ class ViewTransitionSaveTest extends TestCase
         $dispatcher = new ViewTransitionSave();
         $_REQUEST['title'] = 'test';
         $_REQUEST['description'] = 'test';
+        $_REQUEST['schema_name'] = 'test';
         $dispatcher($request, $response, ['name' => 'test']);
         $this->assertEquals(200, $response->getStatusCode());
 

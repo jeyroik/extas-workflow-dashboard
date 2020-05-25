@@ -65,6 +65,8 @@ class ViewTransitionSave extends Plugin
         $itemsView = '';
         foreach ($transitions as $index => $transition) {
             if ($currentTransition && ($transition->getName() == $currentTransition->getName())) {
+                $sample = $currentTransition->buildFromSample($this->extractData($currentTransition->getName()));
+                $transition = $currentTransition->buildFromSample($sample, '');
                 $repo->update($transition);
                 $this->updated = true;
             }
@@ -76,16 +78,28 @@ class ViewTransitionSave extends Plugin
 
     /**
      * @param string $name
+     * @param ITransition $transition
      * @return ITransitionSample
      */
-    protected function extractData(string $name): ITransitionSample
+    protected function extractData(string $name, ITransition $transition = null): ITransitionSample
     {
+        $defaults = $transition
+            ? $transition->__toArray()
+            : [
+                Transition::FIELD__TITLE => '',
+                Transition::FIELD__DESCRIPTION => '',
+                Transition::FIELD__STATE_FROM => '',
+                Transition::FIELD__STATE_TO => '',
+                Transition::FIELD__SCHEMA_NAME => ''
+            ];
+
         return new TransitionSample([
             Transition::FIELD__NAME => $name,
-            Transition::FIELD__TITLE => $_REQUEST['title'] ?? '',
-            Transition::FIELD__DESCRIPTION => $_REQUEST['description'] ?? '',
-            Transition::FIELD__STATE_FROM => $_REQUEST['state_from'] ?? '',
-            Transition::FIELD__STATE_TO => $_REQUEST['state_to'] ?? ''
+            Transition::FIELD__TITLE => $_REQUEST['title'] ?? $defaults[Transition::FIELD__TITLE],
+            Transition::FIELD__DESCRIPTION => $_REQUEST['description'] ?? $defaults[Transition::FIELD__DESCRIPTION],
+            Transition::FIELD__STATE_FROM => $_REQUEST['state_from'] ?? $defaults[Transition::FIELD__STATE_FROM],
+            Transition::FIELD__STATE_TO => $_REQUEST['state_to'] ?? $defaults[Transition::FIELD__STATE_TO],
+            Transition::FIELD__SCHEMA_NAME => $_REQUEST['schema_name'] ?? $defaults[Transition::FIELD__SCHEMA_NAME],
         ]);
     }
 }
