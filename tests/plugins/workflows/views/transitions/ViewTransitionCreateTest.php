@@ -5,9 +5,7 @@ use PHPUnit\Framework\TestCase;
 use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
 use extas\components\plugins\workflows\views\transitions\ViewTransitionCreate;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
 use extas\components\workflows\transitions\TransitionRepository;
-use extas\interfaces\workflows\states\IStateRepository;
 use extas\components\workflows\states\StateRepository;
 use extas\components\workflows\transitions\Transition;
 use extas\interfaces\repositories\IRepository;
@@ -36,8 +34,8 @@ class ViewTransitionCreateTest extends TestCase
 
         $this->transitionRepo = new TransitionRepository();
         $this->addReposForExt([
-            ITransitionRepository::class => TransitionRepository::class,
-            IStateRepository::class => StateRepository::class
+            'workflowTransitionRepository' => TransitionRepository::class,
+            'workflowStateRepository' => StateRepository::class
         ]);
     }
 
@@ -51,9 +49,7 @@ class ViewTransitionCreateTest extends TestCase
         $request = $this->getPsrRequest();
         $response = $this->getPsrResponse();
 
-        $this->transitionRepo->create(new Transition([
-            Transition::FIELD__NAME => 'test'
-        ]));
+        $this->transitionRepo->create(new Transition([Transition::FIELD__NAME => 'test']));
 
         $dispatcher = new ViewTransitionCreate();
         $dispatcher($request, $response, []);

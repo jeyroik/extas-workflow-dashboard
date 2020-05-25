@@ -2,11 +2,11 @@
 namespace tests\plugins\workflows\views\transitions;
 
 use Dotenv\Dotenv;
+use extas\components\workflows\states\StateRepository;
 use PHPUnit\Framework\TestCase;
 use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
 use extas\components\plugins\workflows\views\transitions\ViewTransitionSave;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
 use extas\components\workflows\transitions\TransitionRepository;
 use extas\components\workflows\transitions\Transition;
 use extas\interfaces\repositories\IRepository;
@@ -34,7 +34,10 @@ class ViewTransitionSaveTest extends TestCase
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
         $this->transitionRepo = new TransitionRepository();
-        $this->addReposForExt([ITransitionRepository::class => TransitionRepository::class]);
+        $this->addReposForExt([
+            'workflowTransitionRepository' => TransitionRepository::class,
+            'workflowStateRepository' => StateRepository::class
+        ]);
     }
 
     public function tearDown(): void
