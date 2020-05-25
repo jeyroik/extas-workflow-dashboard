@@ -88,7 +88,10 @@ class SchemaTransitionAddTest extends TestCase
 
         $response = $operation();
 
-        $this->assertTrue($this->isJsonRpcResponseHasError($response));
+        $this->assertTrue(
+            $this->isJsonRpcResponseHasError($response),
+            print_r($this->getJsonRpcResponse($response), true)
+        );
     }
 
     /**
@@ -110,7 +113,10 @@ class SchemaTransitionAddTest extends TestCase
         ]));
 
         $response = $operation();
-        $this->assertTrue($this->isJsonRpcResponseHasError($response));
+        $this->assertTrue(
+            $this->isJsonRpcResponseHasError($response),
+            print_r($this->getJsonRpcResponse($response), true)
+        );
     }
 
     /**
@@ -132,10 +138,13 @@ class SchemaTransitionAddTest extends TestCase
         ]));
 
         $response = $operation();
-        $this->assertFalse($this->isJsonRpcResponseHasError($response));
+        $this->assertFalse(
+            $this->isJsonRpcResponseHasError($response),
+            print_r($this->getJsonRpcResponse($response), true)
+        );
 
         $dispatcher = $this->transitionDispatcherRepo->one([ITransitionDispatcher::FIELD__NAME => 'test']);
-        $this->assertNotEmpty($dispatcher);
+        $this->assertNotEmpty($dispatcher, 'Dispatcher is not removed');
     }
 
     protected function createSchema(): void

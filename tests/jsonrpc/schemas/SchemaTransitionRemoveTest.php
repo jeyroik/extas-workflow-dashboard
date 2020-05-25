@@ -68,7 +68,10 @@ class SchemaTransitionRemoveTest extends TestCase
         ]);
 
         $response = $operation();
-        $this->assertTrue($this->isJsonRpcResponseHasError($response));
+        $this->assertTrue(
+            $this->isJsonRpcResponseHasError($response),
+            print_r($this->getJsonRpcResponse($response), true)
+        );
     }
 
     /**
@@ -83,7 +86,10 @@ class SchemaTransitionRemoveTest extends TestCase
         $this->createSchema();
 
         $response = $operation();
-        $this->assertTrue($this->isJsonRpcResponseHasError($response));
+        $this->assertTrue(
+            $this->isJsonRpcResponseHasError($response),
+            print_r($this->getJsonRpcResponse($response), true)
+        );
     }
 
     /**
@@ -111,13 +117,16 @@ class SchemaTransitionRemoveTest extends TestCase
         ]));
 
         $response = $operation();
-        $this->assertFalse($this->isJsonRpcResponseHasError($response));
+        $this->assertFalse(
+            $this->isJsonRpcResponseHasError($response),
+            print_r($this->getJsonRpcResponse($response), true)
+        );
 
         /**
          * @var ISchema $schema
          */
         $schema = $this->schemaRepo->one([Schema::FIELD__NAME => 'test']);
-        $this->assertFalse($schema->hasTransition('test'));
+        $this->assertFalse($schema->hasTransition('test'), 'Schema has transition');
     }
 
     protected function createSchema(): void
