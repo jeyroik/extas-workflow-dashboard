@@ -69,8 +69,7 @@ class SchemaTransitionAddTest extends TestCase
     {
         $this->entityTemplateRepo->delete([EntitySample::FIELD__NAME => 'test']);
         $this->transitionDispatcherRepo->delete([TransitionDispatcher::FIELD__NAME => 'test']);
-        $this->transitionDispatcherTemplateRepo->delete([TDT::FIELD__NAME => 'test']);
-        $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
+        $this->transitionRepo->delete([Transition::FIELD__SAMPLE_NAME => 'test']);
         $this->transitionSampleRepo->delete([TransitionSample::FIELD__NAME => 'test']);
         $this->schemaRepo->delete([Schema::FIELD__NAME => 'test']);
         $this->deleteSnuffExtensions();
