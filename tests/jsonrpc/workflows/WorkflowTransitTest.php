@@ -132,6 +132,7 @@ class WorkflowTransitTest extends TestCase
             WorkflowTransit::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
 
+        $this->createEntity();
         $this->createCondition([
             'missed' => [
                 ISampleParameter::FIELD__NAME => 'missed'
@@ -175,7 +176,7 @@ class WorkflowTransitTest extends TestCase
     /**
      * @param array $params
      */
-    protected function createEntity(array $params): void
+    protected function createEntity(array $params = []): void
     {
         $this->entityRepo->create(new Entity([
             Entity::FIELD__NAME => 'test',
