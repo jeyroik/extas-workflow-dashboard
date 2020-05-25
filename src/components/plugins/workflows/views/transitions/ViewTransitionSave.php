@@ -38,20 +38,29 @@ class ViewTransitionSave extends Plugin
          */
         $repo = $this->workflowTransitionRepository();
         $transitions = $repo->all([]);
-
         $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'transitions/item']);
-
         $transitionName = $args['name'] ?? '';
-        $transitionSample = $this->extractData($transitionName);
-        $itemsView = $this->buildView($transitions, $transitionSample, $repo, $itemTemplate);
+        $transition = $repo->one([ITransition::FIELD__NAME => $transitionName]);
+
+        $this->updateTransition($transition);
 
         if (!$this->updated) {
+            $transitionSample = $this->extractData($transitionName);
+            $itemsView = $this->buildView($transitions, $transitionSample, $repo, $itemTemplate);
             $newTransition = new Transition();
             $newTransition->buildFromSample($transitionSample);
             $newTransition = $repo->create($newTransition);
             $itemsView = $itemTemplate->render(['transition' => $newTransition]) . $itemsView;
         }
         $this->renderPage($itemsView, $response, 'transitions', 'Переходы');
+    }
+
+    protected function updateTransition(?ITransition $transition)
+    {
+        if ($transition) {
+            $this->workflowTransitionRepository()->update($transition);
+            $this->updated = true;
+        }
     }
 
     /**
