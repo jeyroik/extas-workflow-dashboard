@@ -1,21 +1,19 @@
 <?php
 namespace tests;
 
-use Dotenv\Dotenv;
-use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
+use extas\components\repositories\TSnuffRepository;
 use extas\components\workflows\entities\EntityRepository;
 use extas\components\workflows\entities\EntitySampleRepository;
-use PHPUnit\Framework\TestCase;
 use extas\components\plugins\workflows\views\schemas\ViewSchemaEdit;
-use extas\interfaces\workflows\schemas\ISchemaRepository;
 use extas\components\workflows\schemas\SchemaRepository;
 use extas\components\workflows\transitions\TransitionRepository;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
 use extas\components\workflows\transitions\Transition;
 use extas\components\workflows\schemas\Schema;
-use extas\interfaces\repositories\IRepository;
+
 use Psr\Http\Message\ResponseInterface;
+use Dotenv\Dotenv;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class ViewSchemaEditTest
@@ -25,17 +23,7 @@ use Psr\Http\Message\ResponseInterface;
 class ViewSchemaEditTest extends TestCase
 {
     use TSnuffHttp;
-    use TSnuffExtensions;
-
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $schemaRepo = null;
-
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $transitionRepo = null;
+    use TSnuffRepository;
 
     protected function setUp(): void
     {
@@ -44,9 +32,7 @@ class ViewSchemaEditTest extends TestCase
         $env->load();
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
-        $this->schemaRepo = new SchemaRepository();
-        $this->transitionRepo = new TransitionRepository();
-        $this->addReposForExt([
+        $this->registerSnuffRepos([
             'workflowSchemaRepository' => SchemaRepository::class,
             'workflowTransitionRepository' => TransitionRepository::class,
             'workflowEntitySampleRepository' => EntitySampleRepository::class,
@@ -56,9 +42,7 @@ class ViewSchemaEditTest extends TestCase
 
     public function tearDown(): void
     {
-        $this->schemaRepo->delete([Schema::FIELD__NAME => 'test']);
-        $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
-        $this->deleteSnuffExtensions();
+        $this->unregisterSnuffRepos();
     }
 
     public function testEditingSchema()
@@ -86,13 +70,13 @@ class ViewSchemaEditTest extends TestCase
         $request = $this->getPsrRequest();
         $response = $this->getPsrResponse();
 
-        $this->schemaRepo->create(new Schema([
+        $this->createWithSnuffRepo('workflowSchemaRepository', new Schema([
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__TITLE => 'Test',
             Schema::FIELD__DESCRIPTION => 'Test',
             Schema::FIELD__ENTITY_NAME => 'test'
         ]));
-        $this->transitionRepo->create(new Transition([
+        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__TITLE => 'Test',
             Transition::FIELD__STATE_FROM => 'from',

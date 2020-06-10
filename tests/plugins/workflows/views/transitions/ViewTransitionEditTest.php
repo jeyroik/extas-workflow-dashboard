@@ -1,14 +1,15 @@
 <?php
 namespace tests\plugins\workflows\views\transitions;
 
-use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
-use PHPUnit\Framework\TestCase;
+use extas\components\repositories\TSnuffRepository;
 use extas\components\plugins\workflows\views\transitions\ViewTransitionEdit;
 use extas\components\workflows\transitions\TransitionRepository;
 use extas\components\workflows\states\StateRepository;
 use extas\components\workflows\transitions\Transition;
-use extas\interfaces\repositories\IRepository;
+
+use Dotenv\Dotenv;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class ViewTransitionEditTest
@@ -18,22 +19,16 @@ use extas\interfaces\repositories\IRepository;
 class ViewTransitionEditTest extends TestCase
 {
     use TSnuffHttp;
-    use TSnuffExtensions;
-
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $transitionRepo = null;
+    use TSnuffRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
+        $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
-        $this->transitionRepo = new TransitionRepository();
-        $this->addReposForExt([
+        $this->registerSnuffRepos([
             'workflowTransitionRepository' => TransitionRepository::class,
             'workflowStateRepository' => StateRepository::class
         ]);
@@ -41,7 +36,7 @@ class ViewTransitionEditTest extends TestCase
 
     public function tearDown(): void
     {
-        $this->transitionRepo->delete([Transition::FIELD__TITLE => 'test']);
+        $this->unregisterSnuffRepos();
     }
 
     public function testTransitionsIndex()
@@ -49,11 +44,11 @@ class ViewTransitionEditTest extends TestCase
         $request = $this->getPsrRequest();
         $response = $this->getPsrResponse();
 
-        $this->transitionRepo->create(new Transition([
+        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__TITLE => 'test'
         ]));
-        $this->transitionRepo->create(new Transition([
+        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
             Transition::FIELD__NAME => 'test2',
             Transition::FIELD__TITLE => 'test'
         ]));

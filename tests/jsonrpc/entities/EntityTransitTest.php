@@ -1,29 +1,24 @@
 <?php
 namespace tests\jsonrpc\entities;
 
-use Dotenv\Dotenv;
 use extas\interfaces\samples\parameters\ISampleParameter;
-use PHPUnit\Framework\TestCase;
-use extas\components\extensions\TSnuffExtensions;
+use extas\interfaces\jsonrpc\IResponse;
+
+use extas\components\repositories\TSnuffRepository;
 use extas\components\http\TSnuffHttp;
 use extas\components\workflows\entities\EntityRepository;
-use extas\interfaces\workflows\entities\IEntityRepository;
-use extas\interfaces\repositories\IRepository;
 use extas\components\workflows\schemas\Schema;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcherRepository;
-use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
 use extas\components\workflows\transitions\Transition;
 use extas\components\workflows\transitions\TransitionRepository;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
-use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherSampleRepository;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcherSampleRepository;
-use extas\components\workflows\transitions\dispatchers\TransitionDispatcherSample as TDT;
 use extas\components\workflows\entities\Entity;
 use extas\components\jsonrpc\entities\EntityTransit;
-use extas\interfaces\jsonrpc\IResponse;
 use extas\components\workflows\schemas\SchemaRepository;
-use extas\interfaces\workflows\schemas\ISchemaRepository;
+
+use Dotenv\Dotenv;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class EntityTransitTest
@@ -33,26 +28,14 @@ use extas\interfaces\workflows\schemas\ISchemaRepository;
 class EntityTransitTest extends TestCase
 {
     use TSnuffHttp;
-    use TSnuffExtensions;
-
-    protected ?IRepository $entityRepo = null;
-    protected ?IRepository $transitionDispatcherRepo = null;
-    protected ?IRepository $transitionDispatcherTemplateRepo = null;
-    protected ?IRepository $transitionRepo = null;
-    protected ?IRepository $schemaRepo = null;
+    use TSnuffRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
-
-        $this->entityRepo = new EntityRepository();
-        $this->transitionDispatcherRepo = new TransitionDispatcherRepository();
-        $this->transitionDispatcherTemplateRepo = new TransitionDispatcherSampleRepository();
-        $this->transitionRepo = new TransitionRepository();
-        $this->schemaRepo = new SchemaRepository();
-        $this->addReposForExt([
+        $this->registerSnuffRepos([
             'workflowTransitionDispatcherRepository' => TransitionDispatcherRepository::class,
             'workflowTransitionDispatcherSampleRepository' => TransitionDispatcherSampleRepository::class,
             'workflowEntityRepository' => EntityRepository::class,
@@ -63,12 +46,7 @@ class EntityTransitTest extends TestCase
 
     public function tearDown(): void
     {
-        $this->entityRepo->delete([Entity::FIELD__NAME => 'test']);
-        $this->transitionDispatcherRepo->delete([TransitionDispatcher::FIELD__NAME => 'test']);
-        $this->transitionDispatcherTemplateRepo->delete([TDT::FIELD__NAME => 'test']);
-        $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
-        $this->schemaRepo->delete([Schema::FIELD__NAME => 'test']);
-        $this->deleteSnuffExtensions();
+        $this->unregisterSnuffRepos();
     }
 
     public function testUnknownSchema()
@@ -89,13 +67,13 @@ class EntityTransitTest extends TestCase
             EntityTransit::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
 
-        $this->entityRepo->create(new Entity([
+        $this->createWithSnuffRepo('workflowEntityRepository', new Entity([
             Entity::FIELD__NAME => 'test',
             Entity::FIELD__CLASS => Entity::class,
             Entity::FIELD__SCHEMA_NAME => 'test'
         ]));
 
-        $this->schemaRepo->create(new Schema([
+        $this->createWithSnuffRepo('workflowSchemaRepository', new Schema([
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__ENTITY_NAME => 'test'
         ]));
@@ -111,18 +89,18 @@ class EntityTransitTest extends TestCase
             EntityTransit::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
 
-        $this->entityRepo->create(new Entity([
+        $this->createWithSnuffRepo('workflowEntityRepository', new Entity([
             Entity::FIELD__NAME => 'test',
             Entity::FIELD__CLASS => Entity::class,
             Entity::FIELD__SCHEMA_NAME => 'test'
         ]));
 
-        $this->schemaRepo->create(new Schema([
+        $this->createWithSnuffRepo('workflowSchemaRepository', new Schema([
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__ENTITY_NAME => 'test'
         ]));
 
-        $this->transitionRepo->create(new Transition([
+        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__STATE_FROM => 'from',
             Transition::FIELD__STATE_TO => 'to',
@@ -140,25 +118,25 @@ class EntityTransitTest extends TestCase
             ),
             EntityTransit::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
-        $this->entityRepo->create(new Entity([
+        $this->createWithSnuffRepo('workflowEntityRepository', new Entity([
             Entity::FIELD__NAME => 'test',
             Entity::FIELD__CLASS => Entity::class,
             Entity::FIELD__SCHEMA_NAME => 'test'
         ]));
 
-        $this->schemaRepo->create(new Schema([
+        $this->createWithSnuffRepo('workflowSchemaRepository', new Schema([
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__ENTITY_NAME => 'test'
         ]));
 
-        $this->transitionRepo->create(new Transition([
+        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__STATE_FROM => 'from',
             Transition::FIELD__STATE_TO => 'to',
             Transition::FIELD__SCHEMA_NAME => 'test'
         ]));
 
-        $this->transitionDispatcherRepo->create(new TransitionDispatcher([
+        $this->createWithSnuffRepo('workflowTransitionDispatcherRepository', new TransitionDispatcher([
             TransitionDispatcher::FIELD__NAME => 'test',
             TransitionDispatcher::FIELD__TYPE => TransitionDispatcher::TYPE__CONDITION,
             TransitionDispatcher::FIELD__TRANSITION_NAME => 'test',
@@ -180,18 +158,18 @@ class EntityTransitTest extends TestCase
             EntityTransit::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
 
-        $this->entityRepo->create(new Entity([
+        $this->createWithSnuffRepo('workflowEntityRepository', new Entity([
             Entity::FIELD__NAME => 'test',
             Entity::FIELD__CLASS => Entity::class,
             Entity::FIELD__SCHEMA_NAME => 'test'
         ]));
 
-        $this->schemaRepo->create(new Schema([
+        $this->createWithSnuffRepo('workflowSchemaRepository', new Schema([
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__ENTITY_NAME => 'test'
         ]));
 
-        $this->transitionRepo->create(new Transition([
+        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__STATE_FROM => 'from',
             Transition::FIELD__STATE_TO => 'to',

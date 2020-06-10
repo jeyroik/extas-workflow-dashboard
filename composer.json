@@ -3,8 +3,8 @@
   "description": "Simple dashboard for the extas workflow",
   "require": {
     "jeyroik/extas-workflow": "3.*",
-    "jeyroik/extas-installer": "2.*",
-    "jeyroik/extas-jsonrpc": "1.*",
+    "jeyroik/extas-installer": "3.*",
+    "jeyroik/extas-jsonrpc": "3.*",
     "jeyroik/extas-repositories-mongo": "1.*",
     "jeyroik/extas-repositories-get": "0.*",
     "jeyroik/extas-workflow-dispatchers": "1.*"

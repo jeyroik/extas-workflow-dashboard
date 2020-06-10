@@ -1,16 +1,16 @@
 <?php
 namespace tests;
 
-use Dotenv\Dotenv;
-use PHPUnit\Framework\TestCase;
-use extas\components\extensions\TSnuffExtensions;
+use extas\components\repositories\TSnuffRepository;
 use extas\components\http\TSnuffHttp;
 use extas\components\workflows\entities\Entity;
 use extas\components\workflows\entities\EntityRepository;
-use extas\interfaces\repositories\IRepository;
 use extas\components\plugins\workflows\expands\schemas\SchemaExpandByEntity;
 use extas\components\workflows\schemas\Schema;
 use extas\components\expands\ExpandingBox;
+
+use Dotenv\Dotenv;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class SchemaByEntityTest
@@ -21,12 +21,7 @@ use extas\components\expands\ExpandingBox;
 class SchemaByEntityTest extends TestCase
 {
     use TSnuffHttp;
-    use TSnuffExtensions;
-
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $entityRepo = null;
+    use TSnuffRepository;
 
     protected function setUp(): void
     {
@@ -34,14 +29,12 @@ class SchemaByEntityTest extends TestCase
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
-        $this->entityRepo = new EntityRepository();
-        $this->addReposForExt(['workflowEntityRepository' => EntityRepository::class]);
+        $this->registerSnuffRepos(['workflowEntityRepository' => EntityRepository::class]);
     }
 
     public function tearDown(): void
     {
-        $this->entityRepo->delete([Entity::FIELD__NAME => 'test']);
-        $this->deleteSnuffExtensions();
+        $this->unregisterSnuffRepos();
     }
 
     /**
@@ -119,7 +112,7 @@ class SchemaByEntityTest extends TestCase
             ]
         ]);
 
-        $this->entityRepo->create(new Entity([
+        $this->createWithSnuffRepo('workflowEntityRepository', new Entity([
             Entity::FIELD__NAME => 'test',
             Entity::FIELD__TITLE => 'test'
         ]));

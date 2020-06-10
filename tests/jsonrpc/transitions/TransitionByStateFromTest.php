@@ -1,29 +1,21 @@
 <?php
 namespace tests\jsonrpc\transitions;
 
-use Dotenv\Dotenv;
-use extas\components\extensions\TSnuffExtensions;
+use extas\interfaces\jsonrpc\IResponse;
+
 use extas\components\http\TSnuffHttp;
-use PHPUnit\Framework\TestCase;
+use extas\components\repositories\TSnuffRepository;
 use extas\components\workflows\entities\EntitySampleRepository;
-use extas\interfaces\workflows\entities\IEntitySampleRepository;
-use extas\interfaces\repositories\IRepository;
 use extas\components\workflows\schemas\Schema;
-use extas\components\workflows\entities\EntitySample;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcherRepository;
-use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherRepository;
-use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
 use extas\components\workflows\transitions\Transition;
 use extas\components\workflows\transitions\TransitionRepository;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
-use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcherSampleRepository;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcherSampleRepository;
-use extas\components\workflows\transitions\dispatchers\TransitionDispatcherSample as TDT;
 use extas\components\jsonrpc\transitions\TransitionByStateFrom;
-use extas\interfaces\jsonrpc\IResponse;
 use extas\components\workflows\schemas\SchemaRepository;
-use extas\interfaces\workflows\schemas\ISchemaRepository;
-use Psr\Http\Message\ResponseInterface;
+
+use Dotenv\Dotenv;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class TransitionByStateFromTest
@@ -33,45 +25,14 @@ use Psr\Http\Message\ResponseInterface;
 class TransitionByStateFromTest extends TestCase
 {
     use TSnuffHttp;
-    use TSnuffExtensions;
-
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $entityTemplateRepo = null;
-
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $transitionDispatcherRepo = null;
-
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $transitionDispatcherTemplateRepo = null;
-
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $transitionRepo = null;
-
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $schemaRepo = null;
+    use TSnuffRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
-
-        $this->entityTemplateRepo = new EntitySampleRepository();
-        $this->transitionDispatcherRepo = new TransitionDispatcherRepository();
-        $this->transitionDispatcherTemplateRepo = new TransitionDispatcherSampleRepository();
-        $this->transitionRepo = new TransitionRepository();
-        $this->schemaRepo = new SchemaRepository();
-        $this->addReposForExt([
+        $this->registerSnuffRepos([
             'workflowTransitionDispatcherRepository' => TransitionDispatcherRepository::class,
             'workflowTransitionDispatcherSampleRepository' => TransitionDispatcherSampleRepository::class,
             'workflowEntitySampleRepository' => EntitySampleRepository::class,
@@ -82,12 +43,7 @@ class TransitionByStateFromTest extends TestCase
 
     public function tearDown(): void
     {
-        $this->entityTemplateRepo->delete([EntitySample::FIELD__NAME => 'test']);
-        $this->transitionDispatcherRepo->delete([TransitionDispatcher::FIELD__NAME => 'test']);
-        $this->transitionDispatcherTemplateRepo->delete([TDT::FIELD__NAME => 'test']);
-        $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
-        $this->schemaRepo->delete([Schema::FIELD__NAME => 'test']);
-        $this->deleteSnuffExtensions();
+        $this->unregisterSnuffRepos();
     }
 
     /**
@@ -101,7 +57,7 @@ class TransitionByStateFromTest extends TestCase
             ),
             TransitionByStateFrom::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
-        $this->assertTrue($this->isResponseHasError($operation()));
+        $this->assertTrue($this->isJsonRpcResponseHasError($operation()));
     }
 
     /**
@@ -116,12 +72,12 @@ class TransitionByStateFromTest extends TestCase
             TransitionByStateFrom::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
 
-        $this->schemaRepo->create(new Schema([
+        $this->createWithSnuffRepo('workflowSchemaRepository', new Schema([
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__ENTITY_NAME => 'test'
         ]));
 
-        $this->assertTrue($this->isResponseHasError($operation()));
+        $this->assertTrue($this->isJsonRpcResponseHasError($operation()));
     }
 
     /**
@@ -134,19 +90,19 @@ class TransitionByStateFromTest extends TestCase
             TransitionByStateFrom::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
 
-        $this->schemaRepo->create(new Schema([
+        $this->createWithSnuffRepo('workflowSchemaRepository', new Schema([
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__ENTITY_NAME => 'test'
         ]));
 
-        $this->transitionRepo->create(new Transition([
+        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__STATE_FROM => 'from',
             Transition::FIELD__STATE_TO => 'to',
             Transition::FIELD__SCHEMA_NAME => 'test'
         ]));
 
-        $this->transitionRepo->create(new Transition([
+        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
             Transition::FIELD__NAME => 'test2',
             Transition::FIELD__STATE_FROM => 'from',
             Transition::FIELD__STATE_TO => 'to',
@@ -176,15 +132,5 @@ class TransitionByStateFromTest extends TestCase
             ],
             $jsonRpcResponse
         );
-    }
-
-    /**
-     * @param ResponseInterface $response
-     * @return bool
-     */
-    protected function isResponseHasError(ResponseInterface $response):bool
-    {
-        $jsonRpcRequest = $this->getJsonRpcResponse($response);
-        return isset($jsonRpcRequest[IResponse::RESPONSE__ERROR]);
     }
 }

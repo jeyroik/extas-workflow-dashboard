@@ -1,15 +1,15 @@
 <?php
 namespace tests\plugins\workflows\views\transitions;
 
-use Dotenv\Dotenv;
+use extas\components\repositories\TSnuffRepository;
 use extas\components\workflows\states\StateRepository;
-use PHPUnit\Framework\TestCase;
-use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
 use extas\components\plugins\workflows\views\transitions\ViewTransitionSave;
 use extas\components\workflows\transitions\TransitionRepository;
 use extas\components\workflows\transitions\Transition;
-use extas\interfaces\repositories\IRepository;
+
+use Dotenv\Dotenv;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class ViewTransitionSaveTest
@@ -18,13 +18,8 @@ use extas\interfaces\repositories\IRepository;
  */
 class ViewTransitionSaveTest extends TestCase
 {
-    use TSnuffExtensions;
+    use TSnuffRepository;
     use TSnuffHttp;
-
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $transitionRepo = null;
 
     protected function setUp(): void
     {
@@ -33,8 +28,7 @@ class ViewTransitionSaveTest extends TestCase
         $env->load();
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
-        $this->transitionRepo = new TransitionRepository();
-        $this->addReposForExt([
+        $this->registerSnuffRepos([
             'workflowTransitionRepository' => TransitionRepository::class,
             'workflowStateRepository' => StateRepository::class
         ]);
@@ -42,7 +36,7 @@ class ViewTransitionSaveTest extends TestCase
 
     public function tearDown(): void
     {
-        $this->transitionRepo->delete([Transition::FIELD__TITLE => 'test']);
+        $this->unregisterSnuffRepos();
     }
 
     public function testTransitionUpdate()
@@ -50,11 +44,11 @@ class ViewTransitionSaveTest extends TestCase
         $request = $this->getPsrRequest();
         $response = $this->getPsrResponse();
 
-        $this->transitionRepo->create(new Transition([
+        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__TITLE => 'test'
         ]));
-        $this->transitionRepo->create(new Transition([
+        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
             Transition::FIELD__NAME => 'test2',
             Transition::FIELD__TITLE => 'test'
         ]));
@@ -72,7 +66,7 @@ class ViewTransitionSaveTest extends TestCase
         /**
          * @var Transition $transition
          */
-        $transition = $this->transitionRepo->one([Transition::FIELD__NAME => 'test']);
+        $transition = $this->oneSnuffRepos('workflowTransitionRepository', [Transition::FIELD__NAME => 'test']);
         $this->assertEquals(
             'test',
             $transition->getDescription(),
@@ -85,11 +79,11 @@ class ViewTransitionSaveTest extends TestCase
         $request = $this->getPsrRequest();
         $response = $this->getPsrResponse();
 
-        $this->transitionRepo->create(new Transition([
+        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__TITLE => 'test'
         ]));
-        $this->transitionRepo->create(new Transition([
+        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
             Transition::FIELD__NAME => 'test2',
             Transition::FIELD__TITLE => 'test'
         ]));
@@ -102,6 +96,8 @@ class ViewTransitionSaveTest extends TestCase
 
         $page = (string) $response->getBody();
         $this->assertTrue(strpos($page, '<title>Переходы</title>') !== false);
-        $this->assertNotEmpty($this->transitionRepo->one([Transition::FIELD__DESCRIPTION => 'test']));
+        $this->assertNotEmpty(
+            $this->oneSnuffRepos('workflowTransitionRepository', [Transition::FIELD__DESCRIPTION => 'test'])
+        );
     }
 }

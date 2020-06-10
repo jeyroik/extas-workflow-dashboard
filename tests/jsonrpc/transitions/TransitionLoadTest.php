@@ -1,19 +1,18 @@
 <?php
 namespace tests\jsonrpc\transitions;
 
-use Dotenv\Dotenv;
-use PHPUnit\Framework\TestCase;
-use extas\components\extensions\TSnuffExtensions;
+use extas\interfaces\jsonrpc\IResponse;
+
+use extas\components\repositories\TSnuffRepository;
 use extas\components\http\TSnuffHttp;
-use extas\interfaces\repositories\IRepository;
 use extas\components\workflows\transitions\Transition;
 use extas\components\jsonrpc\transitions\TransitionLoad;
-use extas\interfaces\jsonrpc\IResponse;
-use extas\interfaces\workflows\transitions\ITransitionRepository;
 use extas\components\workflows\transitions\TransitionRepository;
-use extas\interfaces\workflows\states\IStateRepository;
 use extas\components\workflows\states\StateRepository;
 use extas\components\workflows\states\State;
+
+use Dotenv\Dotenv;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class TransitionLoadTest
@@ -22,18 +21,8 @@ use extas\components\workflows\states\State;
  */
 class TransitionLoadTest extends TestCase
 {
-    use TSnuffExtensions;
+    use TSnuffRepository;
     use TSnuffHttp;
-
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $repo = null;
-
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $stateRepo = null;
 
     protected function setUp(): void
     {
@@ -41,9 +30,7 @@ class TransitionLoadTest extends TestCase
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
 
-        $this->repo = new TransitionRepository();
-        $this->stateRepo = new StateRepository();
-        $this->addReposForExt([
+        $this->registerSnuffRepos([
             'workflowTransitionRepository' => TransitionRepository::class,
             'workflowStateRepository' => StateRepository::class
         ]);
@@ -51,9 +38,7 @@ class TransitionLoadTest extends TestCase
 
     public function tearDown(): void
     {
-        $this->repo->delete([Transition::FIELD__TITLE => 'test']);
-        $this->stateRepo->delete([State::FIELD__TITLE => 'test']);
-        $this->deleteSnuffExtensions();
+        $this->unregisterSnuffRepos();
     }
 
     /**
@@ -66,16 +51,16 @@ class TransitionLoadTest extends TestCase
             TransitionLoad::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
 
-        $this->repo->create(new Transition([
+        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
             Transition::FIELD__NAME => 'already-exists',
             Transition::FIELD__TITLE => 'test'
         ]));
 
-        $this->stateRepo->create(new State([
+        $this->createWithSnuffRepo('workflowStateRepository', new State([
             State::FIELD__NAME => 'from',
             State::FIELD__TITLE => 'test'
         ]));
-        $this->stateRepo->create(new State([
+        $this->createWithSnuffRepo('workflowStateRepository', new State([
             State::FIELD__NAME => 'to',
             State::FIELD__TITLE => 'test'
         ]));

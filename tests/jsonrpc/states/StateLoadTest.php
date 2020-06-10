@@ -1,15 +1,15 @@
 <?php
 namespace tests\jsonrpc\states;
 
-use Dotenv\Dotenv;
-use PHPUnit\Framework\TestCase;
-use extas\components\extensions\TSnuffExtensions;
+use extas\components\repositories\TSnuffRepository;
 use extas\components\http\TSnuffHttp;
-use extas\interfaces\repositories\IRepository;
 use extas\components\workflows\states\State;
 use extas\components\jsonrpc\states\StateLoad;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\components\workflows\states\StateRepository;
+
+use Dotenv\Dotenv;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class StateLoadTest
@@ -19,27 +19,19 @@ use extas\components\workflows\states\StateRepository;
 class StateLoadTest extends TestCase
 {
     use TSnuffHttp;
-    use TSnuffExtensions;
-
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $stateRepo = null;
+    use TSnuffRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
-
-        $this->stateRepo = new StateRepository();
-        $this->addReposForExt(['workflowStateRepository' => StateRepository::class]);
+        $this->registerSnuffRepos(['workflowStateRepository' => StateRepository::class]);
     }
 
     public function tearDown(): void
     {
-        $this->stateRepo->delete([State::FIELD__TITLE => 'test']);
-        $this->deleteSnuffExtensions();
+        $this->unregisterSnuffRepos();
     }
 
     /**
@@ -52,7 +44,7 @@ class StateLoadTest extends TestCase
             StateLoad::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
 
-        $this->stateRepo->create(new State([
+        $this->createWithSnuffRepo('workflowStateRepository', new State([
             State::FIELD__NAME => 'test2',
             State::FIELD__TITLE => 'test'
         ]));
