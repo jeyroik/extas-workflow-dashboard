@@ -1,10 +1,8 @@
 <?php
 namespace tests\plugins\jsonrpc;
 
-use Dotenv\Dotenv;
+use extas\components\repositories\TSnuffRepository;
 use extas\components\workflows\states\StateRepository;
-use PHPUnit\Framework\TestCase;
-use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\App;
 use extas\components\plugins\jsonrpc\PluginBoardRoute;
@@ -15,11 +13,9 @@ use extas\components\workflows\schemas\SchemaRepository;
 use extas\components\workflows\transitions\TransitionRepository;
 use extas\components\workflows\transitions\Transition;
 use extas\components\workflows\schemas\Schema;
-use extas\interfaces\repositories\IRepository;
-use Slim\Psr7\Headers;
-use Slim\Psr7\Request;
-use Slim\Psr7\Stream;
-use Slim\Psr7\Uri;
+
+use Dotenv\Dotenv;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class PluginBoardRouteTest
@@ -28,20 +24,8 @@ use Slim\Psr7\Uri;
  */
 class PluginBoardRouteTest extends TestCase
 {
-    use TSnuffExtensions;
+    use TSnuffRepository;
     use TSnuffHttp;
-
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $pluginRepo = null;
-
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $schemaRepo = null;
-
-    protected ?IRepository $transitionRepo = null;
 
     protected function setUp(): void
     {
@@ -50,10 +34,8 @@ class PluginBoardRouteTest extends TestCase
         $env->load();
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
-        $this->pluginRepo = new PluginRepository();
-        $this->schemaRepo = new SchemaRepository();
-        $this->transitionRepo = new TransitionRepository();
-        $this->addReposForExt([
+        $this->registerSnuffRepos([
+            'pluginRepository' => PluginRepository::class,
             'workflowSchemaRepository' => SchemaRepository::class,
             'workflowTransitionRepository' => TransitionRepository::class,
             'workflowStateRepository' => StateRepository::class
@@ -62,10 +44,7 @@ class PluginBoardRouteTest extends TestCase
 
     public function tearDown(): void
     {
-        $this->pluginRepo->delete([Plugin::FIELD__CLASS => ViewIndexIndex::class]);
-        $this->schemaRepo->delete([Schema::FIELD__NAME => 'test']);
-        $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
-        $this->deleteSnuffExtensions();
+        $this->unregisterSnuffRepos();
     }
 
     public function testAddRoute()
@@ -84,15 +63,7 @@ class PluginBoardRouteTest extends TestCase
 
     public function testBoardIndex()
     {
-        $request = new Request(
-            'GET',
-            new Uri('http', 'localhost', 80, '/'),
-            new Headers(['Content-type' => 'text/html']),
-            [],
-            [],
-            new Stream(fopen('php://input', 'r'))
-        );
-
+        $request = $this->getPsrRequest();
         $response = $this->getPsrResponse();
 
         $app = App::create();
@@ -100,17 +71,17 @@ class PluginBoardRouteTest extends TestCase
         $plugin($app);
         $routes = $app->getRouteCollector()->getRoutes();
 
-        $this->pluginRepo->create(new Plugin([
+        $this->createWithSnuffRepo('pluginRepository', new Plugin([
             Plugin::FIELD__CLASS => ViewIndexIndex::class,
             Plugin::FIELD__STAGE => 'view.index.index'
         ]));
-        $this->schemaRepo->create(new Schema([
+        $this->createWithSnuffRepo('workflowSchemaRepository', new Schema([
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__TITLE => 'Test',
             Schema::FIELD__DESCRIPTION => 'Test',
             Schema::FIELD__ENTITY_NAME => 'test'
         ]));
-        $this->transitionRepo->create(new Transition([
+        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__TITLE => 'Test',
             Transition::FIELD__STATE_FROM => 'from',

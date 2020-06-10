@@ -1,15 +1,15 @@
 <?php
 namespace tests\plugins\workflows\views\transitions;
 
-use Dotenv\Dotenv;
+use extas\components\repositories\TSnuffRepository;
 use extas\components\workflows\states\StateRepository;
-use PHPUnit\Framework\TestCase;
-use extas\components\extensions\TSnuffExtensions;
 use extas\components\http\TSnuffHttp;
 use extas\components\plugins\workflows\views\transitions\ViewTransitionsIndex;
 use extas\components\workflows\transitions\TransitionRepository;
 use extas\components\workflows\transitions\Transition;
-use extas\interfaces\repositories\IRepository;
+
+use Dotenv\Dotenv;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class ViewTransitionsIndexTest
@@ -19,12 +19,7 @@ use extas\interfaces\repositories\IRepository;
 class ViewTransitionsIndexTest extends TestCase
 {
     use TSnuffHttp;
-    use TSnuffExtensions;
-
-    /**
-     * @var IRepository|null
-     */
-    protected ?IRepository $transitionRepo = null;
+    use TSnuffRepository;
 
     protected function setUp(): void
     {
@@ -33,8 +28,7 @@ class ViewTransitionsIndexTest extends TestCase
         $env->load();
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
-        $this->transitionRepo = new TransitionRepository();
-        $this->addReposForExt([
+        $this->registerSnuffRepos([
             'workflowTransitionRepository' => TransitionRepository::class,
             'workflowStateRepository' => StateRepository::class
         ]);
@@ -42,8 +36,7 @@ class ViewTransitionsIndexTest extends TestCase
 
     public function tearDown(): void
     {
-        $this->transitionRepo->delete([Transition::FIELD__NAME => 'test']);
-        $this->deleteSnuffExtensions();
+        $this->unregisterSnuffRepos();
     }
 
     public function testTransitionsIndex()
@@ -51,7 +44,7 @@ class ViewTransitionsIndexTest extends TestCase
         $request = $this->getPsrRequest();
         $response = $this->getPsrResponse();
 
-        $this->transitionRepo->create(new Transition([
+        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
             Transition::FIELD__NAME => 'test'
         ]));
 
