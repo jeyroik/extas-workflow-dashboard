@@ -4,6 +4,7 @@ namespace extas\components\plugins\workflows\views\schemas;
 use extas\components\dashboards\DashboardList;
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
+use extas\interfaces\repositories\IRepository;
 use extas\interfaces\workflows\entities\IEntitySample;
 use extas\interfaces\workflows\schemas\ISchema;
 use Psr\Http\Message\RequestInterface;
@@ -12,8 +13,8 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Class ViewSchemaEdit
  *
- * @method workflowSchemaRepository()
- * @method workflowEntitySampleRepository()
+ * @method IRepository workflowSchemas()
+ * @method IRepository workflowEntitiesSamples()
  *
  * @stage view.schemas.edit
  * @package extas\components\plugins\workflows\views
@@ -32,7 +33,7 @@ class ViewSchemaEdit extends Plugin
          * @var $schema ISchema
          * @var $templates IEntitySample[]
          */
-        $schema = $this->workflowSchemaRepository()->one([ISchema::FIELD__NAME => $args['name'] ?? '']);
+        $schema = $this->workflowSchemas()->one([ISchema::FIELD__NAME => $args['name'] ?? '']);
 
         if (!$schema) {
             $response = $response->withHeader('Location', '/')->withStatus(302);
@@ -44,7 +45,7 @@ class ViewSchemaEdit extends Plugin
                 DashboardList::FIELD__SELECTED => $schema->getEntityName(),
                 DashboardList::FIELD__TITLE => 'Сущность',
                 DashboardList::FIELD__NAME => 'entity_name',
-                DashboardList::FIELD__ITEMS => $this->workflowEntitySampleRepository()->all([])
+                DashboardList::FIELD__ITEMS => $this->workflowEntitiesSamples()->all([])
             ]);
             $schema['entity_name'] = $entity->render();
 

@@ -4,6 +4,7 @@ namespace extas\components\jsonrpc\states;
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\jsonrpc\TLoad;
 use extas\components\workflows\states\State;
+use extas\interfaces\repositories\IRepository;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -17,7 +18,7 @@ use Psr\Http\Message\ResponseInterface;
  * @jsonrpc_response_field created_count:int
  * @jsonrpc_response_field got_count:int
  *
- * @method workflowStateRepository()
+ * @method IRepository workflowStates()
  *
  * @stage run.jsonrpc.state.load
  * @package extas\components\jsonrpc\states
@@ -32,12 +33,12 @@ class StateLoad extends OperationDispatcher
      */
     public function __invoke(): ResponseInterface
     {
-        $request = $this->convertPsrToJsonRpcRequest();
+        $request = $this->getJsonRpcRequest();
         $states = $request->getData();
 
         return $this->defaultLoad(
             $states,
-            $this->workflowStateRepository(),
+            $this->workflowStates(),
             State::class,
             $request
         );

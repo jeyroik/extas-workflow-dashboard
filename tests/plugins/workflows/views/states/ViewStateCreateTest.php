@@ -2,9 +2,9 @@
 namespace tests\plugins\workflows\views\states;
 
 use extas\components\http\TSnuffHttp;
-use extas\components\repositories\TSnuffRepository;
 use extas\components\plugins\workflows\views\states\ViewStateCreate;
-use extas\components\workflows\states\StateRepository;
+use extas\components\repositories\TSnuffRepositoryDynamic;
+use extas\components\THasMagicClass;
 use extas\components\workflows\states\State;
 
 use Dotenv\Dotenv;
@@ -18,7 +18,8 @@ use PHPUnit\Framework\TestCase;
 class ViewStateCreateTest extends TestCase
 {
     use TSnuffHttp;
-    use TSnuffRepository;
+    use TSnuffRepositoryDynamic;
+    use THasMagicClass;
 
     protected function setUp(): void
     {
@@ -26,13 +27,14 @@ class ViewStateCreateTest extends TestCase
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
-
-        $this->registerSnuffRepos(['workflowStateRepository' => StateRepository::class]);
+        $this->createSnuffDynamicRepositories([
+            ['workflowStates', 'name', State::class]
+        ]);
     }
 
     public function tearDown(): void
     {
-        $this->unregisterSnuffRepos();
+        $this->deleteSnuffDynamicRepositories();
     }
 
     public function testStateCreateView()
@@ -40,7 +42,7 @@ class ViewStateCreateTest extends TestCase
         $request = $this->getPsrRequest();
         $response = $this->getPsrResponse();
 
-        $this->createWithSnuffRepo('workflowStateRepository', new State([
+        $this->getMagicClass('workflowStates')->create(new State([
             State::FIELD__NAME => 'test'
         ]));
 

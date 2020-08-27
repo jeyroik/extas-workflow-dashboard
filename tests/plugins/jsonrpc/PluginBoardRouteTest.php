@@ -1,16 +1,15 @@
 <?php
 namespace tests\plugins\jsonrpc;
 
-use extas\components\repositories\TSnuffRepository;
-use extas\components\workflows\states\StateRepository;
+use extas\components\repositories\TSnuffRepositoryDynamic;
 use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\App;
 use extas\components\plugins\jsonrpc\PluginBoardRoute;
 use extas\components\plugins\Plugin;
 use extas\components\plugins\PluginRepository;
 use extas\components\plugins\workflows\views\ViewIndexIndex;
-use extas\components\workflows\schemas\SchemaRepository;
-use extas\components\workflows\transitions\TransitionRepository;
+use extas\components\THasMagicClass;
+use extas\components\workflows\states\State;
 use extas\components\workflows\transitions\Transition;
 use extas\components\workflows\schemas\Schema;
 
@@ -24,8 +23,9 @@ use PHPUnit\Framework\TestCase;
  */
 class PluginBoardRouteTest extends TestCase
 {
-    use TSnuffRepository;
+    use TSnuffRepositoryDynamic;
     use TSnuffHttp;
+    use THasMagicClass;
 
     protected function setUp(): void
     {
@@ -34,17 +34,16 @@ class PluginBoardRouteTest extends TestCase
         $env->load();
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
-        $this->registerSnuffRepos([
-            'pluginRepository' => PluginRepository::class,
-            'workflowSchemaRepository' => SchemaRepository::class,
-            'workflowTransitionRepository' => TransitionRepository::class,
-            'workflowStateRepository' => StateRepository::class
+        $this->createSnuffDynamicRepositories([
+            ['workflowTransitions', 'name', Transition::class],
+            ['workflowStates', 'name', State::class],
+            ['workflowSchemas', 'name', Schema::class],
         ]);
     }
 
     public function tearDown(): void
     {
-        $this->unregisterSnuffRepos();
+        $this->deleteSnuffDynamicRepositories();
     }
 
     public function testAddRoute()
@@ -75,13 +74,13 @@ class PluginBoardRouteTest extends TestCase
             Plugin::FIELD__CLASS => ViewIndexIndex::class,
             Plugin::FIELD__STAGE => 'view.index.index'
         ]));
-        $this->createWithSnuffRepo('workflowSchemaRepository', new Schema([
+        $this->getMagicClass('workflowSchemas')->create(new Schema([
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__TITLE => 'Test',
             Schema::FIELD__DESCRIPTION => 'Test',
             Schema::FIELD__ENTITY_NAME => 'test'
         ]));
-        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
+        $this->getMagicClass('workflowTransitions')->create(new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__TITLE => 'Test',
             Transition::FIELD__STATE_FROM => 'from',

@@ -1,9 +1,11 @@
 <?php
 namespace extas\components\jsonrpc\schemas;
 
+use extas\components\exceptions\AlreadyExist;
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
 use extas\components\workflows\transitions\Transition;
+use extas\interfaces\repositories\IRepository;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
 use extas\interfaces\workflows\transitions\ITransition;
 use extas\interfaces\workflows\transitions\ITransitionSample;
@@ -24,9 +26,9 @@ use Psr\Http\Message\ResponseInterface;
  * @jsonrpc_request_field dispatchers:array
  * @jsonrpc_response_field name:string
  *
- * @method workflowTransitionDispatcherRepository()
- * @method workflowTransitionRepository()
- * @method workflowTransitionSampleRepository()
+ * @method IRepository workflowTransitionsDispatchers()
+ * @method IRepository workflowTransitions()
+ * @method IRepository workflowTransitionsSamples()
  *
  * @stage run.jsonrpc.schema.transition.add
  * @package extas\components\jsonrpc\schemas
@@ -38,7 +40,7 @@ class SchemaTransitionAdd extends OperationDispatcher
 
     public function __invoke(): ResponseInterface
     {
-        $request = $this->convertPsrToJsonRpcRequest();
+        $request = $this->getJsonRpcRequest();
         $jRpcData = $request->getParams();
         $transitionSampleName = $jRpcData['transition_sample_name'] ?? '';
         $schemaName = $jRpcData['schema_name'] ?? '';
@@ -48,7 +50,7 @@ class SchemaTransitionAdd extends OperationDispatcher
             $schema = $this->getSchema($schemaName);
 
             if ($this->hasTransitionByThisSample($schemaName, $transitionSampleName)) {
-                throw new \Exception('Schema has already transition by this sample');
+                throw new AlreadyExist('Transition by this sample');
             }
 
             $transition = $schema->addTransition($transitionSampleName);
@@ -67,7 +69,7 @@ class SchemaTransitionAdd extends OperationDispatcher
      */
     protected function hasTransitionByThisSample(string $schemaName, string $transitionSampleName): bool
     {
-        $transition = $this->workflowTransitionRepository()->one([
+        $transition = $this->workflowTransitions()->one([
             ITransition::FIELD__SCHEMA_NAME => $schemaName,
             ITransition::FIELD__SAMPLE_NAME => $transitionSampleName
         ]);
@@ -81,7 +83,7 @@ class SchemaTransitionAdd extends OperationDispatcher
      */
     protected function createDispatchers(array $dispatchersData, string $transitionName): void
     {
-        $dispatcherRepo = $this->workflowTransitionDispatcherRepository();
+        $dispatcherRepo = $this->workflowTransitionsDispatchers();
 
         foreach ($dispatchersData as $dispatchersDatum) {
             $dispatchersDatum[ITransitionDispatcher::FIELD__TRANSITION_NAME] = $transitionName;
@@ -108,13 +110,13 @@ class SchemaTransitionAdd extends OperationDispatcher
             ->setSchemaName($schemaName)
             ->setName($transitionName);
 
-        $exits = $this->workflowTransitionRepository()->one([ITransition::FIELD__NAME => $transitionName]);
+        $exits = $this->workflowTransitions()->one([ITransition::FIELD__NAME => $transitionName]);
 
         if ($exits) {
             throw new \Exception('Transition already exists');
         }
 
-        return $this->workflowTransitionRepository()->create($transition);
+        return $this->workflowTransitions()->create($transition);
     }
 
     /**

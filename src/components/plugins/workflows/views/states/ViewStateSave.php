@@ -6,6 +6,7 @@ use extas\components\plugins\Plugin;
 use extas\components\plugins\workflows\views\TItemsView;
 use extas\components\workflows\states\State;
 use extas\interfaces\dashboards\IDashboardView;
+use extas\interfaces\repositories\IRepository;
 use extas\interfaces\workflows\states\IState;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -14,7 +15,7 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * Class ViewStateSave
  *
- * @method workflowStateRepository()
+ * @method IRepository workflowStates()
  *
  * @stage view.states.save
  * @package extas\components\plugins\workflows\views
@@ -48,7 +49,7 @@ class ViewStateSave extends Plugin
         /**
          * @var $states IState[]
          */
-        $states = $this->workflowStateRepository()->all([]);
+        $states = $this->workflowStates()->all([]);
         $stateName = $args['name'] ?? '';
         $stateTitle = $_REQUEST['title'] ?? '';
         $stateDesc = $_REQUEST['description'] ?? '';
@@ -71,7 +72,7 @@ class ViewStateSave extends Plugin
     protected function buildView($states, $stateName, $stateTitle, $stateDesc): string
     {
         $itemsView = '';
-        $repo = $this->workflowStateRepository();
+        $repo = $this->workflowStates();
         foreach ($states as $index => $state) {
             if ($state->getName() == $stateName) {
                 $state->setTitle(htmlspecialchars($stateTitle))
@@ -97,6 +98,6 @@ class ViewStateSave extends Plugin
             State::FIELD__TITLE => $title,
             State::FIELD__DESCRIPTION => $description
         ]);
-        return $this->workflowStateRepository()->create($newState);
+        return $this->workflowStates()->create($newState);
     }
 }

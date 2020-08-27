@@ -5,6 +5,7 @@ use extas\components\workflows\entities\Entity;
 use extas\components\workflows\entities\EntityContext;
 use extas\components\workflows\Workflow;
 use extas\interfaces\jsonrpc\IRequest;
+use extas\interfaces\repositories\IRepository;
 use extas\interfaces\workflows\entities\IEntity;
 use extas\interfaces\workflows\transitions\ITransition;
 use extas\interfaces\workflows\transits\ITransitResult;
@@ -13,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Trait TTransit
  *
- * @method workflowEntityRepository()
+ * @method IRepository workflowEntities()
  *
  * @package extas\components\jsonrpc\workflows
  * @author jeyroik@gmail.com
@@ -74,7 +75,7 @@ trait TTransit
          * @var IEntity $entityFormal
          */
         $entity = new Entity($entityData);
-        $entityFormal = $this->workflowEntityRepository()->one([IEntity::FIELD__NAME => $entity->getName()]);
+        $entityFormal = $this->workflowEntities()->one([IEntity::FIELD__NAME => $entity->getName()]);
 
         if (!$entityFormal) {
             throw new \Exception('Missed entity');

@@ -3,6 +3,7 @@ namespace extas\components\jsonrpc\schemas;
 
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\workflows\exceptions\transitions\ExceptionTransitionMissed;
+use extas\interfaces\repositories\IRepository;
 use extas\interfaces\workflows\exceptions\transitions\IExceptionTransitionMissed;
 use extas\interfaces\workflows\transitions\dispatchers\ITransitionDispatcher;
 use extas\interfaces\workflows\transitions\ITransition;
@@ -21,8 +22,8 @@ use Psr\Http\Message\ResponseInterface;
  * @jsonrpc_request_field transition_name:string
  * @jsonrpc_response_field name:string
  *
- * @method workflowTransitionRepository()
- * @method workflowTransitionDispatcherRepository()
+ * @method IRepository workflowTransitions()
+ * @method IRepository workflowTransitionsDispatchers()
  *
  * @stage run.jsonrpc.schema.transition.remove
  * @package extas\components\jsonrpc\schemas
@@ -38,7 +39,7 @@ class SchemaTransitionRemove extends OperationDispatcher
      */
     public function __invoke(): ResponseInterface
     {
-        $request = $this->convertPsrToJsonRpcRequest();
+        $request = $this->getJsonRpcRequest();
         $jRpcData = $request->getParams();
         $transitionName = $jRpcData['transition_name'] ?? '';
         $schemaName = $jRpcData['schema_name'] ?? '';
@@ -64,8 +65,8 @@ class SchemaTransitionRemove extends OperationDispatcher
      */
     protected function removeTransitionAndDispatchers(string $transitionName): void
     {
-        $this->workflowTransitionRepository()->delete([ITransition::FIELD__NAME => $transitionName]);
-        $this->workflowTransitionDispatcherRepository()->delete([
+        $this->workflowTransitions()->delete([ITransition::FIELD__NAME => $transitionName]);
+        $this->workflowTransitionsDispatchers()->delete([
             ITransitionDispatcher::FIELD__TRANSITION_NAME => $transitionName
         ]);
     }
@@ -77,7 +78,7 @@ class SchemaTransitionRemove extends OperationDispatcher
      */
     protected function checkTransition(string $transitionName)
     {
-        $transition = $this->workflowTransitionRepository()->one([ITransition::FIELD__NAME => $transitionName]);
+        $transition = $this->workflowTransitions()->one([ITransition::FIELD__NAME => $transitionName]);
 
         if (!$transition) {
             throw new ExceptionTransitionMissed($transitionName);

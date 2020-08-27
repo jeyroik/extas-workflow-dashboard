@@ -1,11 +1,11 @@
 <?php
 namespace tests\plugins\workflows\views\transitions;
 
-use extas\components\repositories\TSnuffRepository;
-use extas\components\workflows\states\StateRepository;
+use extas\components\repositories\TSnuffRepositoryDynamic;
+use extas\components\THasMagicClass;
+use extas\components\workflows\states\State;
 use extas\components\http\TSnuffHttp;
 use extas\components\plugins\workflows\views\transitions\ViewTransitionSave;
-use extas\components\workflows\transitions\TransitionRepository;
 use extas\components\workflows\transitions\Transition;
 
 use Dotenv\Dotenv;
@@ -18,7 +18,8 @@ use PHPUnit\Framework\TestCase;
  */
 class ViewTransitionSaveTest extends TestCase
 {
-    use TSnuffRepository;
+    use TSnuffRepositoryDynamic;
+    use THasMagicClass;
     use TSnuffHttp;
 
     protected function setUp(): void
@@ -28,15 +29,15 @@ class ViewTransitionSaveTest extends TestCase
         $env->load();
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
-        $this->registerSnuffRepos([
-            'workflowTransitionRepository' => TransitionRepository::class,
-            'workflowStateRepository' => StateRepository::class
+        $this->createSnuffDynamicRepositories([
+            ['workflowTransitions', 'name', Transition::class],
+            ['workflowStates', 'name', State::class],
         ]);
     }
 
     public function tearDown(): void
     {
-        $this->unregisterSnuffRepos();
+        $this->deleteSnuffDynamicRepositories();
     }
 
     public function testTransitionUpdate()
@@ -44,11 +45,11 @@ class ViewTransitionSaveTest extends TestCase
         $request = $this->getPsrRequest();
         $response = $this->getPsrResponse();
 
-        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
+        $this->getMagicClass('workflowTransitions')->create(new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__TITLE => 'test'
         ]));
-        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
+        $this->getMagicClass('workflowTransitions')->create(new Transition([
             Transition::FIELD__NAME => 'test2',
             Transition::FIELD__TITLE => 'test'
         ]));
@@ -66,7 +67,7 @@ class ViewTransitionSaveTest extends TestCase
         /**
          * @var Transition $transition
          */
-        $transition = $this->oneSnuffRepos('workflowTransitionRepository', [Transition::FIELD__NAME => 'test']);
+        $transition = $this->getMagicClass('workflowTransitions')->one([Transition::FIELD__NAME => 'test']);
         $this->assertEquals(
             'test',
             $transition->getDescription(),
@@ -79,11 +80,11 @@ class ViewTransitionSaveTest extends TestCase
         $request = $this->getPsrRequest();
         $response = $this->getPsrResponse();
 
-        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
+        $this->getMagicClass('workflowTransitions')->create(new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__TITLE => 'test'
         ]));
-        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
+        $this->getMagicClass('workflowTransitions')->create(new Transition([
             Transition::FIELD__NAME => 'test2',
             Transition::FIELD__TITLE => 'test'
         ]));
@@ -97,7 +98,7 @@ class ViewTransitionSaveTest extends TestCase
         $page = (string) $response->getBody();
         $this->assertTrue(strpos($page, '<title>Переходы</title>') !== false);
         $this->assertNotEmpty(
-            $this->oneSnuffRepos('workflowTransitionRepository', [Transition::FIELD__DESCRIPTION => 'test'])
+            $this->getMagicClass('workflowTransitions')->one([Transition::FIELD__DESCRIPTION => 'test'])
         );
     }
 }

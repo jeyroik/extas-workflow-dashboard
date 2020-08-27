@@ -2,6 +2,9 @@
 namespace tests\plugins\workflows\views\transitions;
 
 use extas\components\repositories\TSnuffRepository;
+use extas\components\repositories\TSnuffRepositoryDynamic;
+use extas\components\THasMagicClass;
+use extas\components\workflows\states\State;
 use extas\components\workflows\states\StateRepository;
 use extas\components\http\TSnuffHttp;
 use extas\components\plugins\workflows\views\transitions\ViewTransitionsIndex;
@@ -19,7 +22,8 @@ use PHPUnit\Framework\TestCase;
 class ViewTransitionsIndexTest extends TestCase
 {
     use TSnuffHttp;
-    use TSnuffRepository;
+    use TSnuffRepositoryDynamic;
+    use THasMagicClass;
 
     protected function setUp(): void
     {
@@ -28,15 +32,15 @@ class ViewTransitionsIndexTest extends TestCase
         $env->load();
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
-        $this->registerSnuffRepos([
-            'workflowTransitionRepository' => TransitionRepository::class,
-            'workflowStateRepository' => StateRepository::class
+        $this->createSnuffDynamicRepositories([
+            ['workflowTransitions', 'name', Transition::class],
+            ['workflowStates', 'name', State::class],
         ]);
     }
 
     public function tearDown(): void
     {
-        $this->unregisterSnuffRepos();
+        $this->deleteSnuffDynamicRepositories();
     }
 
     public function testTransitionsIndex()
@@ -44,7 +48,7 @@ class ViewTransitionsIndexTest extends TestCase
         $request = $this->getPsrRequest();
         $response = $this->getPsrResponse();
 
-        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
+        $this->getMagicClass('workflowTransitions')->create(new Transition([
             Transition::FIELD__NAME => 'test'
         ]));
 

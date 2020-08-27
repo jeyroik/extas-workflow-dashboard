@@ -1,10 +1,10 @@
 <?php
 namespace tests\plugins\workflows\views\states;
 
-use extas\components\repositories\TSnuffRepository;
 use extas\components\http\TSnuffHttp;
 use extas\components\plugins\workflows\views\states\ViewStateSave;
-use extas\components\workflows\states\StateRepository;
+use extas\components\repositories\TSnuffRepositoryDynamic;
+use extas\components\THasMagicClass;
 use extas\components\workflows\states\State;
 
 use Dotenv\Dotenv;
@@ -18,7 +18,8 @@ use PHPUnit\Framework\TestCase;
 class ViewStateSaveTest extends TestCase
 {
     use TSnuffHttp;
-    use TSnuffRepository;
+    use TSnuffRepositoryDynamic;
+    use THasMagicClass;
 
     protected function setUp(): void
     {
@@ -27,12 +28,14 @@ class ViewStateSaveTest extends TestCase
         $env->load();
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
-        $this->registerSnuffRepos(['workflowStateRepository' => StateRepository::class]);
+        $this->createSnuffDynamicRepositories([
+            ['workflowStates', 'name', State::class]
+        ]);
     }
 
     public function tearDown(): void
     {
-        $this->unregisterSnuffRepos();
+        $this->deleteSnuffDynamicRepositories();
     }
 
     public function testStateUpdate()
@@ -48,7 +51,7 @@ class ViewStateSaveTest extends TestCase
         /**
          * @var State $state
          */
-        $state = $this->oneSnuffRepos('workflowStateRepository', [State::FIELD__NAME => 'test']);
+        $state = $this->getMagicClass('workflowStates')->one([State::FIELD__NAME => 'test']);
         $this->assertEquals('test', $state->getDescription());
     }
 
@@ -62,7 +65,7 @@ class ViewStateSaveTest extends TestCase
         $page = (string) $response->getBody();
         $this->assertTrue(strpos($page, '<title>Состояния</title>') !== false);
         $this->assertNotEmpty(
-            $this->oneSnuffRepos('workflowStateRepository', [State::FIELD__DESCRIPTION => 'test'])
+            $this->getMagicClass('workflowStates')->one([State::FIELD__DESCRIPTION => 'test'])
         );
     }
 
@@ -75,11 +78,11 @@ class ViewStateSaveTest extends TestCase
         $request = $this->getPsrRequest();
         $response = $this->getPsrResponse();
 
-        $this->createWithSnuffRepo('workflowStateRepository', new State([
+        $this->getMagicClass('workflowStates')->create(new State([
             State::FIELD__NAME => 'test',
             State::FIELD__TITLE => 'test'
         ]));
-        $this->createWithSnuffRepo('workflowStateRepository', new State([
+        $this->getMagicClass('workflowStates')->create(new State([
             State::FIELD__NAME => 'test2',
             State::FIELD__TITLE => 'test'
         ]));

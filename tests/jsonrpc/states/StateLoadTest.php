@@ -3,8 +3,11 @@ namespace tests\jsonrpc\states;
 
 use extas\components\repositories\TSnuffRepository;
 use extas\components\http\TSnuffHttp;
+use extas\components\repositories\TSnuffRepositoryDynamic;
+use extas\components\THasMagicClass;
 use extas\components\workflows\states\State;
 use extas\components\jsonrpc\states\StateLoad;
+use extas\components\workflows\transitions\Transition;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\components\workflows\states\StateRepository;
 
@@ -19,19 +22,22 @@ use PHPUnit\Framework\TestCase;
 class StateLoadTest extends TestCase
 {
     use TSnuffHttp;
-    use TSnuffRepository;
+    use TSnuffRepositoryDynamic;
+    use THasMagicClass;
 
     protected function setUp(): void
     {
         parent::setUp();
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
-        $this->registerSnuffRepos(['workflowStateRepository' => StateRepository::class]);
+        $this->createSnuffDynamicRepositories([
+            ['workflowStates', 'name', State::class],
+        ]);
     }
 
     public function tearDown(): void
     {
-        $this->unregisterSnuffRepos();
+        $this->deleteSnuffDynamicRepositories();
     }
 
     /**
@@ -44,7 +50,7 @@ class StateLoadTest extends TestCase
             StateLoad::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
 
-        $this->createWithSnuffRepo('workflowStateRepository', new State([
+        $this->getMagicClass('workflowStates')->create(new State([
             State::FIELD__NAME => 'test2',
             State::FIELD__TITLE => 'test'
         ]));
