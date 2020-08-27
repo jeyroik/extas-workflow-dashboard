@@ -6,6 +6,7 @@ use extas\components\plugins\Plugin;
 use extas\components\plugins\workflows\views\TItemsView;
 use extas\components\workflows\transitions\Transition;
 use extas\components\workflows\transitions\TransitionSample;
+use extas\interfaces\repositories\IRepository;
 use extas\interfaces\workflows\transitions\ITransition;
 use extas\interfaces\workflows\transitions\ITransitionSample;
 use Psr\Http\Message\RequestInterface;
@@ -14,7 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Class ViewTransitionSave
  *
- * @method workflowTransitionRepository()
+ * @method IRepository workflowTransitions()
  *
  * @stage view.transitions.save
  * @package extas\components\plugins\workflows\views
@@ -36,7 +37,7 @@ class ViewTransitionSave extends Plugin
         /**
          * @var $transitions ITransition[]
          */
-        $repo = $this->workflowTransitionRepository();
+        $repo = $this->workflowTransitions();
         $transitions = $repo->all([]);
         $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'transitions/item']);
         $transitionName = $args['name'] ?? '';

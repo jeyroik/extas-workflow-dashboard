@@ -1,21 +1,18 @@
 <?php
 namespace tests\jsonrpc\workflows;
 
+use extas\components\repositories\TSnuffRepositoryDynamic;
+use extas\components\THasMagicClass;
+use extas\components\workflows\schemas\Schema;
+use extas\components\workflows\transitions\dispatchers\TransitionDispatcherSample;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\interfaces\samples\parameters\ISampleParameter;
-
 use extas\components\http\TSnuffHttp;
 use extas\components\jsonrpc\workflows\WorkflowTransit;
-use extas\components\repositories\TSnuffRepository;
 use extas\components\workflows\entities\Entity;
-use extas\components\workflows\entities\EntityRepository;
-use extas\components\workflows\schemas\SchemaRepository;
 use extas\components\workflows\transitions\dispatchers\ContextHasAllParams;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
-use extas\components\workflows\transitions\dispatchers\TransitionDispatcherRepository;
-use extas\components\workflows\transitions\dispatchers\TransitionDispatcherSampleRepository;
 use extas\components\workflows\transitions\Transition;
-use extas\components\workflows\transitions\TransitionRepository;
 
 use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
@@ -29,25 +26,26 @@ use PHPUnit\Framework\TestCase;
 class WorkflowTransitTest extends TestCase
 {
     use TSnuffHttp;
-    use TSnuffRepository;
+    use TSnuffRepositoryDynamic;
+    use THasMagicClass;
 
     protected function setUp(): void
     {
         parent::setUp();
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
-        $this->registerSnuffRepos([
-            'workflowTransitionDispatcherRepository' => TransitionDispatcherRepository::class,
-            'workflowTransitionDispatcherSampleRepository' => TransitionDispatcherSampleRepository::class,
-            'workflowEntityRepository' => EntityRepository::class,
-            'workflowTransitionRepository' => TransitionRepository::class,
-            'workflowSchemaRepository' => SchemaRepository::class
+        $this->createSnuffDynamicRepositories([
+            ['workflowTransitionsDispatchers', 'name', TransitionDispatcher::class],
+            ['workflowTransitionsDispatchersSamples', 'name', TransitionDispatcherSample::class],
+            ['workflowEntities', 'name', Entity::class],
+            ['workflowTransitions', 'name', Transition::class],
+            ['workflowSchemas', 'name', Schema::class],
         ]);
     }
 
     public function tearDown(): void
     {
-        $this->unregisterSnuffRepos();
+        $this->deleteSnuffDynamicRepositories();
     }
 
     public function testUnknownTransition()
@@ -161,7 +159,7 @@ class WorkflowTransitTest extends TestCase
      */
     protected function createEntity(array $params = []): void
     {
-        $this->createWithSnuffRepo('workflowEntityRepository', new Entity([
+        $this->getMagicClass('workflowEntities')->create(new Entity([
             Entity::FIELD__NAME => 'test',
             Entity::FIELD__PARAMETERS => $params
         ]));
@@ -172,7 +170,7 @@ class WorkflowTransitTest extends TestCase
      */
     protected function createTransition(): void
     {
-        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
+        $this->getMagicClass('workflowTransitions')->create(new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__STATE_FROM => 'from',
             Transition::FIELD__STATE_TO => 'to',
@@ -187,7 +185,7 @@ class WorkflowTransitTest extends TestCase
      */
     protected function createCondition(array $params): void
     {
-        $this->createWithSnuffRepo('workflowTransitionDispatcherRepository', new TransitionDispatcher([
+        $this->getMagicClass('workflowTransitionsDispatchers')->create(new TransitionDispatcher([
             TransitionDispatcher::FIELD__NAME => 'test',
             TransitionDispatcher::FIELD__CLASS => ContextHasAllParams::class,
             TransitionDispatcher::FIELD__TRANSITION_NAME => 'test',

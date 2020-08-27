@@ -35,7 +35,7 @@ class WorkflowTransit extends OperationDispatcher
      */
     public function __invoke(): ResponseInterface
     {
-        $request = $this->convertPsrToJsonRpcRequest();
+        $request = $this->getJsonRpcRequest();
         list($entityData, $contextData, $transitionName) = $this->listData($request->getParams());
 
         try {

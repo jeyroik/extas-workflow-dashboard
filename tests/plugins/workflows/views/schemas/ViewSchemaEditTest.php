@@ -2,12 +2,11 @@
 namespace tests;
 
 use extas\components\http\TSnuffHttp;
-use extas\components\repositories\TSnuffRepository;
-use extas\components\workflows\entities\EntityRepository;
-use extas\components\workflows\entities\EntitySampleRepository;
+use extas\components\repositories\TSnuffRepositoryDynamic;
+use extas\components\THasMagicClass;
+use extas\components\workflows\entities\Entity;
+use extas\components\workflows\entities\EntitySample;
 use extas\components\plugins\workflows\views\schemas\ViewSchemaEdit;
-use extas\components\workflows\schemas\SchemaRepository;
-use extas\components\workflows\transitions\TransitionRepository;
 use extas\components\workflows\transitions\Transition;
 use extas\components\workflows\schemas\Schema;
 
@@ -23,7 +22,8 @@ use PHPUnit\Framework\TestCase;
 class ViewSchemaEditTest extends TestCase
 {
     use TSnuffHttp;
-    use TSnuffRepository;
+    use TSnuffRepositoryDynamic;
+    use THasMagicClass;
 
     protected function setUp(): void
     {
@@ -32,17 +32,17 @@ class ViewSchemaEditTest extends TestCase
         $env->load();
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
 
-        $this->registerSnuffRepos([
-            'workflowSchemaRepository' => SchemaRepository::class,
-            'workflowTransitionRepository' => TransitionRepository::class,
-            'workflowEntitySampleRepository' => EntitySampleRepository::class,
-            'workflowEntityRepository' => EntityRepository::class
+        $this->createSnuffDynamicRepositories([
+            ['workflowSchemas', 'name', Schema::class],
+            ['workflowTransitions', 'name', Transition::class],
+            ['workflowEntitiesSamples', 'name', EntitySample::class],
+            ['workflowEntities', 'name', Entity::class]
         ]);
     }
 
     public function tearDown(): void
     {
-        $this->unregisterSnuffRepos();
+        $this->deleteSnuffDynamicRepositories();
     }
 
     public function testEditingSchema()
@@ -70,13 +70,13 @@ class ViewSchemaEditTest extends TestCase
         $request = $this->getPsrRequest();
         $response = $this->getPsrResponse();
 
-        $this->createWithSnuffRepo('workflowSchemaRepository', new Schema([
+        $this->getMagicClass('workflowSchemas')->create(new Schema([
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__TITLE => 'Test',
             Schema::FIELD__DESCRIPTION => 'Test',
             Schema::FIELD__ENTITY_NAME => 'test'
         ]));
-        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
+        $this->getMagicClass('workflowTransitions')->create(new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__TITLE => 'Test',
             Transition::FIELD__STATE_FROM => 'from',

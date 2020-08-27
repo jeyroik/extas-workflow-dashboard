@@ -1,66 +1,33 @@
 <?php
 namespace extas\components\plugins\workflows\expands\schemas;
 
-use extas\components\plugins\expands\PluginExpandAbstract;
-use extas\interfaces\expands\IExpandingBox;
-use extas\interfaces\workflows\entities\IEntity;
+use extas\components\plugins\Plugin;
+use extas\interfaces\expands\IExpand;
+use extas\interfaces\IItem;
+use extas\interfaces\repositories\IRepository;
+use extas\interfaces\stages\IStageExpand;
 use extas\interfaces\workflows\schemas\ISchema;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class SchemaExpandByEntityTemplate
  *
- * @method workflowEntityRepository()
+ * @method IRepository workflowEntities()
  *
  * @stage expand.index.schema
  * @package extas\components\plugins\expands\schemas
  * @author jeyroik@gmail.com
  */
-class SchemaExpandByEntity extends PluginExpandAbstract
+class SchemaExpandByEntity extends Plugin implements IStageExpand
 {
     /**
-     * @param IExpandingBox $parent
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
+     * @param IItem|ISchema $subject
+     * @param IExpand $expand
+     * @return IItem
      */
-    protected function dispatch(IExpandingBox &$parent, RequestInterface $request, ResponseInterface $response)
+    public function __invoke(IItem $subject, IExpand $expand): IItem
     {
-        /**
-         * @var $schemas
-         * @var $items IEntity[]
-         */
-        $value = $parent->getValue([]);
-        if (empty($value)) {
-            $schemasIndex = $parent->getData();
-            $schemas = $schemasIndex['schemas'] ?? [];
-        } else {
-            $schemas = $value['schemas'];
-        }
+        $subject[$subject::FIELD__ENTITY_NAME] = $subject->getEntity()->__toArray();
 
-        $names = array_column($schemas, ISchema::FIELD__ENTITY_NAME);
-        $items = $this->workflowEntityRepository()->all([IEntity::FIELD__NAME => $names]);
-        $byName = [];
-        foreach ($items as $entity) {
-            $byName[$entity->getName()] = $entity->__toArray();
-        }
-
-        foreach ($schemas as &$schema) {
-            $entityName = $schema[ISchema::FIELD__ENTITY_NAME];
-            $schema[ISchema::FIELD__ENTITY_NAME] = $byName[$entityName] ?? [
-                IEntity::FIELD__NAME => $entityName,
-                IEntity::FIELD__TITLE => 'Ошибка: Неизвестная сущность [' . $entityName . ']'
-            ];
-        }
-
-        $parent->addToValue('schemas', $schemas);
-    }
-
-    /**
-     * @return string
-     */
-    protected function getExpandName(): string
-    {
-        return 'entity';
+        return $subject;
     }
 }

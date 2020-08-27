@@ -4,6 +4,7 @@ namespace extas\components\plugins\workflows\views;
 use extas\components\dashboards\DashboardView;
 use extas\components\dashboards\TDashboardChart;
 use extas\components\plugins\Plugin;
+use extas\interfaces\repositories\IRepository;
 use extas\interfaces\workflows\schemas\ISchema;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -11,7 +12,7 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Class ViewIndexIndex
  *
- * @method workflowSchemaRepository()
+ * @method IRepository workflowSchemas()
  *
  * @stage view.index.index
  * @package extas\components\plugins\workflows\views
@@ -32,7 +33,7 @@ class ViewIndexIndex extends Plugin
         /**
          * @var $schemas ISchema[]
          */
-        $schemas = $this->workflowSchemaRepository()->all([]);
+        $schemas = $this->workflowSchemas()->all([]);
         $itemView = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'schemas/item']);
         $itemsView = '';
         $footer = '';

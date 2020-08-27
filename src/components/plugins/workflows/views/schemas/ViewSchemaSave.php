@@ -3,8 +3,12 @@ namespace extas\components\plugins\workflows\views\schemas;
 
 use extas\components\dashboards\DashboardView;
 use extas\components\dashboards\TDashboardChart;
+use extas\components\exceptions\MissedOrUnknown;
 use extas\components\plugins\Plugin;
 use extas\components\plugins\workflows\views\TSchemaView;
+use extas\components\workflows\entities\Entity;
+use extas\interfaces\repositories\IRepository;
+use extas\interfaces\workflows\entities\IEntitySample;
 use extas\interfaces\workflows\schemas\ISchema;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -12,7 +16,9 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Class ViewSchemaSave
  *
- * @method workflowSchemaRepository()
+ * @method IRepository workflowSchemas()
+ * @method IRepository workflowEntitiesSamples()
+ * @method IRepository workflowEntities()
  *
  * @stage view.schemas.save
  * @package extas\components\plugins\workflows\views
@@ -27,13 +33,14 @@ class ViewSchemaSave extends Plugin
      * @param RequestInterface $request
      * @param ResponseInterface $response
      * @param array $args
+     * @throws MissedOrUnknown
      */
     public function __invoke(RequestInterface $request, ResponseInterface &$response, array $args)
     {
         /**
          * @var $schemas ISchema[]
          */
-        $schemaRepo = $this->workflowSchemaRepository();
+        $schemaRepo = $this->workflowSchemas();
         $schemas = $schemaRepo->all([]);
         $itemsView = '';
         $itemView = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'schemas/item']);
@@ -50,11 +57,35 @@ class ViewSchemaSave extends Plugin
                 $schema
                     ->setTitle($schemaTitle)
                     ->setDescription($schemaDesc)
-                    ->setEntity($schemaEntity);
+                    ->setEntityName($this->getEntityNameBySample($schemaEntity));
                 $schemaRepo->update($schema);
             }
             $this->buildTransitions($schema, $itemView, $itemsView, $footer);
         }
         $this->renderPage($itemsView, $footer, $response);
+    }
+
+    /**
+     * @param string $sampleName
+     * @return string
+     * @throws MissedOrUnknown
+     */
+    protected function getEntityNameBySample(string $sampleName): string
+    {
+        /**
+         * @var IEntitySample $sample
+         */
+        $sample = $this->workflowEntitiesSamples()->one([IEntitySample::FIELD__NAME => $sampleName]);
+
+        if (!$sample) {
+            throw new MissedOrUnknown('entity sample "' . $sampleName . '"');
+        }
+
+        $entity = new Entity();
+        $entity->buildFromSample($sample);
+
+        $this->workflowEntities()->create($entity);
+
+        return $entity->getName();
     }
 }

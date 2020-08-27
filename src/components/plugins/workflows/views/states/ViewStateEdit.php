@@ -4,6 +4,7 @@ namespace extas\components\plugins\workflows\views\states;
 use extas\components\dashboards\DashboardView;
 use extas\components\plugins\Plugin;
 use extas\components\plugins\workflows\views\TItemsView;
+use extas\interfaces\repositories\IRepository;
 use extas\interfaces\workflows\states\IState;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -11,7 +12,7 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Class ViewStateEdit
  *
- * @method workflowStateRepository()
+ * @method IRepository workflowStates()
  *
  * @stage view.states.edit
  * @package extas\components\plugins\workflows\views
@@ -31,7 +32,7 @@ class ViewStateEdit extends Plugin
         /**
          * @var $states IState[]
          */
-        $stateRepo = $this->workflowStateRepository();
+        $stateRepo = $this->workflowStates();
         $states = $stateRepo->all([]);
         $itemsView = '';
         $itemTemplate = new DashboardView([DashboardView::FIELD__VIEW_PATH => 'states/item']);

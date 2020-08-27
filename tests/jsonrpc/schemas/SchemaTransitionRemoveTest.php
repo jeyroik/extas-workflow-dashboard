@@ -1,17 +1,14 @@
 <?php
 namespace tests\jsonrpc\schemas;
 
+use extas\components\repositories\TSnuffRepositoryDynamic;
+use extas\components\THasMagicClass;
 use extas\interfaces\workflows\schemas\ISchema;
-
 use extas\components\http\TSnuffHttp;
-use extas\components\repositories\TSnuffRepository;
 use extas\components\workflows\schemas\Schema;
-use extas\components\workflows\transitions\dispatchers\TransitionDispatcherRepository;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
 use extas\components\workflows\transitions\Transition;
-use extas\components\workflows\transitions\TransitionRepository;
 use extas\components\jsonrpc\schemas\SchemaTransitionRemove;
-use extas\components\workflows\schemas\SchemaRepository;
 
 use PHPUnit\Framework\TestCase;
 use Dotenv\Dotenv;
@@ -24,23 +21,24 @@ use Dotenv\Dotenv;
 class SchemaTransitionRemoveTest extends TestCase
 {
     use TSnuffHttp;
-    use TSnuffRepository;
+    use TSnuffRepositoryDynamic;
+    use THasMagicClass;
 
     protected function setUp(): void
     {
         parent::setUp();
         $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
-        $this->registerSnuffRepos([
-            'workflowTransitionDispatcherRepository' => TransitionDispatcherRepository::class,
-            'workflowTransitionRepository' => TransitionRepository::class,
-            'workflowSchemaRepository' => SchemaRepository::class
+        $this->createSnuffDynamicRepositories([
+            ['workflowTransitionsDispatchers', 'name', TransitionDispatcher::class],
+            ['workflowTransitions', 'name', Transition::class],
+            ['workflowSchemas', 'name', Schema::class],
         ]);
     }
 
     public function tearDown(): void
     {
-        $this->unregisterSnuffRepos();
+        $this->deleteSnuffDynamicRepositories();
     }
 
     /**
@@ -89,14 +87,14 @@ class SchemaTransitionRemoveTest extends TestCase
         ]);
         $this->createSchema();
 
-        $this->createWithSnuffRepo('workflowTransitionRepository', new Transition([
+        $this->getMagicClass('workflowTransitions')->create(new Transition([
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__STATE_FROM => 'from',
             Transition::FIELD__STATE_TO => 'to',
             Transition::FIELD__SCHEMA_NAME => 'test'
         ]));
 
-        $this->createWithSnuffRepo('workflowTransitionDispatcherRepository', new TransitionDispatcher([
+        $this->getMagicClass('workflowTransitionsDispatchers')->create(new TransitionDispatcher([
             TransitionDispatcher::FIELD__NAME => 'test',
             TransitionDispatcher::FIELD__CLASS => '',
             TransitionDispatcher::FIELD__TRANSITION_NAME => 'test'
@@ -111,13 +109,13 @@ class SchemaTransitionRemoveTest extends TestCase
         /**
          * @var ISchema $schema
          */
-        $schema = $this->oneSnuffRepos('workflowSchemaRepository' , [Schema::FIELD__NAME => 'test']);
+        $schema = $this->getMagicClass('workflowSchemas')->one([Schema::FIELD__NAME => 'test']);
         $this->assertFalse($schema->hasTransition('test'), 'Schema has transition');
     }
 
     protected function createSchema(): void
     {
-        $this->createWithSnuffRepo('workflowSchemaRepository', new Schema([
+        $this->getMagicClass('workflowSchemas')->create(new Schema([
             Schema::FIELD__NAME => 'test',
             Schema::FIELD__ENTITY_NAME => 'test'
         ]));

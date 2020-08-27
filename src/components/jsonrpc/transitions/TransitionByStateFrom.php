@@ -7,6 +7,7 @@ use extas\components\workflows\entities\Entity;
 use extas\components\workflows\entities\EntityContext;
 use extas\components\workflows\transits\TransitResult;
 use extas\interfaces\IItem;
+use extas\interfaces\repositories\IRepository;
 use extas\interfaces\workflows\entities\IEntity;
 use extas\interfaces\workflows\schemas\ISchema;
 use extas\interfaces\workflows\transitions\ITransition;
@@ -31,7 +32,7 @@ use Psr\Http\Message\ResponseInterface;
  * @jsonrpc_response_field state_from:string
  * @jsonrpc_response_field state_to:string
  *
- * @method workflowTransitionRepository()
+ * @method IRepository workflowTransitions()
  *
  * @stage run.jsonrpc.transition.by_state_from.index
  * @package extas\components\jsonrpc\transitions
@@ -46,7 +47,7 @@ class TransitionByStateFrom extends OperationDispatcher
      */
     public function __invoke(): ResponseInterface
     {
-        $request = $this->convertPsrToJsonRpcRequest();
+        $request = $this->getJsonRpcRequest();
         $jRpcData = $request->getParams();
 
         try {
@@ -102,7 +103,7 @@ class TransitionByStateFrom extends OperationDispatcher
      */
     protected function getTransitions(string $stateName, ISchema $schema): array
     {
-        return $this->workflowTransitionRepository()->all([
+        return $this->workflowTransitions()->all([
             ITransition::FIELD__NAME => $schema->getTransitionsNames(),
             ITransition::FIELD__STATE_FROM => $stateName
         ]);

@@ -31,7 +31,7 @@ class EntityTransit extends OperationDispatcher
      */
     public function __invoke(): ResponseInterface
     {
-        $request = $this->convertPsrToJsonRpcRequest();
+        $request = $this->getJsonRpcRequest();
         list($entityData, $contextData, $schemaName, $transitionName) = $this->listData($request->getParams());
 
         try {
