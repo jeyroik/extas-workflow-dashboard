@@ -1,6 +1,7 @@
 <?php
 namespace extas\components\jsonrpc\workflows;
 
+use extas\components\exceptions\MissedOrUnknown;
 use extas\components\workflows\entities\Entity;
 use extas\components\workflows\entities\EntityContext;
 use extas\components\workflows\Workflow;
@@ -25,40 +26,34 @@ trait TTransit
      * @param array $contextData
      * @param array $entityData
      * @param ITransition $transition
-     * @param IRequest $request
+     * @return array
      * @throws \Exception
      */
     protected function transit(
         array $contextData,
         array $entityData,
-        ITransition $transition,
-        IRequest $request
-    ): ResponseInterface
+        ITransition $transition
+    ): array
     {
         $workflow = new Workflow([Workflow::FIELD__CONTEXT => new EntityContext($contextData)]);
         $result = $workflow->transit($this->buildEntity($entityData), $transition);
         if ($result->hasErrors()) {
-            return $this->errorResponse(
-                $request->getId(),
-                'Error entity transition',
-                400,
-                $this->getResultErrors($result)
-            );
+            throw new \Exception('Error entity transition.' . $this->getResultErrors($result), 400);
         } else {
-            return $this->successResponse($request->getId(), $result->getEntity()->__toArray());
+            return $result->getEntity()->__toArray();
         }
     }
 
     /**
      * @param ITransitResult $result
-     * @return array
+     * @return string
      */
-    protected function getResultErrors(ITransitResult $result): array
+    protected function getResultErrors(ITransitResult $result): string
     {
-        $errors = [];
+        $errors = '';
         $resultErrors = $result->getErrors();
         foreach ($resultErrors as $error) {
-            $errors[] = $error->__toArray();
+            $errors .= $error->getTitle() . ': ' . $error->getDescription() . ';';
         }
 
         return $errors;
@@ -67,7 +62,7 @@ trait TTransit
     /**
      * @param array $entityData
      * @return IEntity
-     * @throws
+     * @throws MissedOrUnknown
      */
     protected function buildEntity(array $entityData): IEntity
     {
@@ -78,11 +73,11 @@ trait TTransit
         $entityFormal = $this->workflowEntities()->one([IEntity::FIELD__NAME => $entity->getName()]);
 
         if (!$entityFormal) {
-            throw new \Exception('Missed entity');
+            throw new MissedOrUnknown('entity');
         }
 
         if (!$entity->has(...$entityFormal->getParametersNames())) {
-            throw new \Exception('Missed entity parameters');
+            throw new MissedOrUnknown('entity parameters');
         }
 
         return $entity;

@@ -1,11 +1,11 @@
 <?php
 namespace extas\components\jsonrpc\states;
 
-use extas\components\jsonrpc\operations\OperationDispatcher;
+use extas\components\api\jsonrpc\operations\OperationRunner;
 use extas\components\jsonrpc\TLoad;
 use extas\components\workflows\states\State;
+use extas\interfaces\http\IHasHttpIO;
 use extas\interfaces\repositories\IRepository;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class StateLoad
@@ -24,23 +24,21 @@ use Psr\Http\Message\ResponseInterface;
  * @package extas\components\jsonrpc\states
  * @author jeyroik@gmail.com
  */
-class StateLoad extends OperationDispatcher
+class StateLoad extends OperationRunner implements IHasHttpIO
 {
     use TLoad;
 
     /**
-     * @return ResponseInterface
+     * @return array
      */
-    public function __invoke(): ResponseInterface
+    public function run(): array
     {
-        $request = $this->getJsonRpcRequest();
-        $states = $request->getData();
+        $states = $this->getJsonRpcRequest()->getData();
 
         return $this->defaultLoad(
             $states,
             $this->workflowStates(),
-            State::class,
-            $request
+            State::class
         );
     }
 

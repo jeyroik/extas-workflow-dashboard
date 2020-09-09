@@ -1,12 +1,15 @@
 <?php
 namespace tests\plugins\jsonrpc;
 
+use extas\components\api\App;
+use extas\components\plugins\api\PluginJsonRpc;
+use extas\components\plugins\jsonrpc\ApiJsonRpc;
+use extas\components\plugins\jsonrpc\Describe;
+use extas\components\plugins\TSnuffPlugins;
 use extas\components\repositories\TSnuffRepositoryDynamic;
 use extas\components\http\TSnuffHttp;
-use extas\components\jsonrpc\App;
 use extas\components\plugins\jsonrpc\PluginBoardRoute;
 use extas\components\plugins\Plugin;
-use extas\components\plugins\PluginRepository;
 use extas\components\plugins\workflows\views\ViewIndexIndex;
 use extas\components\THasMagicClass;
 use extas\components\workflows\states\State;
@@ -14,6 +17,7 @@ use extas\components\workflows\transitions\Transition;
 use extas\components\workflows\schemas\Schema;
 
 use Dotenv\Dotenv;
+use extas\interfaces\samples\parameters\ISampleParameter;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -26,6 +30,7 @@ class PluginBoardRouteTest extends TestCase
     use TSnuffRepositoryDynamic;
     use TSnuffHttp;
     use THasMagicClass;
+    use TSnuffPlugins;
 
     protected function setUp(): void
     {
@@ -48,6 +53,34 @@ class PluginBoardRouteTest extends TestCase
 
     public function testAddRoute()
     {
+        $this->createWithSnuffRepo('pluginRepository', new Plugin([
+            Plugin::FIELD__CLASS => PluginJsonRpc::class,
+            Plugin::FIELD__STAGE => 'extas.api.app.init',
+            Plugin::FIELD__PARAMETERS => [
+                PluginJsonRpc::PARAM__PATTERN => [
+                    ISampleParameter::FIELD__NAME => PluginJsonRpc::PARAM__PATTERN,
+                    ISampleParameter::FIELD__VALUE => '/api/jsonrpc[/{version}]'
+                ],
+                PluginJsonRpc::PARAM__ENDPOINT => [
+                    ISampleParameter::FIELD__NAME => PluginJsonRpc::PARAM__ENDPOINT,
+                    ISampleParameter::FIELD__VALUE => 'api/jsonrpc'
+                ]
+            ]
+        ]));
+        $this->createWithSnuffRepo('pluginRepository', new Plugin([
+            Plugin::FIELD__CLASS => PluginJsonRpc::class,
+            Plugin::FIELD__STAGE => 'extas.api.app.init',
+            Plugin::FIELD__PARAMETERS => [
+                PluginJsonRpc::PARAM__PATTERN => [
+                    ISampleParameter::FIELD__NAME => PluginJsonRpc::PARAM__PATTERN,
+                    ISampleParameter::FIELD__VALUE => '/api/_describe[/{version}]'
+                ],
+                PluginJsonRpc::PARAM__ENDPOINT => [
+                    ISampleParameter::FIELD__NAME => PluginJsonRpc::PARAM__ENDPOINT,
+                    ISampleParameter::FIELD__VALUE => 'api/_describe'
+                ]
+            ]
+        ]));
         $app = App::create();
         $plugin = new PluginBoardRoute();
         $plugin($app);

@@ -24,7 +24,7 @@
 
 # Использование
 
-`# php -S 0.0.0.0:8080 -t vendor/jeyroik/extas-jsonrpc/src/public`
+`# php -S 0.0.0.0:8080 -t vendor/jeyroik/extas-api/src/public`
 
 После запуска при переходе по localhost:8080 должен отобразиться экран "Схемы".
 

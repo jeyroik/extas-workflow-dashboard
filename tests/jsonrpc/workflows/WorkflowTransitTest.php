@@ -16,6 +16,7 @@ use extas\components\workflows\transitions\Transition;
 
 use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
+use tests\workflows\misc\TriggerSetStateTo;
 
 /**
  * Class WorkflowTransitTest
@@ -50,46 +51,35 @@ class WorkflowTransitTest extends TestCase
 
     public function testUnknownTransition()
     {
-        $operation = new WorkflowTransit([
+        $operation = new WorkflowTransit();
+
+        $this->expectExceptionMessage('Missed or unknown transition "unknown"');
+        $operation([
             WorkflowTransit::FIELD__PSR_REQUEST => $this->getPsrRequest(
                 '.transit.transition.missed'
             ),
             WorkflowTransit::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
-
-        $response = $operation();
-        $this->assertTrue(
-            $this->isJsonRpcResponseHasError($response, IResponse::RESPONSE__ERROR),
-            print_r($this->getJsonRpcResponse($response), true)
-        );
     }
 
     public function testUnknownEntity()
     {
-        $operation = new WorkflowTransit([
+        $operation = new WorkflowTransit();
+
+        $this->createTransition();
+
+        $this->expectExceptionMessage('Missed or unknown entity');
+        $result = $operation([
             WorkflowTransit::FIELD__PSR_REQUEST => $this->getPsrRequest(
                 '.transit'
             ),
             WorkflowTransit::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
-
-        $this->createTransition();
-
-        $response = $operation();
-        $this->assertTrue(
-            $this->isJsonRpcResponseHasError($response, IResponse::RESPONSE__ERROR),
-            print_r($this->getJsonRpcResponse($response), true)
-        );
     }
 
     public function testMissedEntityFields()
     {
-        $operation = new WorkflowTransit([
-            WorkflowTransit::FIELD__PSR_REQUEST => $this->getPsrRequest(
-                '.transit'
-            ),
-            WorkflowTransit::FIELD__PSR_RESPONSE => $this->getPsrResponse()
-        ]);
+        $operation = new WorkflowTransit();
 
         $this->createTransition();
         $this->createEntity([
@@ -98,19 +88,18 @@ class WorkflowTransitTest extends TestCase
             ]
         ]);
 
-        $response = $operation();
-        $this->assertTrue(
-            $this->isJsonRpcResponseHasError($response, IResponse::RESPONSE__ERROR),
-            print_r($this->getJsonRpcResponse($response), true)
-        );
+        $this->expectExceptionMessage('Missed or unknown entity parameters');
+        $operation([
+            WorkflowTransit::FIELD__PSR_REQUEST => $this->getPsrRequest(
+                '.transit'
+            ),
+            WorkflowTransit::FIELD__PSR_RESPONSE => $this->getPsrResponse()
+        ]);
     }
 
     public function testHasTransitionErrors()
     {
-        $operation = new WorkflowTransit([
-            WorkflowTransit::FIELD__PSR_REQUEST => $this->getPsrRequest('.transit'),
-            WorkflowTransit::FIELD__PSR_RESPONSE => $this->getPsrResponse()
-        ]);
+        $operation = new WorkflowTransit();
 
         $this->createEntity();
         $this->createCondition([
@@ -120,25 +109,25 @@ class WorkflowTransitTest extends TestCase
         ]);
         $this->createTransition();
 
-        $response = $operation();
-        $this->assertTrue(
-            $this->isJsonRpcResponseHasError($response, IResponse::RESPONSE__ERROR),
-            print_r($this->getJsonRpcResponse($response), true)
+        $this->expectExceptionMessage(
+            'Error entity transition.Missed param: Can not find one of params "missed" in a context'
         );
+        $operation([
+            WorkflowTransit::FIELD__PSR_REQUEST => $this->getPsrRequest('.transit'),
+            WorkflowTransit::FIELD__PSR_RESPONSE => $this->getPsrResponse()
+        ]);
     }
 
     public function testValid()
     {
-        $operation = new WorkflowTransit([
-            WorkflowTransit::FIELD__PSR_REQUEST => $this->getPsrRequest('.transit'),
-            WorkflowTransit::FIELD__PSR_RESPONSE => $this->getPsrResponse()
-        ]);
+        $operation = new WorkflowTransit();
 
         $this->createCondition([
             'known' => [
                 ISampleParameter::FIELD__NAME => 'known'
             ]
         ]);
+        $this->createTrigger();
         $this->createTransition();
         $this->createEntity([
             'test' => [
@@ -146,11 +135,29 @@ class WorkflowTransitTest extends TestCase
             ]
         ]);
 
-        $response = $operation();
-        $this->assertFalse(
-            $this->isJsonRpcResponseHasError($response, IResponse::RESPONSE__ERROR),
-            print_r($this->getJsonRpcResponse($response), true)
+        $result = $operation([
+            WorkflowTransit::FIELD__PSR_REQUEST => $this->getPsrRequest('.transit'),
+            WorkflowTransit::FIELD__PSR_RESPONSE => $this->getPsrResponse()
+        ]);
+        $this->assertEquals(
+            [
+                'name' => 'test',
+                'state_name' => 'to',
+                'test' => true
+            ],
+            $result,
+            'Incorrect result: ' . print_r($result, true)
         );
+    }
+
+    protected function createTrigger()
+    {
+        $this->getMagicClass('workflowTransitionsDispatchers')->create(new TransitionDispatcher([
+            TransitionDispatcher::FIELD__NAME => 'set_state_to',
+            TransitionDispatcher::FIELD__TYPE => TransitionDispatcher::TYPE__TRIGGER,
+            TransitionDispatcher::FIELD__TRANSITION_NAME => 'test',
+            TransitionDispatcher::FIELD__CLASS => TriggerSetStateTo::class
+        ]));
     }
 
     /**
@@ -174,8 +181,7 @@ class WorkflowTransitTest extends TestCase
             Transition::FIELD__NAME => 'test',
             Transition::FIELD__STATE_FROM => 'from',
             Transition::FIELD__STATE_TO => 'to',
-            Transition::FIELD__SCHEMA_NAME => 'test',
-            Transition::FIELD__CONDITIONS_NAMES => ['test']
+            Transition::FIELD__SCHEMA_NAME => 'test'
         ]));
     }
 

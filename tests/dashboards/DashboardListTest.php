@@ -1,5 +1,7 @@
 <?php
+namespace tests\dashboards;
 
+use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
 use extas\components\dashboards\DashboardList;
 use extas\interfaces\IHasName;
@@ -16,7 +18,7 @@ class DashboardListTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $env = \Dotenv\Dotenv::create(getcwd() . '/tests/');
+        $env = Dotenv::create(getcwd() . '/tests/');
         $env->load();
         defined('APP__ROOT') || define('APP__ROOT', getcwd());
     }
