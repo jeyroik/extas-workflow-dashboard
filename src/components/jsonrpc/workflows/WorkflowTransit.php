@@ -1,9 +1,11 @@
 <?php
 namespace extas\components\jsonrpc\workflows;
 
-use extas\components\jsonrpc\operations\OperationDispatcher;
+use extas\components\api\jsonrpc\operations\OperationRunner;
+use extas\components\exceptions\MissedOrUnknown;
+use extas\components\workflows\exceptions\transitions\ExceptionTransitionMissed;
+use extas\interfaces\http\IHasHttpIO;
 use extas\interfaces\workflows\transitions\ITransition;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class WorkflowTransit
@@ -21,7 +23,7 @@ use Psr\Http\Message\ResponseInterface;
  * @package extas\components\jsonrpc\workflows
  * @author jeyroik@gmail.com
  */
-class WorkflowTransit extends OperationDispatcher
+class WorkflowTransit extends OperationRunner implements IHasHttpIO
 {
     use TTransit;
     use TGetTransition;
@@ -31,19 +33,17 @@ class WorkflowTransit extends OperationDispatcher
     public const FIELD__TRANSITION_NAME = 'transition_name';
 
     /**
-     * @return ResponseInterface
+     * @return array
+     * @throws MissedOrUnknown
      */
-    public function __invoke(): ResponseInterface
+    public function run(): array
     {
         $request = $this->getJsonRpcRequest();
         list($entityData, $contextData, $transitionName) = $this->listData($request->getParams());
 
-        try {
-            $transition = $this->getTransition([ITransition::FIELD__NAME => $transitionName], $transitionName);
-            return $this->transit($contextData, $entityData, $transition, $request);
-        } catch (\Exception $e) {
-            return $this->errorResponse($request->getId(), $e->getMessage(), 400);
-        }
+        $transition = $this->getTransition([ITransition::FIELD__NAME => $transitionName], $transitionName);
+
+        return $this->transit($contextData, $entityData, $transition);
     }
 
     /**

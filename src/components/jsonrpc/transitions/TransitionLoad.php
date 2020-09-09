@@ -1,9 +1,11 @@
 <?php
 namespace extas\components\jsonrpc\transitions;
 
+use extas\components\api\jsonrpc\operations\OperationRunner;
 use extas\components\jsonrpc\operations\OperationDispatcher;
 use extas\components\jsonrpc\TLoad;
 use extas\components\workflows\transitions\Transition;
+use extas\interfaces\http\IHasHttpIO;
 use extas\interfaces\repositories\IRepository;
 use Psr\Http\Message\ResponseInterface;
 
@@ -24,14 +26,14 @@ use Psr\Http\Message\ResponseInterface;
  * @package extas\components\jsonrpc\transitions
  * @author jeyroik@gmail.com
  */
-class TransitionLoad extends OperationDispatcher
+class TransitionLoad extends OperationRunner implements IHasHttpIO
 {
     use TLoad;
 
     /**
-     * @return ResponseInterface
+     * @return array
      */
-    public function __invoke(): ResponseInterface
+    public function run(): array
     {
         $request = $this->getJsonRpcRequest();
         $transitions = $request->getData();
@@ -39,8 +41,7 @@ class TransitionLoad extends OperationDispatcher
         return $this->defaultLoad(
             $transitions,
             $this->workflowTransitions(),
-            Transition::class,
-            $request
+            Transition::class
         );
     }
 

@@ -19,10 +19,9 @@ trait TLoad
      * @param $items
      * @param $repo
      * @param $itemClass
-     * @param IRequest $request
-     * @return ResponseInterface
+     * @return array
      */
-    protected function defaultLoad($items, $repo, $itemClass, IRequest $request): ResponseInterface
+    protected function defaultLoad($items, $repo, $itemClass): array
     {
         $names = array_column($items, IHasName::FIELD__NAME);
         $byName = array_column($items, null, IHasName::FIELD__NAME);
@@ -42,9 +41,9 @@ trait TLoad
             $created++;
         }
 
-        return $this->successResponse($request->getId(), [
+        return [
             'created_count' => $created,
             'got_count' => count($items)
-        ]);
+        ];
     }
 }

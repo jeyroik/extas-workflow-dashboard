@@ -3,6 +3,7 @@ namespace tests\jsonrpc\transitions;
 
 use extas\components\repositories\TSnuffRepositoryDynamic;
 use extas\components\THasMagicClass;
+use extas\interfaces\jsonrpc\IRequest;
 use extas\interfaces\jsonrpc\IResponse;
 use extas\components\http\TSnuffHttp;
 use extas\components\workflows\transitions\Transition;
@@ -44,10 +45,7 @@ class TransitionLoadTest extends TestCase
      */
     public function testValid()
     {
-        $operation = new TransitionLoad([
-            TransitionLoad::FIELD__PSR_REQUEST => $this->getPsrRequest('.transition.load'),
-            TransitionLoad::FIELD__PSR_RESPONSE => $this->getPsrResponse()
-        ]);
+        $operation = new TransitionLoad();
 
         $this->getMagicClass('workflowTransitions')->create(new Transition([
             Transition::FIELD__NAME => 'already-exists',
@@ -63,19 +61,17 @@ class TransitionLoadTest extends TestCase
             State::FIELD__TITLE => 'test'
         ]));
 
-        $response = $operation();
-        $jsonRpcResponse = $this->getJsonRpcResponse($response);
-        $this->assertFalse(isset($jsonRpcResponse[IResponse::RESPONSE__ERROR]));
+        $result = $operation([
+            TransitionLoad::FIELD__PSR_REQUEST => $this->getPsrRequest('.transition.load'),
+            TransitionLoad::FIELD__PSR_RESPONSE => $this->getPsrResponse()
+        ]);
         $this->assertEquals(
             [
-                IResponse::RESPONSE__ID => '2f5d0719-5b82-4280-9b3b-10f23aff226b',
-                IResponse::RESPONSE__VERSION => IResponse::VERSION_CURRENT,
-                IResponse::RESPONSE__RESULT => [
-                    'created_count' => 1,
-                    'got_count' => 2
-                ]
+                'created_count' => 1,
+                'got_count' => 2
             ],
-            $jsonRpcResponse
+            $result,
+            'Incorrect result: ' . print_r($result, true)
         );
     }
 }

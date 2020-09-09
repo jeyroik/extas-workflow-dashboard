@@ -2,9 +2,9 @@
   "name": "jeyroik/extas-workflow-dashboard",
   "description": "Simple dashboard for the extas workflow",
   "require": {
-    "jeyroik/extas-workflow": "4.*",
+    "jeyroik/extas-workflow": "5.*",
     "jeyroik/extas-installer": "3.*",
-    "jeyroik/extas-jsonrpc": "4.*",
+    "jeyroik/extas-operations-jsonrpc-ciud": "0.*",
     "jeyroik/extas-repositories-mongo": "1.*",
     "jeyroik/extas-repositories-get": "0.*",
     "jeyroik/extas-workflow-dispatchers": "1.*",
@@ -18,7 +18,8 @@
   },
   "autoload": {
     "psr-4": {
-      "extas\\": "src/"
+      "extas\\": "src/",
+      "tests\\": "tests/"
     }
   },
   "scripts": {
