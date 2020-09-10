@@ -1,3 +1,7 @@
+# 6.0.1
+
+- Operations configuration in the extas.json fixed.
+
 # 6.0.0
 
 - `extas-jsonrpc` dep removed.
