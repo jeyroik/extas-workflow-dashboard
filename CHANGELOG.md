@@ -1,3 +1,8 @@
+# 6.0.2
+
+- Version to operations added.
+- Actualized tests.
+
 # 6.0.1
 
 - Operations configuration in the extas.json fixed.
