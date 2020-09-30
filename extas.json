@@ -23,6 +23,7 @@
       "item_repo": "",
       "class": "extas\\components\\jsonrpc\\states\\StateLoad",
       "filter": "",
+      "version": 0,
       "specs": {
         "request": {
           "type": "object",
@@ -55,6 +56,7 @@
       "item_repo": "",
       "class": "extas\\components\\jsonrpc\\transitions\\TransitionLoad",
       "filter": "",
+      "version": 0,
       "specs": {
         "request": {
           "type": "object",
@@ -87,6 +89,7 @@
       "item_repo": "",
       "class": "extas\\components\\jsonrpc\\transitions\\TransitionByStateFrom",
       "filter": "",
+      "version": 0,
       "specs": {
         "request": {
           "type": "object",
@@ -156,6 +159,7 @@
       "item_repo": "",
       "class": "extas\\components\\jsonrpc\\schemas\\SchemaTransitionAdd",
       "filter": "",
+      "version": 0,
       "specs": {
         "request": {
           "type": "object",
@@ -225,6 +229,7 @@
       "item_repo": "",
       "class": "extas\\components\\jsonrpc\\schemas\\SchemaTransitionRemove",
       "filter": "",
+      "version": 0,
       "specs": {
         "request": {
           "type": "object",
@@ -257,6 +262,7 @@
       "item_repo": "",
       "class": "extas\\components\\jsonrpc\\workflows\\WorkflowTransit",
       "filter": "",
+      "version": 0,
       "specs": {
         "request": {
           "type": "object",
@@ -305,6 +311,7 @@
       "item_repo": "",
       "class": "extas\\components\\jsonrpc\\entities\\EntityTransit",
       "filter": "",
+      "version": 0,
       "specs": {
         "request": {
           "type": "object",

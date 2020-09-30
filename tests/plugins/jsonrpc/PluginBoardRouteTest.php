@@ -86,11 +86,11 @@ class PluginBoardRouteTest extends TestCase
         $plugin($app);
         $routes = $app->getRouteCollector()->getRoutes();
         /**
-         * - /api/jsonrpc
-         * - /specs
          * - /section/action/name
+         * - /specs will be added by extas-api-jsonrpc-opencity
+         * - /api/jsonrpc wiil be added by extas-api-jsonrpc
          */
-        $this->assertCount(3, $routes);
+        $this->assertCount(1, $routes);
     }
 
     public function testBoardIndex()
