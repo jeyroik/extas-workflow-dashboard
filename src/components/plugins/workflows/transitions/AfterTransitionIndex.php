@@ -39,6 +39,10 @@ class AfterTransitionIndex extends Plugin implements IStageAfterJsonRpcOperation
         ResponseInterface $response
     ): ResponseInterface
     {
+        if ($operation->getName() != 'workflow.transition.index') {
+            return $response;
+        }
+
         $request = $this->getJsonRpcRequest();
         $context = new EntityContext($request->getParams()['context']);
         $entity = new Entity($request->getParams()['entity']);

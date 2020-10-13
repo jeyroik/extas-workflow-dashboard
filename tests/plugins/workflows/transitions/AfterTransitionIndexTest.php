@@ -96,15 +96,16 @@ class AfterTransitionIndexTest extends TestCase
                     [
                         'name' => 'test_transition_3'
                     ]
-                ]
-            ]
+                ],
+                'total' => 3
+            ],
+            'id' => '2f5d0719-5b82-4280-9b3b-10f23aff226b',
+            'jsonrpc' => '2.0'
         ]));
-        $operation = new JsonRpcOperation([]);
-        $result = $plugin(
-            $operation,
-            '',
-            $response
-        );
+        $operation = new JsonRpcOperation([
+            JsonRpcOperation::FIELD__NAME => 'workflow.transition.index'
+        ]);
+        $result = $plugin($operation, '', $response);
 
         $response = $this->getJsonRpcResponse($result);
         $this->assertEquals(
@@ -119,6 +120,62 @@ class AfterTransitionIndexTest extends TestCase
                         ]
                     ],
                     'total' => 2
+                ],
+                'id' => '2f5d0719-5b82-4280-9b3b-10f23aff226b',
+                'jsonrpc' => '2.0'
+            ],
+            $response,
+            'Incorrect response: ' . print_r($response, true)
+        );
+    }
+
+    public function testSkipAnotherOperations()
+    {
+        $plugin = new AfterTransitionIndex([
+            AfterTransitionIndex::FIELD__PSR_REQUEST => $this->getPsrRequest('.transitions.index'),
+            AfterTransitionIndex::FIELD__PSR_RESPONSE => $this->getPsrResponse()
+        ]);
+        $response = $this->getPsrResponse();
+
+        $response->getBody()->write(json_encode([
+            'result' => [
+                'items' => [
+                    [
+                        'name' => 'test_transition_1'
+                    ],
+                    [
+                        'name' => 'test_transition_2'
+                    ],
+                    [
+                        'name' => 'test_transition_3'
+                    ]
+                ],
+                'total' => 3
+            ],
+            'id' => '2f5d0719-5b82-4280-9b3b-10f23aff226b',
+            'jsonrpc' => '2.0'
+        ]));
+        $operation = new JsonRpcOperation([
+            JsonRpcOperation::FIELD__NAME => 'some'
+        ]);
+        $result = $plugin($operation, '', $response);
+
+        $response = $this->getJsonRpcResponse($result);
+        $this->assertEquals(
+            [
+                'result' => [
+                    'items' => [
+                        [
+                            'name' => 'test_transition_1'
+                        ],
+                        [
+                            'name' => 'test_transition_2'
+                        ],
+                        [
+                            'name' => 'test_transition_3'
+                        ]
+                    ],
+                    'total' => 3
                 ],
                 'id' => '2f5d0719-5b82-4280-9b3b-10f23aff226b',
                 'jsonrpc' => '2.0'
