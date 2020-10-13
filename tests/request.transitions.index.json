@@ -1,0 +1,12 @@
+{
+  "id": "2f5d0719-5b82-4280-9b3b-10f23aff226b",
+  "method": "workflow.schema.index",
+  "params": {
+    "context": {
+      "state": "is ok"
+    },
+    "entity": {
+      "name": "test"
+    }
+  }
+}
