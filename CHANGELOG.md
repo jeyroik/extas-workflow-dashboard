@@ -1,3 +1,8 @@
+# 6.1.0
+
+- `AfterTransiitonIndex` plugin added.
+  - Checks conditions for each transition: skips transition if condition failed.
+
 # 6.0.2
 
 - Version to operations added.
