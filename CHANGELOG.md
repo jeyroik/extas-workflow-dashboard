@@ -1,3 +1,10 @@
+# 6.2.0
+
+- Added expanding by `transition.state_from`.
+- Added expanding by `transition.state_to`.
+- Added expanding by `transition.schema`.
+- Added expanding by `transition.dispatchers.
+
 # 6.1.1
 
 - `AfterTransiitonIndex` accepts `conditions` parameter now.
