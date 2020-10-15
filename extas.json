@@ -364,6 +364,22 @@
       "stage": "expand.index.schema"
     },
     {
+      "class": "extas\\components\\plugins\\workflows\\expands\\transitions\\TransitionExpandByStateFrom",
+      "stage": "extas.expand.transition.state_from"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\expands\\transitions\\TransitionExpandByStateTo",
+      "stage": "extas.expand.transition.state_to"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\expands\\transitions\\TransitionExpandBySchema",
+      "stage": "extas.expand.transition.schema"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\expands\\transitions\\TransitionExpandByDispatchers",
+      "stage": "extas.expand.transition.dispatchers"
+    },
+    {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\transitions\\BeforeTransitionCreate",
       "stage": "before.run.jsonrpc.transition.create"
     },
