@@ -1,3 +1,8 @@
+# 6.1.1
+
+- `AfterTransiitonIndex` accepts `conditions` parameter now.
+  - Set `conditions` to `false` to skip conditions.
+
 # 6.1.0
 
 - `AfterTransiitonIndex` plugin added.
