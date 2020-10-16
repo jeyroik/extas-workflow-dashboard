@@ -1,25 +1,26 @@
 <?php
-namespace tests\plugins\workflows\expands;
+namespace tests\plugins\workflows\expands\states\samples;
 
 use Dotenv\Dotenv;
 use extas\components\expands\Expand;
 use extas\components\http\TSnuffHttp;
-use extas\components\plugins\workflows\expands\schemas\SchemaExpandByEntity;
+use extas\components\plugins\workflows\expands\states\samples\SampleExpandByStates;
+use extas\components\plugins\workflows\expands\states\StateExpandByTransitions;
 use extas\components\plugins\workflows\expands\transitions\TransitionExpandByStateFrom;
-use extas\components\plugins\workflows\expands\transitions\TransitionExpandByStateTo;
 use extas\components\repositories\TSnuffRepositoryDynamic;
 use extas\components\THasMagicClass;
 use extas\components\workflows\states\State;
+use extas\components\workflows\states\StateSample;
 use extas\components\workflows\transitions\Transition;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class TransitionExpandByStateToTest
+ * Class SampleExpandByStatesTest
  *
- * @package tests\plugins\workflows\expands
+ * @package tests\plugins\workflows\expands\states\samples
  * @author jeyroik <jeyroik@gmail.com>
  */
-class TransitionExpandByStateToTest extends TestCase
+class SampleExpandByStatesTest extends TestCase
 {
     use TSnuffHttp;
     use TSnuffRepositoryDynamic;
@@ -43,33 +44,38 @@ class TransitionExpandByStateToTest extends TestCase
     public function testExpand()
     {
         $this->getMagicClass('workflowStates')->create(new State([
-            State::FIELD__NAME => 'state_to',
-            State::FIELD__TITLE => 'State to'
+            State::FIELD__NAME => 'state',
+            State::FIELD__SAMPLE_NAME => 'test'
         ]));
-        $operation = new TransitionExpandByStateTo();
-        $transition = new Transition([
-            Transition::FIELD__STATE_TO => 'state_to'
+        $operation = new SampleExpandByStates();
+        $stateSample = new StateSample([
+            StateSample::FIELD__NAME => 'test'
         ]);
         $expand = new Expand([
             Expand::FIELD__PSR_REQUEST => $this->getPsrRequest(
-                '.transitions.index',
-                ['x-extas-expand' => 'transition.state_to']
+                '.state.sample.index',
+                ['x-extas-expand' => 'sample.states']
             ),
             Expand::FIELD__PSR_RESPONSE => $this->getPsrResponse(),
             Expand::FIELD__ARGUMENTS => [
-                'expand' => 'transition.state_to'
+                'expand' => 'sample.states'
             ]
         ]);
 
-        $transition = $operation($transition, $expand);
+        $stateSample = $operation($stateSample, $expand);
 
         $this->assertEquals(
-            ['state_to' => [
-                'name' => 'state_to',
-                'title' => 'State to'
-            ]],
-            $transition->__toArray(),
-            'Incorrect expanding: ' . print_r($transition, true)
+            [
+                'name' => 'test',
+                'states' => [
+                    [
+                        'name' => 'state',
+                        'sample_name' => 'test'
+                    ]
+                ]
+            ],
+            $stateSample->__toArray(),
+            'Incorrect expanding: ' . print_r($stateSample->__toArray(), true)
         );
     }
 }

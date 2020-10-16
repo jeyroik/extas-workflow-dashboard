@@ -1,13 +1,10 @@
 <?php
-namespace tests\plugins\workflows\expands;
+namespace tests\plugins\workflows\expands\transitions;
 
 use Dotenv\Dotenv;
 use extas\components\expands\Expand;
 use extas\components\http\TSnuffHttp;
-use extas\components\plugins\workflows\expands\schemas\SchemaExpandByEntity;
-use extas\components\plugins\workflows\expands\transitions\TransitionExpandBySchema;
-use extas\components\plugins\workflows\expands\transitions\TransitionExpandByStateFrom;
-use extas\components\plugins\workflows\expands\transitions\TransitionExpandByStateTo;
+use extas\components\plugins\workflows\expands\ExpandBySchema;
 use extas\components\repositories\TSnuffRepositoryDynamic;
 use extas\components\THasMagicClass;
 use extas\components\workflows\schemas\Schema;
@@ -17,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class TransitionExpandBySchemaTest
  *
- * @package tests\plugins\workflows\expands
+ * @package tests\plugins\workflows\expands\transitions
  * @author jeyroik <jeyroik@gmail.com>
  */
 class TransitionExpandBySchemaTest extends TestCase
@@ -47,7 +44,7 @@ class TransitionExpandBySchemaTest extends TestCase
             Schema::FIELD__NAME => 'schema',
             Schema::FIELD__TITLE => 'Schema'
         ]));
-        $operation = new TransitionExpandBySchema();
+        $operation = new ExpandBySchema();
         $transition = new Transition([
             Transition::FIELD__SCHEMA_NAME => 'schema'
         ]);

@@ -1,3 +1,11 @@
+# 6.3.0
+
+- Marked `transition.schema` as deprecated.
+- Added expanding by `state.transitions`.
+- Added expanding by `sample.states`.
+- Added expanding by `schema`.
+  - This can be used for expanding states, transitions, etc.
+
 # 6.2.0
 
 - Added expanding by `transition.state_from`.

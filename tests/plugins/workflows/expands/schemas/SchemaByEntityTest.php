@@ -1,5 +1,5 @@
 <?php
-namespace tests;
+namespace tests\plugins\workflows\expands\schemas;
 
 use extas\components\expands\Expand;
 use extas\components\http\TSnuffHttp;
@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class SchemaByEntityTest
  *
- * @package tests
+ * @package tests\plugins\workflows\expands\schemas
  * @author jeyroik@gmail.com
  */
 class SchemaByEntityTest extends TestCase

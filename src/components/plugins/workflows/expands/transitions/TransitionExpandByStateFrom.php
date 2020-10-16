@@ -12,7 +12,7 @@ use extas\interfaces\workflows\transitions\ITransition;
  * Class TransitionExpandByStateFrom
  *
  * @stage expand.index.schema
- * @package extas\components\plugins\expands\schemas
+ * @package extas\components\plugins\expands\transitions
  * @author jeyroik@gmail.com
  */
 class TransitionExpandByStateFrom extends Plugin implements IStageExpand
