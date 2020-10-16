@@ -11,8 +11,10 @@ use extas\interfaces\workflows\transitions\ITransition;
 /**
  * Class TransitionExpandBySchema
  *
+ * @deprecated Please, use ExpandBySchema instead
+ *
  * @stage expand.index.schema
- * @package extas\components\plugins\expands\schemas
+ * @package extas\components\plugins\expands\transitions
  * @author jeyroik@gmail.com
  */
 class TransitionExpandBySchema extends Plugin implements IStageExpand

@@ -1,10 +1,9 @@
 <?php
-namespace tests\plugins\workflows\expands;
+namespace tests\plugins\workflows\expands\transitions;
 
 use Dotenv\Dotenv;
 use extas\components\expands\Expand;
 use extas\components\http\TSnuffHttp;
-use extas\components\plugins\workflows\expands\schemas\SchemaExpandByEntity;
 use extas\components\plugins\workflows\expands\transitions\TransitionExpandByStateFrom;
 use extas\components\repositories\TSnuffRepositoryDynamic;
 use extas\components\THasMagicClass;
@@ -15,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class TransitionExpandByStateFromTest
  *
- * @package tests\plugins\workflows\expands
+ * @package tests\plugins\workflows\expands\transitions
  * @author jeyroik <jeyroik@gmail.com>
  */
 class TransitionExpandByStateFromTest extends TestCase

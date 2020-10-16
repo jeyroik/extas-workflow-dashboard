@@ -1,5 +1,5 @@
 <?php
-namespace tests\plugins\workflows\expands;
+namespace tests\plugins\workflows\expands\transitions;
 
 use Dotenv\Dotenv;
 use extas\components\expands\Expand;
@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class TransitionExpandByDispatchersTest
  *
- * @package tests\plugins\workflows\expands
+ * @package tests\plugins\workflows\expands\transitions
  * @author jeyroik <jeyroik@gmail.com>
  */
 class TransitionExpandByDispatchersTest extends TestCase

@@ -372,8 +372,20 @@
       "stage": "extas.expand.transition.state_to"
     },
     {
-      "class": "extas\\components\\plugins\\workflows\\expands\\transitions\\TransitionExpandBySchema",
+      "class": "extas\\components\\plugins\\workflows\\expands\\ExpandBySchema",
       "stage": "extas.expand.transition.schema"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\expands\\states\\StateExpandByTransitions",
+      "stage": "extas.expand.state.transitions"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\expands\\states\\samples\\SampleExpandByStates",
+      "stage": "extas.expand.sample.states"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\expands\\ExpandBySchema",
+      "stage": "extas.expand.schema"
     },
     {
       "class": "extas\\components\\plugins\\workflows\\expands\\transitions\\TransitionExpandByDispatchers",
