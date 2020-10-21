@@ -384,6 +384,14 @@
       "stage": "extas.expand.sample.states"
     },
     {
+      "class": "extas\\components\\plugins\\workflows\\expands\\schemas\\SchemaExpandByStates",
+      "stage": "extas.expand.schema.states"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\expands\\schemas\\SchemaExpandByTransitions",
+      "stage": "extas.expand.schema.transitions"
+    },
+    {
       "class": "extas\\components\\plugins\\workflows\\expands\\ExpandBySchema",
       "stage": "extas.expand.schema"
     },

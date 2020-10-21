@@ -1,3 +1,8 @@
+# 6.4.0
+
+- Added expanding by `schema.states`
+- Added expanding by `schema.transitions`
+
 # 6.3.0
 
 - Marked `transition.schema` as deprecated.
