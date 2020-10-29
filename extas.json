@@ -412,6 +412,14 @@
       "stage": "extas.after.jsonrpc.operation"
     },
     {
+      "class": "extas\\components\\plugins\\workflows\\transitions\\AfterTransitionDelete",
+      "stage": "extas.after.jsonrpc.operation"
+    },
+    {
+      "class": "extas\\components\\plugins\\workflows\\transitions\\AfterSchemaDelete",
+      "stage": "extas.after.jsonrpc.operation"
+    },
+    {
       "class": "extas\\components\\plugins\\workflows\\jsonrpc\\before\\transitions\\BeforeTransitionUpdate",
       "stage": "before.run.jsonrpc.transition.update"
     },

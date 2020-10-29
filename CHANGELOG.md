@@ -1,3 +1,7 @@
+# 6.5.1
+
+- Turned cleaning on after schema and transition deleting .
+
 # 6.5.0
 
 - After schema deleting all schema data deleting is added.
