@@ -1,3 +1,7 @@
+# 6.5.2
+
+- Mistype fixed.
+
 # 6.5.1
 
 - Turned cleaning on after schema and transition deleting .

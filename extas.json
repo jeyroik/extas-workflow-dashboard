@@ -416,7 +416,7 @@
       "stage": "extas.after.jsonrpc.operation"
     },
     {
-      "class": "extas\\components\\plugins\\workflows\\transitions\\AfterSchemaDelete",
+      "class": "extas\\components\\plugins\\workflows\\schemas\\AfterSchemaDelete",
       "stage": "extas.after.jsonrpc.operation"
     },
     {
