@@ -1,3 +1,8 @@
+# 6.5.0
+
+- After schema deleting all schema data deleting is added.
+- After transition deleteing dispatchers deleting is added.
+
 # 6.4.1
 
 - Turned expanding by `schema.entity` on.
