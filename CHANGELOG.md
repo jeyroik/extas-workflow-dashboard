@@ -1,3 +1,7 @@
+# 6.4.1
+
+- Turned expanding by `schema.entity` on.
+
 # 6.4.0
 
 - Added expanding by `schema.states`

@@ -392,6 +392,10 @@
       "stage": "extas.expand.schema.transitions"
     },
     {
+      "class": "extas\\components\\plugins\\workflows\\expands\\schemas\\SchemaExpandByEntity",
+      "stage": "extas.expand.schema.entity"
+    },
+    {
       "class": "extas\\components\\plugins\\workflows\\expands\\ExpandBySchema",
       "stage": "extas.expand.schema"
     },
