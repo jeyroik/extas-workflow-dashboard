@@ -1,3 +1,7 @@
+# 6.5.3
+
+- Docker support added.
+
 # 6.5.2
 
 - Mistype fixed.
