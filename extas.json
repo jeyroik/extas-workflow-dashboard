@@ -408,8 +408,8 @@
       "stage": "before.run.jsonrpc.transition.create"
     },
     {
-      "class": "extas\\components\\plugins\\workflows\\transitions\\AfterTransitionIndex",
-      "stage": "extas.after.jsonrpc.operation"
+      "class": "extas\\components\\plugins\\workflows\\transitions\\ApplyConditions",
+      "stage": "extas.json.rpc.before.index.response.workflow.transition.index"
     },
     {
       "class": "extas\\components\\plugins\\workflows\\transitions\\AfterTransitionDelete",

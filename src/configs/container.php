@@ -1,13 +1,20 @@
 <?php
-
-use extas\interfaces as I;
-use extas\components as C;
-
 return [
-    I\plugins\IPluginRepository::class => C\plugins\PluginRepository::class,
-    I\extensions\IExtensionRepository::class => C\extensions\ExtensionRepository::class,
-    I\stages\IStageRepository::class => C\stages\StageRepository::class,
-    I\packages\IPackageClassRepository::class => C\packages\PackageClassRepository::class,
-    I\repositories\IRepository::class => C\repositories\Repository::class,
-    I\repositories\drivers\IDriverRepository::class => C\repositories\drivers\DriverRepository::class
-];
+extas\interfaces\plugins\IPluginRepository::class => extas\components\plugins\PluginRepository::class,
+extas\interfaces\extensions\IExtensionRepository::class => extas\components\extensions\ExtensionRepository::class,
+extas\interfaces\stages\IStageRepository::class => extas\components\stages\StageRepository::class,
+extas\interfaces\packages\IPackageClassRepository::class => extas\components\packages\PackageClassRepository::class,
+extas\interfaces\repositories\IRepository::class => extas\components\repositories\Repository::class,
+extas\interfaces\repositories\drivers\IDriverRepository::class => extas\components\repositories\drivers\DriverRepository::class,
+fieldRepository::class => extas\components\fields\FieldRepository::class,
+fieldSampleRepository::class => extas\components\fields\FieldSampleRepository::class,
+fieldTypeRepository::class => extas\components\fields\types\FieldTypeRepository::class,
+fieldTypeSampleRepository::class => extas\components\fields\types\FieldTypeSampleRepository::class,
+valueRepository::class => extas\components\values\ValueRepository::class,
+generatorRepository::class => extas\components\generators\GeneratorRepository::class,
+crawlerRepository::class => extas\components\crawlers\CrawlerRepository::class,
+repositoryDescriptionRepository::class => extas\components\repositories\RepositoryDescriptionRepository::class,
+commandOptionRepository::class => extas\components\options\CommandOptionRepository::class,
+entityRepository::class => extas\components\packages\entities\EntityRepository::class,
+pluginRepository::class => extas\components\plugins\PluginRepository::class,
+extensionRepository::class => extas\components\extensions\ExtensionRepository::class];

@@ -5,13 +5,10 @@ use Dotenv\Dotenv;
 use extas\components\http\TSnuffHttp;
 use extas\components\operations\JsonRpcOperation;
 use extas\components\plugins\workflows\schemas\AfterSchemaDelete;
-use extas\components\plugins\workflows\transitions\AfterTransitionDelete;
-use extas\components\plugins\workflows\transitions\AfterTransitionIndex;
 use extas\components\repositories\TSnuffRepositoryDynamic;
 use extas\components\THasMagicClass;
 use extas\components\workflows\entities\Entity;
 use extas\components\workflows\states\State;
-use extas\components\workflows\transitions\dispatchers\ContextHasAllParams;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
 use extas\components\workflows\transitions\Transition;
 use PHPUnit\Framework\TestCase;
@@ -64,8 +61,8 @@ class AfterSchemaDeleteTest extends TestCase
         ]));
 
         $plugin = new AfterSchemaDelete([
-            AfterTransitionIndex::FIELD__PSR_REQUEST => $this->getPsrRequest('.schema.delete'),
-            AfterTransitionIndex::FIELD__PSR_RESPONSE => $this->getPsrResponse()
+            AfterSchemaDelete::FIELD__PSR_REQUEST => $this->getPsrRequest('.schema.delete'),
+            AfterSchemaDelete::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
         $response = $this->getPsrResponse();
         $operation = new JsonRpcOperation([
