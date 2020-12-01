@@ -5,15 +5,18 @@ use Dotenv\Dotenv;
 use extas\components\http\TSnuffHttp;
 use extas\components\operations\JsonRpcOperation;
 use extas\components\plugins\workflows\transitions\AfterTransitionDelete;
-use extas\components\plugins\workflows\transitions\AfterTransitionIndex;
 use extas\components\repositories\TSnuffRepositoryDynamic;
 use extas\components\THasMagicClass;
-use extas\components\workflows\states\State;
 use extas\components\workflows\transitions\dispatchers\ContextHasAllParams;
 use extas\components\workflows\transitions\dispatchers\TransitionDispatcher;
-use extas\components\workflows\transitions\Transition;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class AfterTransitionDeleteTest
+ *
+ * @package tests\plugins\workflows\transitions
+ * @author jeyroik <jeyroik@gmail.com>
+ */
 class AfterTransitionDeleteTest extends TestCase
 {
     use TSnuffRepositoryDynamic;
@@ -64,8 +67,8 @@ class AfterTransitionDeleteTest extends TestCase
             ]
         ]));
         $plugin = new AfterTransitionDelete([
-            AfterTransitionIndex::FIELD__PSR_REQUEST => $this->getPsrRequest('.transition.delete'),
-            AfterTransitionIndex::FIELD__PSR_RESPONSE => $this->getPsrResponse()
+            AfterTransitionDelete::FIELD__PSR_REQUEST => $this->getPsrRequest('.transition.delete'),
+            AfterTransitionDelete::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
         $response = $this->getPsrResponse();
         $operation = new JsonRpcOperation([

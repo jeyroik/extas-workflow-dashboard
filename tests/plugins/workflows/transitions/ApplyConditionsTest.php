@@ -4,7 +4,7 @@ namespace tests\plugins\workflows\transitions;
 use Dotenv\Dotenv;
 use extas\components\http\TSnuffHttp;
 use extas\components\operations\JsonRpcOperation;
-use extas\components\plugins\workflows\transitions\AfterTransitionIndex;
+use extas\components\plugins\workflows\transitions\ApplyConditions;
 use extas\components\repositories\TSnuffRepositoryDynamic;
 use extas\components\THasMagicClass;
 use extas\components\workflows\states\State;
@@ -14,12 +14,12 @@ use extas\components\workflows\transitions\Transition;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class AfterTransitionIndexTest
+ * Class ApplyConditionsTest
  *
  * @package tests\plugins\workflows\transitions
  * @author jeyroik <jeyroik@gmail.com>
  */
-class AfterTransitionIndexTest extends TestCase
+class ApplyConditionsTest extends TestCase
 {
     use TSnuffRepositoryDynamic;
     use THasMagicClass;
@@ -79,9 +79,9 @@ class AfterTransitionIndexTest extends TestCase
                 ]
             ]
         ]));
-        $plugin = new AfterTransitionIndex([
-            AfterTransitionIndex::FIELD__PSR_REQUEST => $this->getPsrRequest('.transitions.index'),
-            AfterTransitionIndex::FIELD__PSR_RESPONSE => $this->getPsrResponse()
+        $plugin = new ApplyConditions([
+            ApplyConditions::FIELD__PSR_REQUEST => $this->getPsrRequest('.transitions.index'),
+            ApplyConditions::FIELD__PSR_RESPONSE => $this->getPsrResponse()
         ]);
         $response = $this->getPsrResponse();
         $response->getBody()->write(json_encode([
@@ -105,83 +105,18 @@ class AfterTransitionIndexTest extends TestCase
         $operation = new JsonRpcOperation([
             JsonRpcOperation::FIELD__NAME => 'workflow.transition.index'
         ]);
-        $result = $plugin($operation, '', $response);
-
-        $response = $this->getJsonRpcResponse($result);
-        $this->assertEquals(
-            [
-                'result' => [
-                    'items' => [
-                        [
-                            'name' => 'test_transition_1'
-                        ],
-                        [
-                            'name' => 'test_transition_3'
-                        ]
-                    ],
-                    'total' => 2
-                ],
-                'id' => '2f5d0719-5b82-4280-9b3b-10f23aff226b',
-                'jsonrpc' => '2.0'
-            ],
-            $response,
-            'Incorrect response: ' . print_r($response, true)
-        );
-    }
-
-    public function testSkipAnotherOperations()
-    {
-        $plugin = new AfterTransitionIndex([
-            AfterTransitionIndex::FIELD__PSR_REQUEST => $this->getPsrRequest('.transitions.index'),
-            AfterTransitionIndex::FIELD__PSR_RESPONSE => $this->getPsrResponse()
+        $result = $plugin([
+            new Transition([
+                Transition::FIELD__NAME => 'test_transition_1'
+            ]),
+            new Transition([
+                Transition::FIELD__NAME => 'test_transition_2'
+            ]),
+            new Transition([
+                Transition::FIELD__NAME => 'test_transition_3'
+            ])
         ]);
-        $response = $this->getPsrResponse();
 
-        $response->getBody()->write(json_encode([
-            'result' => [
-                'items' => [
-                    [
-                        'name' => 'test_transition_1'
-                    ],
-                    [
-                        'name' => 'test_transition_2'
-                    ],
-                    [
-                        'name' => 'test_transition_3'
-                    ]
-                ],
-                'total' => 3
-            ],
-            'id' => '2f5d0719-5b82-4280-9b3b-10f23aff226b',
-            'jsonrpc' => '2.0'
-        ]));
-        $operation = new JsonRpcOperation([
-            JsonRpcOperation::FIELD__NAME => 'some'
-        ]);
-        $result = $plugin($operation, '', $response);
-
-        $response = $this->getJsonRpcResponse($result);
-        $this->assertEquals(
-            [
-                'result' => [
-                    'items' => [
-                        [
-                            'name' => 'test_transition_1'
-                        ],
-                        [
-                            'name' => 'test_transition_2'
-                        ],
-                        [
-                            'name' => 'test_transition_3'
-                        ]
-                    ],
-                    'total' => 3
-                ],
-                'id' => '2f5d0719-5b82-4280-9b3b-10f23aff226b',
-                'jsonrpc' => '2.0'
-            ],
-            $response,
-            'Incorrect response: ' . print_r($response, true)
-        );
+        $this->assertCount(2, $result);
     }
 }
