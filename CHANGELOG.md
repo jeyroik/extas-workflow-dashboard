@@ -1,3 +1,7 @@
+# 6.6.1
+
+- Added entity state check for the `ApplyConditions`.
+
 # 6.6.0
 
 - Removed plugin `AfterTransitionIndex`.
