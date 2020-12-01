@@ -6,7 +6,8 @@
       "state": "is ok"
     },
     "entity": {
-      "name": "test"
+      "name": "test",
+      "state_name": "test"
     }
   }
 }

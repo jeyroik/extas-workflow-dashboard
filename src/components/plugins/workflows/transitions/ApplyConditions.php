@@ -40,6 +40,9 @@ class ApplyConditions extends Plugin implements IStageJsonRpcBeforeIndexResponse
 
         $valid = [];
         foreach ($items as $transition) {
+            if ($this->runConditions && ($this->entity->getStateName() !== $transition->getStateFromName())) {
+                continue;
+            }
             $this->appendIfConditionsValid($transition, $valid);
         }
 

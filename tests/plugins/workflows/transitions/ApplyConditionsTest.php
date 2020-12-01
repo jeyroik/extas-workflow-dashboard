@@ -107,16 +107,19 @@ class ApplyConditionsTest extends TestCase
         ]);
         $result = $plugin([
             new Transition([
-                Transition::FIELD__NAME => 'test_transition_1'
+                Transition::FIELD__NAME => 'test_transition_1',
+                Transition::FIELD__STATE_FROM => 'test'
             ]),
             new Transition([
-                Transition::FIELD__NAME => 'test_transition_2'
+                Transition::FIELD__NAME => 'test_transition_2',
+                Transition::FIELD__STATE_FROM => 'test'
             ]),
             new Transition([
-                Transition::FIELD__NAME => 'test_transition_3'
+                Transition::FIELD__NAME => 'test_transition_3',
+                Transition::FIELD__STATE_FROM => 'test2'
             ])
         ]);
 
-        $this->assertCount(2, $result);
+        $this->assertCount(1, $result);
     }
 }
